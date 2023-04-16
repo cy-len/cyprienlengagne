@@ -4,7 +4,7 @@
     import Gallery from "../../../components/media/Gallery.svelte";
 </script>
 
-<PageStructure title="Media" imgName="bio-extrapic.jpg" layout="content-only">
+<PageStructure title="Media" bgImgName="Recital3.jpg" layout="content-only">
     <section>
         <h2>Videos</h2>
 

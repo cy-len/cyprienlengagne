@@ -55,27 +55,32 @@
             </div>
 
             <div class="listen">
-                <iframe class="yt-video" width="560" height="315" src="https://www.youtube.com/embed/1V7yLJOhuV8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe class="yt-video" width="560" height="315" src="https://www.youtube.com/embed/xongSVmsbSc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </section>
         
+        <!--
         <section class="news backdrop-blur-very-strong bg-very-light">
             <h3>{ newsTitle }</h3>
             <NewsList lang={language} maxCount={3} />
             <a href="{language}/news" class="cta-inverted">{ seeNews }</a>
         </section>
-    
+    -->
+
         <section class="concerts backdrop-blur-very-strong bg-very-light">
             <h3>{ concertsTitle }</h3>
             <SmartConcertList mode="upcoming" maxCount={5} />
             <a href="{language}/concerts" class="cta">{ seeAllConcertsText }</a>
         </section>
         
-        <section class="gallery backdrop-blur-very-strong bg-very-light">
-            <div class="gallery-backdrop">
-                <a href="{language}/media" class="cta-inverted">{ seeGalleryText }</a>
-            </div>
-        </section>
+        <!--
+
+            <section class="gallery backdrop-blur-very-strong bg-very-light">
+                <div class="gallery-backdrop">
+                    <a href="{language}/media" class="cta-inverted">{ seeGalleryText }</a>
+                </div>
+            </section>
+        -->
     </div>
 </div>
 

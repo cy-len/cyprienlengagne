@@ -3,7 +3,7 @@
     import ContactForm from "../../../components/contact/ContactForm.svelte";
 </script>
 
-<PageStructure title="Contact" imgName="contact-extrapic.jpg">
+<PageStructure title="Contact" imgName="Orchestra_Vertical.jpg">
     <h2>Contactez-moi</h2>
 
     <ContactForm
