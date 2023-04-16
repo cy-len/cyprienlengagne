@@ -150,7 +150,7 @@
     }
 
     .instrument {
-        font-size: min(3rem, 12vw);
+        font-size: min(3rem, 10vw);
         text-shadow: 0 0 3rem rgba(0, 0, 0, 1), 0 0 1rem rgba(0, 0, 0, 1);
         margin-top: 1rem;
     }
