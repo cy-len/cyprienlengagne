@@ -1,7 +1,10 @@
 import { updateGallery } from "../../../stores/gallery";
 import { updateVideos } from "../../../stores/videos";
+import type { PageLoad } from "./$types";
 
-export async function load() {
-    await updateGallery();
-    await updateVideos();
-}
+export const load: PageLoad = async ({ fetch }) => {
+    await Promise.all([
+        updateGallery(fetch),
+        updateVideos(fetch)
+    ]);
+};

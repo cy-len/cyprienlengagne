@@ -1,75 +1,162 @@
+import { queryFirebaseAggregationREST, queryFirebaseREST } from "../firebase/firebaseUtils";
 import type { Concert } from "../types/concert";
 import { Status } from "../types/status";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 export interface ConcertFetchResult {
-    upcoming: Concert[];
-    past: Concert[];
+    concerts: Concert[];
+    total: number;
     status: Status;
 }
 
-export const concerts = writable<ConcertFetchResult>({
-    upcoming: [],
-    past: [],
+export const upcomingConcerts = writable<ConcertFetchResult>({
+    concerts: [],
+    total: -1,
+    status: Status.PENDING
+});
+
+export const pastConcerts = writable<ConcertFetchResult>({
+    concerts: [],
+    total: -1,
     status: Status.PENDING
 });
 
 interface RawConcert {
-    name: string;
-    fields: {
-        date: {
-            timestampValue: string;
-        },
-        endDate?: {
-            timestampValue: string;
-        },
-        location: {
-            stringValue: string;
-        },
-        description: {
-            stringValue: string;
-        },
-        url?: {
-            stringValue: string;
-        }
-    }
+    date: {
+        timestampValue: string;
+    };
+    endDate?: {
+        timestampValue: string;
+    };
+    location: {
+        stringValue: string;
+    };
+    description: {
+        stringValue: string;
+    };
+    url?: {
+        stringValue: string;
+    };
+};
+
+function rawConcertToConcert(rawFields: RawConcert): Concert {
+    return {
+        location: rawFields.location.stringValue,
+        description: rawFields.description.stringValue,
+        date: new Date(rawFields.date.timestampValue),
+        url: rawFields.url?.stringValue ?? ""
+    };
 }
 
-export async function updateConcerts() {
+export async function queryConcertsCount(whereFilter: object, fetchFunction = fetch): Promise<number> {
+    const countRaw = await queryFirebaseAggregationREST({
+        structuredAggregationQuery: {
+            aggregations: [
+                {
+                    count: {},
+                },
+            ],
+            structuredQuery: {
+                from: [{ collectionId: "concerts" }],
+                where: whereFilter
+            },
+        },
+    }, fetchFunction);
+
+    return parseInt(countRaw[0]?.result.aggregateFields.field_1?.integerValue ?? "-1");
+}
+
+export async function queryConcerts(whereFilter: object, orderBy: object[], limit: number, fetchFunction = fetch): Promise<Concert[]> {
+    const raw = await queryFirebaseREST<RawConcert>({
+        structuredQuery: {
+            from: [
+                {
+                    collectionId: "concerts",
+                },
+            ],
+            where: whereFilter,
+            orderBy,
+            limit: limit
+        }
+    }, fetchFunction);
+
+    return raw.map((rawConcert => rawConcertToConcert(rawConcert.document.fields)));
+}
+
+export async function updateUpcomingConcerts(limit: number = 100, fetchFunction = fetch) {
     try {
-        const res = await fetch("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/concerts?pageSize=100");
-        const json = await res.json();
+        const current = get(upcomingConcerts);
+        if (current.concerts.length > limit && current.total < limit) {
+            return;
+        }
 
-        const upcoming: Concert[] = [];
-        const past: Concert[] = [];
+        const today = new Date();
+        const upcomingWhere = {
+            fieldFilter: {
+                field: { fieldPath: "date" },
+                op: "GREATER_THAN",
+                value: { timestampValue: today.toISOString() },
+            },
+        };
+        const upcomingOrderBy = {
+            field: {
+                fieldPath: "date",
+            },
+            direction: "ASCENDING",
+        };
         
-        json.documents.forEach((rawConcert: RawConcert) => {
-            const concert: Concert = {
-                location: rawConcert.fields.location.stringValue,
-                description: rawConcert.fields.description.stringValue,
-                date: new Date(rawConcert.fields.date.timestampValue),
-                url: rawConcert.fields.url?.stringValue ?? ""
-            };
 
-            if (concert.date.getTime() < Date.now()) {
-                past.push(concert);
-            } else {
-                upcoming.push(concert);
-            }
-        });
+        const upcomingCountPromise = current.total > -1 ? Promise.resolve(current.total) : queryConcertsCount(upcomingWhere, fetchFunction);
+        const [upcomingCount, upcomingArray] = await Promise.all([upcomingCountPromise, queryConcerts(upcomingWhere, [upcomingOrderBy], limit, fetchFunction)]);
 
-        upcoming.sort((a, b) => a.date.getTime() - b.date.getTime());
-        past.sort((a, b) => b.date.getTime() - a.date.getTime());
-    
-        concerts.set({
-            upcoming,
-            past,
+        upcomingConcerts.set({
+            concerts: upcomingArray,
+            total: upcomingCount,
             status: Status.OK
         });
     } catch (error) {
-        concerts.set({
-            upcoming: [],
-            past: [],
+        upcomingConcerts.set({
+            concerts: [],
+            total: -1,
+            status: Status.FAILED
+        });
+    }
+}
+
+export async function updatePastConcerts(limit: number = 100, fetchFunction = fetch) {
+    try {
+        const current = get(pastConcerts);
+        if (current.concerts.length > limit && current.total < limit) {
+            return;
+        }
+        
+        const today = new Date();
+        const pastWhere = {
+            fieldFilter: {
+                field: { fieldPath: "date" },
+                op: "LESS_THAN",
+                value: { timestampValue: today.toISOString() },
+            },
+        };
+        const pastOrderBy = {
+            field: {
+                fieldPath: "date",
+            },
+            direction: "DESCENDING",
+        };
+
+        const pastCountPromise = current.total > -1 ? Promise.resolve(current.total) : queryConcertsCount(pastWhere, fetchFunction);
+        const [pastCount, pastArray] = await Promise.all([pastCountPromise, queryConcerts(pastWhere, [pastOrderBy], limit, fetchFunction)]);
+
+        pastConcerts.set({
+            concerts: pastArray,
+            total: pastCount,
+            status: Status.OK
+        });
+    } catch (error) {
+        pastConcerts.set({
+            concerts: [],
+            total: -1,
             status: Status.FAILED
         });
     }

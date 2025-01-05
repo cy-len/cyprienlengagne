@@ -11,7 +11,14 @@
 
 <Nav />
 <slot />
+
 <footer>
-    Cyprien Lengagne
+    <p>
+        Cyprien Lengagne
+    </p>
     <SocialLinks />
+
+    <p>
+        Website by Cyprien Lengagne
+    </p>
 </footer>

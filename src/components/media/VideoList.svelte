@@ -22,12 +22,14 @@
 <style>
 
     .video-gallery {
-        --player-max-size: 540px;
+        --player-max-size: 560px;
         --cell-width: min(90vw, var(--player-max-size));
-        --cell-height: calc(var(--cell-width) * 9 / 16 + 3rem);
+        --player-height: calc(var(--cell-width) * 9 / 16);
+        --cell-height: calc(var(--player-height) + 3rem);
     }
 
     .yt-video {
+        max-height: var(--player-height);
         margin-bottom: 0.5rem;
     }
 

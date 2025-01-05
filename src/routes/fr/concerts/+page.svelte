@@ -1,12 +1,13 @@
 <script lang="ts">
     import PageStructure from "../../../components/PageStructure.svelte";
-    import SmartConcertList from "../../../components/concerts/SmartConcertList.svelte";
+    import UpcomingConcertList from "../../../components/concerts/UpcomingConcertsList.svelte";
+    import PastConcertsList from "../../../components/concerts/PastConcertsList.svelte";
 </script>
 
-<PageStructure title="Concerts" bgImgName="Recital4.jpg" bgPositionX="center" bgPositionY="-250px" bgPositionMobileX="60%" bgPositionMobileY="0%" imgName="VerticalCloseUp2.jpg">
+<PageStructure title="Concerts" bgImgName="PendereckiSecondRound.webp" bgPositionX="left" bgPositionY="-15rem" bgPositionMobileX="-8rem" bgPositionMobileY="-5rem" imgName="Zimmermann_Vertical.webp">
     <h2>Prochains concerts</h2>
-    <SmartConcertList mode="upcoming" />
+    <UpcomingConcertList />
 
     <h2>Concerts passés</h2>
-    <SmartConcertList mode="past" />
+    <PastConcertsList maxCount={10} loadMoreText="Voir plus" />
 </PageStructure>

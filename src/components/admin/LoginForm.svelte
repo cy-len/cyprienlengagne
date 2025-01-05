@@ -32,7 +32,7 @@
     <label for="password">Password</label>
     <input type="password" name="password" id="password" bind:value={password} />
     <p class="error">{ error }</p>
-    <button>Login</button>
+    <button class="cta-inverted">Login</button>
 </form>
 
 <style>

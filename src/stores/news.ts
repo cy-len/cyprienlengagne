@@ -1,92 +1,134 @@
+import { queryFirebaseAggregationREST, queryFirebaseREST } from "../firebase/firebaseUtils";
 import type { News } from "../types/news";
 import { Status } from "../types/status";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 export interface NewsFetchResult {
     news: News[];
+    total: number;
     status: Status;
 }
 
 export const news = writable<NewsFetchResult>({
     news: [],
+    total: -1,
     status: Status.PENDING
 });
 
 interface RawNews {
-    name: string;
-    fields: {
-        imageUrl: {
-            stringValue: string;
-        },
-        imageCopyright: {
-            stringValue: string;
-        },
-        text: {
-            mapValue: {
-                fields: {
-                    [key: string]: {
-                        mapValue: {
-                            fields: {
-                                title: {
-                                    stringValue: string;
-                                };
-                                content: {
-                                    stringValue: string;
-                                }
+    imageUrl: {
+        stringValue: string;
+    },
+    imageCopyright: {
+        stringValue: string;
+    },
+    text: {
+        mapValue: {
+            fields: {
+                [key: string]: {
+                    mapValue: {
+                        fields: {
+                            title: {
+                                stringValue: string;
+                            };
+                            content: {
+                                stringValue: string;
                             }
                         }
                     }
                 }
             }
         }
-        title: {
-            stringValue: string;
-        },
-        content: {
-            stringValue: string;
-        },
-        date: {
-            timestampValue: string;
-        },
+    }
+    title: {
+        stringValue: string;
+    },
+    content: {
+        stringValue: string;
+    },
+    date: {
+        timestampValue: string;
     }
 }
 
-export async function updateNews() {
-    try {
-        const res = await fetch("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/news");
-        const json = await res.json();
+function rawNewsToNews(rawFields: RawNews): News {
+    return {
+        imageUrl: rawFields.imageUrl.stringValue,
+        imageCopyright: rawFields.imageCopyright.stringValue,
+        text: {
+            en: {
+                title: rawFields.text.mapValue.fields["en"].mapValue.fields.title.stringValue,
+                content: rawFields.text.mapValue.fields["en"].mapValue.fields.content.stringValue,
+            },
+            fr: {
+                title: rawFields.text.mapValue.fields["fr"].mapValue.fields.title.stringValue,
+                content: rawFields.text.mapValue.fields["fr"].mapValue.fields.content.stringValue,
+            },
+        },
+        date: new Date(rawFields.date.timestampValue),
+    };
+}
 
-        const allNews: News[] = [];
-        
-        json.documents.forEach((rawNews: RawNews) => {
-            const newsItem: News = {
-                imageUrl: rawNews.fields.imageUrl.stringValue,
-                imageCopyright: rawNews.fields.imageCopyright.stringValue,
-                text: {
-                    en: {
-                        title: rawNews.fields.text.mapValue.fields["en"].mapValue.fields.title.stringValue,
-                        content: rawNews.fields.text.mapValue.fields["en"].mapValue.fields.content.stringValue,
-                    },
-                    fr: {
-                        title: rawNews.fields.text.mapValue.fields["fr"].mapValue.fields.title.stringValue,
-                        content: rawNews.fields.text.mapValue.fields["fr"].mapValue.fields.content.stringValue,
-                    },
+export async function queryNewsCount(fetchFunction = fetch): Promise<number> {
+    const countRaw = await queryFirebaseAggregationREST({
+        structuredAggregationQuery: {
+            aggregations: [
+                {
+                    count: {},
                 },
-                date: new Date(rawNews.fields.date.timestampValue),
-            };
+            ],
+            structuredQuery: {
+                from: [{ collectionId: "news" }],
+            },
+        },
+    }, fetchFunction);
 
-            allNews.push(newsItem);
-        });
+    return parseInt(countRaw[0]?.result.aggregateFields.field_1?.integerValue ?? "-1");
+}
 
-        allNews.sort((a, b) => a.date.getTime() - b.date.getTime());
-    
+export async function queryNews(limit: number, fetchFunction = fetch): Promise<News[]> {
+    const raw = await queryFirebaseREST<RawNews>({
+        structuredQuery: {
+            from: [
+                {
+                    collectionId: "news",
+                },
+            ],
+            orderBy: [
+                {
+                    field: {
+                        fieldPath: "date",
+                    },
+                    direction: "DESCENDING",
+                },
+            ],
+            limit: limit
+        }
+    }, fetchFunction);
+
+    return raw.map((rawNews => rawNewsToNews(rawNews.document.fields)));
+}
+
+export async function updateNews(limit: number = 20, fetchFunction = fetch) {
+    try {
+        const current = get(news);
+        if (current.news.length > limit && current.total < limit) {
+            return;
+        }
+        
+        const countPromise = current.total > -1 ? Promise.resolve(current.total) : queryNewsCount(fetchFunction);
+        const [newsCount, newsArray] = await Promise.all([countPromise, queryNews(limit, fetchFunction)]);
+
         news.set({
-            news: allNews,
+            news: newsArray,
+            total: newsCount,
             status: Status.OK
         });
     } catch (error) {
+        console.log(error)
         news.set({
             news: [],
+            total: -1,
             status: Status.FAILED
         });
     }

@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { collection, getDocs, getFirestore, orderBy, query, where } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { adminUser } from "./stores";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -38,10 +38,19 @@ export const concertsCollection = collection(db, "concerts");
 export async function getConcerts() {
     return getDocs(concertsCollection);
 }
+export async function getUpcomingConcerts() {
+    const q = query(concertsCollection, where("date", ">=", new Date()), orderBy("date", "asc"));
+    return getDocs(q);
+}
+export async function getPastConcerts() {
+    const q = query(concertsCollection, where("date", "<", new Date()), orderBy("date", "desc"));
+    return getDocs(q);
+}
 
 export const newsCollection = collection(db, "news");
 export async function getNews() {
-    return getDocs(newsCollection);
+    const q = query(newsCollection, orderBy("date", "desc"));
+    return getDocs(q);
 }
 
 export const biosCollection = collection(db, "bios");
@@ -57,6 +66,12 @@ export async function getPictures() {
 export const videosCollection = collection(db, "videos");
 export async function getVideos() {
     return getDocs(videosCollection);
+}
+
+export const compositionsCollection = collection(db, "compositions");
+export async function getCompositions() {
+    const q = query(compositionsCollection, orderBy("premiereDate", "desc"));
+    return getDocs(q);
 }
 
 export const socialMediasCollection = collection(db, "socialMedias");

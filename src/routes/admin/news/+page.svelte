@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { addDoc, type CollectionReference, type DocumentReference } from "firebase/firestore";
     import SingleNewsEditor from "../../../components/admin/news/SingleNewsEditor.svelte";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
@@ -40,6 +40,13 @@
         } as News);
 
         newsRefs = [...newsRefs, docRef];
+
+        await tick();
+
+        window.scroll({
+            behavior: "smooth",
+            top: document.documentElement.scrollHeight
+        });
     }
 
     async function save() {
@@ -67,8 +74,8 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button on:click={addNews}>Add news</button>
-            <button on:click={save}>Save</button>
+            <button class="toolbar-button" on:click={addNews}>Add news</button>
+            <button class="toolbar-button" on:click={save}>Save</button>
         </div>
     
         {#if saving}

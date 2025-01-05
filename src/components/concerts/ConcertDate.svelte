@@ -1,34 +1,38 @@
 <script lang="ts">
+    import { page } from "$app/stores";
+    import { capitalize } from "../../utils/stringUtils";
+
     export let date: Date;
     export let compact: boolean;
 
-    const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-    ];
+    const monthFormatter = new Intl.DateTimeFormat($page.url.pathname.split("/")[1], {
+        month: "short"
+    });
+
+    const fullFormatter = new Intl.DateTimeFormat($page.url.pathname.split("/")[1], {
+        dateStyle: "full"
+    });
 </script>
 
 {#if compact}
-    { date.toLocaleDateString() }
+    <div class="compact-wrapper">
+        { capitalize(fullFormatter.format(date)) }
+    </div>
 {:else}
     <div class="wrapper">
         <div class="year">{ date.getFullYear() }</div>
-        <div class="month">{ months[date.getMonth()] }</div>
+        <div class="month">{ capitalize(monthFormatter.format(date)) }</div>
         <div class="day">{ date.getDate() }</div>
     </div>
 {/if}
 
 <style>
+
+    .compact-wrapper {
+        padding: 0.5rem;
+        text-align: center;
+        background-color: var(--color-primary-light);
+    }
 
     .wrapper {
         width: 5rem;

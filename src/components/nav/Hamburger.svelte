@@ -2,6 +2,7 @@
     import NavLinks from "./NavLinks.svelte";
     import type { NavLinksParams } from "./NavLinks.svelte";
     import { navigating } from "$app/stores";
+    import LanguagePickerBar from "./language/LanguagePickerBar.svelte";
 
     export let navParams: NavLinksParams;
 
@@ -15,18 +16,19 @@
 </script>
 
 <div class="wrapper" class:slideover-open={open}>
-    <button class="hamburger soft-button" on:click={() => open = true}>
+    <button class="hamburger soft-button" on:click={() => (open = true)}>
         <img class="icon" src="/icons/hamburger-menu.svg" alt="Menu" />
     </button>
-    <div class="slideover bg-very-light" class:open={open}>
-        <button class="close soft-button" on:click={() => open = false}>
-            <img class="icon" src="/icons/close.svg" alt="Menu" />
+    <div class="slideover bg-very-light" class:open>
+        <button class="soft-button" on:click={() => (open = false)}>
+            <img class="icon close" src="/icons/close.svg" alt="Menu" />
         </button>
         <div class="mobile-nav">
             <NavLinks vertical={true} params={navParams} />
         </div>
+        <LanguagePickerBar />
     </div>
-    <div class="backdrop" class:open={open} />
+    <div class="backdrop" class:open />
 </div>
 
 <style>
@@ -50,17 +52,18 @@
         pointer-events: none;
         opacity: 0;
         transform: translateX(5rem);
-        
+
         transition: 0.5s;
 
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         gap: 2rem;
-        
+
         padding: 1rem;
         background-color: rgba(0, 0, 0, 0.85);
         height: 100vh;
+        box-sizing: border-box;
     }
 
     .slideover.open {
@@ -88,5 +91,6 @@
 
     .mobile-nav {
         padding: 1rem;
+        flex: 1;
     }
 </style>

@@ -2,19 +2,21 @@
     import type { Concert } from "../../types/concert";
     import { browser } from '$app/environment';
     import { onMount } from "svelte";
-    import ConcertDate from "./ConcertDate.svelte";
+    import { page } from "$app/stores";
+    import ConcertListItem from "./ConcertListItem.svelte";
+    import { capitalize } from "../../utils/stringUtils";
 
     export let concertsList: Concert[];
-
     export let maxCount = -1;
-
     export let forceCompact = false;
-
-    function formatConcertDate(c: Concert) {
-        return c.endDate ? `${c.date.toLocaleDateString()} - ${c.endDate.toLocaleDateString()}` : c.date.toLocaleDateString();
-    }
+    export let grouping: "off" | "month-asc" | "month-desc" = "month-asc";
+    export let alwaysShowYearInGroups: boolean = false;
 
     let autoCompact = false;
+
+    const monthFormatter = new Intl.DateTimeFormat($page.url.pathname.split("/")[1] ?? "en", {
+        month: "long"
+    });
 
     onMount(() => {
         if (browser) {
@@ -26,22 +28,41 @@
     });
 
     $: truncatedConcerts = maxCount > 0 ? concertsList.slice(0, maxCount) : concertsList;
+    $: groupedConcertObj = Object.groupBy(truncatedConcerts, (item, i) => `${item.date.getFullYear()}${item.date.getMonth().toString().padStart(2, "0")}`);
+    $: groupedConcert = Object.values(groupedConcertObj).filter(g => !!g);
 
     $: compact = forceCompact || autoCompact;
 </script>
 
 <ul class:compact={compact}>
-    {#each truncatedConcerts as concert}
-        <li>
-            <a href={concert.url} target="_blank" rel="noopener noreferrer">
-                <div class="concert-container">
-                    <div class="concert-date"><ConcertDate date={concert.date} compact={compact} /></div>
-                    <div class="concert-title">{ concert.location }</div>
-                    <div class="concert-description line-breaks">{ concert.description }</div>
-                </div>
-            </a>
-        </li>
-    {/each}
+    {#if grouping !== "off" && groupedConcert.length > 1}
+        {@const sortedGroups = grouping === "month-desc" ? groupedConcert.toSorted((a, b) => (b[0].date.valueOf() - a[0].date.valueOf())) : groupedConcert}
+        
+        {#each sortedGroups as group, i}
+            {#if group}
+                <li class="group-header" class:extra-margin={compact}>
+                    <h4>
+                        { capitalize(monthFormatter.format(group[0].date)) }
+                        {#if alwaysShowYearInGroups || i === 0 || group[0].date.getFullYear() !== sortedGroups[i - 1][0].date.getFullYear()}
+                            { group[0].date.getFullYear() }
+                        {/if}
+                    </h4>
+                </li>
+                
+                {#each group as concert}
+                    <li>
+                        <ConcertListItem {concert} {compact} />
+                    </li>
+                {/each}
+            {/if}
+        {/each}
+    {:else}
+        {#each truncatedConcerts as concert}
+            <li>
+                <ConcertListItem {concert} {compact} />
+            </li>
+        {/each}
+    {/if}
 </ul>
 
 <style>
@@ -51,55 +72,16 @@
         margin: 1rem 0;
         padding: 0;
     }
-    
-    a {
-        display: block;
-        padding: 0.5rem 0.5rem 0.5rem 0;
-        text-decoration: none;
-        color: inherit;
-        border-top-right-radius: 2rem;
-        border-bottom-right-radius: 2rem;
 
-        transition: 0.25s;
+    li.extra-margin {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
     }
 
-    a:hover {
-        background-color: rgba(51, 51, 51, 0.1);
-        padding-left: 1rem;
-    }
-
-    .concert-container {
-        display: grid;
-        grid-template-areas:
-            "date title"
-            "date description";
-        grid-template-columns: 5rem 1fr;
-        gap: 0.5rem 1rem;
-
-        max-width: calc(100% - 1rem);
-    }
-
-    .compact .concert-container {
-        grid-template-areas:
-            "title"
-            "date"
-            "description";
-        grid-template-columns: 1fr;
-
-    }
-
-    .concert-title {
+    .group-header h4 {
         font-size: 1.25rem;
-        font-weight: bold;
-        grid-area: title;
-    }
-
-    .concert-date {
-        grid-area: date;
-    }
-
-    .concert-description {
-        grid-area: description;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
     }
 
 </style>

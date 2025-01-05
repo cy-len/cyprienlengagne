@@ -39,18 +39,20 @@
 </script>
 
 <div class="editor-container" class:modified={modified}>
-    <h3 class="language">{ bioRef.id }</h3> <!-- id = "en"/"fr"/"de"... -->
-
-    <label for="{idBase}-short" class="short-label">Short bio</label>
-    <textarea id="{idBase}-short" class="short-field" cols="30" bind:value={short} />
-
-    <label for="{idBase}-full" class="full-label">Full bio</label>
-    <textarea id="{idBase}-full" class="full-field" cols="30" rows="30" bind:value={full} />
+    <div class="editor-grid">
+        <h3 class="language">{ bioRef.id }</h3> <!-- id = "en"/"fr"/"de"... -->
+    
+        <label for="{idBase}-short" class="short-label">Short bio</label>
+        <textarea id="{idBase}-short" class="short-field" cols="30" bind:value={short} />
+    
+        <label for="{idBase}-full" class="full-label">Full bio</label>
+        <textarea id="{idBase}-full" class="full-field" cols="30" rows="30" bind:value={full} />
+    </div>
 </div>
 
 <style>
 
-    .editor-container {
+    .editor-grid {
         grid-template-areas:
             "language language"
             "short-label full-label"

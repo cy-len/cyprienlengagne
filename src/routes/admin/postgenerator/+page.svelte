@@ -4,7 +4,7 @@
     import { onMount } from "svelte";
     import TextModal from "../../../components/admin/postGenerator/TextModal.svelte";
     import ConcertSelector from "../../../components/admin/postGenerator/ConcertSelector.svelte";
-    import type { Concert } from "src/types/concert";
+    import type { Concert } from "../../../types/concert";
     import FontSelector from "../../../components/admin/postGenerator/FontSelector.svelte";
 
     interface Vector2 {

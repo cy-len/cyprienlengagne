@@ -29,7 +29,7 @@ interface RawBio {
     }
 }
 
-export async function updateBio(lang: string = "en") {
+export async function updateBio(lang: string = "en", fetchFunction = fetch) {
     bios.update((bioFetches: MultilingualBioFetchResult): MultilingualBioFetchResult => {
         return {
             ...bioFetches,
@@ -44,7 +44,7 @@ export async function updateBio(lang: string = "en") {
     });
 
     try {
-        const res = await fetch(`https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/bios/${lang}`);
+        const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/bios/${lang}`);
         const json = await res.json() as RawBio;
         
         bios.update((bioFetches: MultilingualBioFetchResult): MultilingualBioFetchResult => {

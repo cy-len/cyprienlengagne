@@ -36,9 +36,9 @@ interface RawGalleryPicture {
     }
 }
 
-export async function updateGallery() {
+export async function updateGallery(fetchFunction = fetch) {
     try {
-        const res = await fetch("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/gallery");
+        const res = await fetchFunction("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/gallery");
         const json = await res.json();
 
         const pictures: GalleryPicture[] = [];

@@ -57,8 +57,8 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button on:click={addVideo}>Add video</button>
-            <button on:click={save}>Save</button>
+            <button class="toolbar-button" on:click={addVideo}>Add video</button>
+            <button class="toolbar-button" on:click={save}>Save</button>
         </div>
     
         

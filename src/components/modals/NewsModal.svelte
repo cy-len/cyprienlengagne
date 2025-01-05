@@ -40,10 +40,16 @@
 
     img {
         display: block;
-        width: 100%;
         object-fit: cover;
         max-width: min(90vw, 800px);
-        max-height: 400px;
+    }
+
+    @media screen and (min-width: 768px) {
+        img {
+            max-width: 90vw;
+            width: 100%;
+            max-height: 400px;
+        }
     }
 
     .text {

@@ -1,13 +1,17 @@
 <script lang="ts">
     import SocialLinks from "../utils/SocialLinks.svelte";
-    import SmartConcertList from "../concerts/SmartConcertList.svelte";
     import { bios } from "../../stores/bios";
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
     import { Status } from "../../types/status";
     import { browser } from "$app/environment";
     import NewsList from "../news/NewsList.svelte";
+    import ConcertsList from "../concerts/ConcertsList.svelte";
+    import { upcomingConcerts } from "../../stores/concerts";
+    import { getContext } from "svelte";
+    import type { Writable } from "svelte/store";
+    import type { OpenGraphProps } from "../../types/openGraphProps";
 
-    export let instrument: string = "Cellist";
+    export let instrument: string = "Cellist & composer";
     export let aboutTitle: string = "About Cyprien";
     export let language: string = "en";
     export let bioLoadingText: string = "Loading bio";
@@ -24,11 +28,13 @@
         }, 2000);
     }
     
+    getContext<Writable<OpenGraphProps>>("openGraphProps").set({
+        title: `Home`,
+        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
+        imageUrl: `https://cyprienlengagne.com/imgs/Valere_Top.webp`
+    });
+    
 </script>
-
-<svelte:head>
-    <title>Cyprien Lengagne - Home</title>
-</svelte:head>
 
 <div id="home-wrapper">
     <div id="home-bg" />
@@ -59,17 +65,15 @@
             </div>
         </section>
         
-        <!--
         <section class="news backdrop-blur-very-strong bg-very-light">
             <h3>{ newsTitle }</h3>
             <NewsList lang={language} maxCount={3} />
-            <a href="{language}/news" class="cta-inverted">{ seeNews }</a>
+            <a href="{language}/news" class="cta force-white-bg">{ seeNews }</a>
         </section>
-    -->
 
         <section class="concerts backdrop-blur-very-strong bg-very-light">
             <h3>{ concertsTitle }</h3>
-            <SmartConcertList mode="upcoming" maxCount={5} />
+            <ConcertsList concertsList={$upcomingConcerts.concerts} maxCount={5} grouping="off" />
             <a href="{language}/concerts" class="cta">{ seeAllConcertsText }</a>
         </section>
         
@@ -96,7 +100,7 @@
         width: 100%;
         z-index: -1;
 
-        background-image: url("/imgs/Valere_Top.jpg");
+        background-image: url("/imgs/Valere_Top.webp");
         background-size: cover;
         background-position: top;
 
@@ -113,7 +117,8 @@
     }
 
     section {
-        padding: min(2rem, 5vw);
+        --padding: min(2rem, 5vw);
+        padding: var(--padding);
         box-sizing: border-box;
 
         transition: 0.2s ease;
@@ -155,7 +160,11 @@
         margin-top: 1rem;
     }
     
-    @media screen and (max-width: 55rem) {
+    @media screen and (max-width: 75rem) {
+        .splash {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 20rem, rgba(0, 0, 0, 0) 35rem);
+        }
+
         .splash .text {
             top: unset;
             bottom: 2rem;
@@ -164,6 +173,9 @@
 
     .grid {
         display: grid;
+        grid-template-areas:
+            "mini-bio mini-bio"
+            "concerts news";
 
         opacity: 0;
         box-shadow: 0 -2rem 2rem 2rem rgba(0, 0, 0, 0.4);
@@ -178,10 +190,12 @@
     }
 
     .mini-bio {
+        grid-area: mini-bio;
+
         display: grid;
         grid-template-areas: "bio-text listen";
         grid-template-columns: 3fr 2fr;
-        gap: 1rem;
+        gap: 2rem;
     }
 
     .bio-text {
@@ -192,23 +206,34 @@
         grid-area: listen;
     }
 
-    @media screen and (max-width: 55rem) {
+    @media screen and (max-width: 65rem) {
         .mini-bio {
             grid-template-columns: 1fr;
             grid-template-areas:
                 "bio-text"
                 "listen";
             grid-template-rows: min-content min-content;
+            gap: 3rem;
+        }
+
+        .yt-video {
+            --max-width: calc(100vw - 2 * var(--padding));
+            max-width: var(--max-width);
+            max-height: calc(var(--max-width) * 9 / 16);
         }
     }
 
     h3 {
         margin-top: 0;
-        text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.25);
     }
 
     .news {
-        background-color: var(--color-primary-light);
+        grid-area: news;
+        background-color: var(--color-primary-super-light);
+    }
+
+    .concerts {
+        grid-area: concerts;
     }
 
     .gallery {

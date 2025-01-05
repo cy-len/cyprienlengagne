@@ -1,4 +1,8 @@
 <script lang="ts">
+    import { getContext } from "svelte";
+    import type { OpenGraphProps } from "../types/openGraphProps";
+    import type { Writable } from "svelte/store";
+
     export let title: string = "";
     export let bgImgName: string = "Valere_Back.jpg";
     export let bgPositionX: string = "70%";
@@ -8,11 +12,13 @@
     export let imgName: string = "";
     export let imgAlt: string = "Cyprien Lengagne";
     export let layout: "image-left" | "image-right" | "content-only" = "image-left";
-</script>
 
-<svelte:head>
-    <title>Cyprien Lengagne - {title}</title>
-</svelte:head>
+    getContext<Writable<OpenGraphProps>>("openGraphProps").set({
+        title,
+        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
+        imageUrl: `https://cyprienlengagne.com/imgs/${bgImgName}`
+    });
+</script>
 
 <main style="background-image: url(/imgs/{bgImgName}); --bg-pos-x: {bgPositionX}; --bg-pos-y: {bgPositionY}; --bg-pos-mobile-x: {bgPositionMobileX}; --bg-pos-mobile-y: {bgPositionMobileY};">
     <h1>{ title }</h1>
@@ -71,6 +77,12 @@
     .grid.content-only {
         grid-template-columns: 1fr;
         grid-template-areas: "content";
+    }
+
+    @media screen and (min-width: 768px) {
+        .grid.content-only {
+            padding: 0 calc(5vw - 1rem);
+        }
     }
 
     @media screen and (max-width: 35rem) {

@@ -2,11 +2,12 @@
     import { page } from "$app/stores";
 
     export let href: string;
+    export let aExtraClass: string = "";
 
     $: active = $page.url.pathname === href;
 </script>
 
-<a href={href} class:active={active}><slot /></a>
+<a href={href} class={aExtraClass} class:active={active}><slot /></a>
 
 <style>
     a {
@@ -20,7 +21,7 @@
     }
 
     a:hover {
-        border-bottom-color: black;
+        border-bottom-color: white;
     }
 
     a.active {

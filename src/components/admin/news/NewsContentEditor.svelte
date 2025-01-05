@@ -16,5 +16,5 @@
     <input type="text" id="{idBase}-title" class="title-field" bind:value={text.title} />
     
     <label for="{idBase}-content" class="content-label">Content</label>
-    <textarea id="{idBase}-content" class="content-field" cols="8" bind:value={text.content} />
+    <textarea id="{idBase}-content" class="content-field" cols="8" rows="5" bind:value={text.content} />
 </div>

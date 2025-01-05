@@ -4,7 +4,7 @@
     import Gallery from "../../../components/media/Gallery.svelte";
 </script>
 
-<PageStructure title="Médias" bgImgName="Recital3.jpg" bgPositionY="-250px" layout="content-only">
+<PageStructure title="Médias" bgImgName="JarousskyPapillons.webp" bgPositionY="bottom" bgPositionX="right" layout="content-only">
     <section>
         <h2>Videos</h2>
 

@@ -11,6 +11,7 @@
         bioText: "Bio",
         newsText: "Actualités",
         concertsText: "Concerts",
+        compositionsText: "Compositions",
         mediaText: "Médias",
         contactText: "Contact"
     };
@@ -22,7 +23,14 @@
 
 <Nav navParams={navParams} />
 <slot />
+
 <footer>
-    Cyprien Lengagne
+    <p>
+        Cyprien Lengagne
+    </p>
     <SocialLinks />
+
+    <p>
+        Site internet par Cyprien Lengagne
+    </p>
 </footer>

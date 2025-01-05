@@ -38,7 +38,7 @@
 
     .gallery {
         --thumb-max-size: 25rem;
-        --cell-width: var(--thumb-max-size);
+        --cell-width: min(var(--thumb-max-size), 90vw);
         --cell-height: var(--thumb-max-size);
     }
 

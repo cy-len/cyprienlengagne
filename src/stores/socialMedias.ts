@@ -33,9 +33,9 @@ export const socialMedias = writable<SocialMediaFetchResult>({
     status: Status.PENDING
 });
 
-export async function updateSocialMedias() {
+export async function updateSocialMedias(fetchFunction = fetch) {
     try {
-        const res = await fetch("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/socialMedias/handles");
+        const res = await fetchFunction("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/socialMedias/handles");
         const json = await res.json();
         socialMedias.set({
             facebook: {

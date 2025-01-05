@@ -1,7 +1,16 @@
 <script lang="ts">
-
-    import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
-    import { ref, type FirebaseStorage, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+    import {
+        type DocumentReference,
+        updateDoc,
+        getDoc,
+        deleteDoc,
+    } from "firebase/firestore";
+    import {
+        ref,
+        type FirebaseStorage,
+        uploadBytesResumable,
+        getDownloadURL,
+    } from "firebase/storage";
     import { onMount, createEventDispatcher } from "svelte";
     import type { NewsContent } from "../../../types/news";
     import NewsContentEditor from "./NewsContentEditor.svelte";
@@ -14,7 +23,7 @@
 
     let imageUrl: string = "";
     let imageCopyright: string = "";
-    let text: {[key: string]: NewsContent} = {};
+    let text: { [key: string]: NewsContent } = {};
     let dateString: string = "";
 
     let hash: string = "";
@@ -26,14 +35,14 @@
         let h = imageUrl + imageCopyright + dateString;
 
         Object.values(text).forEach((v) => {
-            h += v.title + v.content
+            h += v.title + v.content;
         });
 
         return h;
     }
 
     onMount(async () => {
-        const { storage }  = await import("../../../firebase");
+        const { storage } = await import("../../../firebase");
 
         storageCopy = storage;
 
@@ -43,7 +52,7 @@
 
         imageUrl = data.imageUrl;
         text = {
-            ...data.text
+            ...data.text,
         };
         imageCopyright = data.imageCopyright;
         dateString = data.date.toDate().toISOString().split("T")[0];
@@ -61,9 +70,11 @@
 
         const uploadTask = uploadBytesResumable(cloudRef, file);
 
-        uploadTask.on("state_changed",
+        uploadTask.on(
+            "state_changed",
             (snapshot) => {
-                imageUploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                imageUploadProgress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             },
             (error) => {
                 console.log(error);
@@ -73,7 +84,7 @@
                     imageUrl = url;
                     imageUploadProgress = -1;
                 });
-            }
+            },
         );
     }
 
@@ -84,9 +95,9 @@
             imageUrl,
             imageCopyright,
             text: {
-                ...text
+                ...text,
             },
-            date: new Date(dateString)
+            date: new Date(dateString),
         };
         console.log(data);
         await updateDoc(newsRef, data);
@@ -96,7 +107,7 @@
     async function deleteNews() {
         await deleteDoc(newsRef);
         dispatch("deleted", {
-            ref: newsRef
+            ref: newsRef,
         });
     }
 
@@ -108,47 +119,64 @@
         let h = imageUrl + imageCopyright + dateString;
 
         Object.values(text).forEach((v) => {
-            h += v.title + v.content
+            h += v.title + v.content;
         });
         modified = hash !== h;
-    };
+    }
 </script>
 
-<div class="editor-container" class:modified={modified}>
-    <!-- svelte-ignore a11y-img-redundant-alt -->
-    <img src={imageUrl} alt="Image thumbnail" class="img" />
+<div class="editor-container" class:modified>
+    <div class="editor-grid">
+        <!-- svelte-ignore a11y-img-redundant-alt -->
+        <img src={imageUrl} alt="Image thumbnail" class="img" />
 
-    <div class="url">
-        <div>{imageUrl}</div>
-        {#if imageUploadProgress >= 0}
-            <div>Uploading image ({imageUploadProgress}%)</div>
-        {:else}
-            <label class="custom-file-upload cta-inverted">
-                <input type="file" accept="image/*" bind:this={imageInput} on:change={uploadImage} />
-                Upload image
-            </label>
-        {/if}
-    </div>
-    
-    <label for="{idBase}-copyright" class="copyright-label">Copyright</label>
-    <input type="text" id="{idBase}-copyright" class="copyright-field" bind:value={imageCopyright} />
+        <div class="url">
+            <div>{imageUrl}</div>
+            {#if imageUploadProgress >= 0}
+                <div>Uploading image ({imageUploadProgress}%)</div>
+            {:else}
+                <label class="custom-file-upload cta-inverted">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        bind:this={imageInput}
+                        on:change={uploadImage}
+                    />
+                    Upload image
+                </label>
+            {/if}
+        </div>
 
-    <label for="{idBase}-date" class="date-label">Date</label>
-    <input type="date" id="{idBase}-date" class="date-field" bind:value={dateString} />
+        <label for="{idBase}-copyright" class="copyright-label">Copyright</label>
+        <input
+            type="text"
+            id="{idBase}-copyright"
+            class="copyright-field"
+            bind:value={imageCopyright}
+        />
 
-    <div class="texts">
-        {#each Object.keys(text) as lang}
-            <NewsContentEditor langName={lang} text={text[lang]} />
-        {/each}
-    </div>
+        <label for="{idBase}-date" class="date-label">Date</label>
+        <input
+            type="date"
+            id="{idBase}-date"
+            class="date-field"
+            bind:value={dateString}
+        />
 
-    <div class="delete-button">
-        <button on:click={deleteNews}>Delete news</button>
+        <div class="texts">
+            {#each Object.keys(text) as lang}
+                <NewsContentEditor langName={lang} text={text[lang]} />
+            {/each}
+        </div>
+
+        <div class="delete-button">
+            <button class="toolbar-button" on:click={deleteNews}>Delete news</button>
+        </div>
     </div>
 </div>
 
 <style>
-    .editor-container {
+    .editor-grid {
         grid-template-areas:
             "img url delete-button"
             "img copyright-label delete-button"
@@ -156,7 +184,7 @@
             "img date-label delete-button"
             "img date-field delete-button"
             "texts texts delete-button";
-        
+
         grid-template-columns: 200px 1fr 10rem;
         grid-template-rows: repeat(min-content);
     }
@@ -203,5 +231,4 @@
     .texts {
         grid-area: texts;
     }
-
 </style>

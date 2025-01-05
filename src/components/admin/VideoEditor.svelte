@@ -2,6 +2,7 @@
 
     import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
     import { onMount, createEventDispatcher } from "svelte";
+    import { extractYouTubeHandle } from "../../utils/stringUtils";
 
     const dispatch = createEventDispatcher();
 
@@ -28,8 +29,8 @@
     export async function save() {
         if (!modified) return;
 
-        youtubeHandle.replace("https://youtu.be/", "");
-        youtubeHandle.replace("https://youtube.com/watch?v=", "");
+        youtubeHandle = extractYouTubeHandle(youtubeHandle);
+
         const data = {
             youtubeHandle,
             title,
@@ -52,31 +53,33 @@
 </script>
 
 <div class="editor-container" class:modified={modified}>
-    <iframe class="yt-video youtube-preview" width="560" height="315" src="https://www.youtube.com/embed/{youtubeHandle}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="editor-grid">
+        <iframe class="yt-video youtube-preview" width="560" height="315" src="https://www.youtube.com/embed/{youtubeHandle}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        
+        <div class="youtube-handle">
+            <label for="{idBase}-youtube-handle" class="youtube-handle-label">Youtube Video link/handle (will automatically be replaced by video ID on save)</label>
+            <input type="text" id="{idBase}-youtube-handle" class="youtube-handle-field" bind:value={youtubeHandle} />
+            <div class="info">The YouTube handle is the string of random characters that identifies the YouTube video, and can be found in the YouTube page URL after this part: youtube.com/watch?v=</div>
+        </div>
+        <div class="title">
+            <label for="{idBase}-title" class="title-label">Title</label>
+            <input type="text" id="{idBase}-title" class="title-field" bind:value={title} />
+        </div>
     
-    <div class="youtube-handle">
-        <label for="{idBase}-youtube-handle" class="youtube-handle-label">Youtube handle (youtube.com/watch?v=YOUTUBE_HANDLE)</label>
-        <input type="text" id="{idBase}-youtube-handle" class="youtube-handle-field" bind:value={youtubeHandle} />
-        <div class="info">The YouTube handle is the string of random characters that identifies the YouTube video, and can be found in the YouTube page URL after this part: youtube.com/watch?v=</div>
-    </div>
-    <div class="title">
-        <label for="{idBase}-title" class="title-label">Title</label>
-        <input type="text" id="{idBase}-title" class="title-field" bind:value={title} />
-    </div>
-
-    <div class="added">
-        Added on <br />
-        { date.toLocaleDateString() }
-    </div>
-
-    <div class="delete-button">
-        <button on:click={deletePicture}>Delete video</button>
+        <div class="added">
+            Added on <br />
+            { date.toLocaleDateString() }
+        </div>
+    
+        <div class="delete-button">
+            <button class="toolbar-button" on:click={deletePicture}>Delete video</button>
+        </div>
     </div>
 </div>
 
 <style>
 
-    .editor-container {
+    .editor-grid {
         grid-template-areas:
             "youtube-preview youtube-handle delete-button"
             "youtube-preview title delete-button"

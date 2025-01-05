@@ -6,6 +6,7 @@
     const dispatch = createEventDispatcher();
 
     export let concertRef: DocumentReference;
+    export let warnAboutPast: boolean = false;
 
     let location: string = "";
     let description: string = "";
@@ -53,25 +54,31 @@
 </script>
 
 <div class="editor-container" class:modified={modified}>
-    <label for="{idBase}-date" class="date-label">Date</label>
-    <input type="date" id="{idBase}-date" class="date-field" bind:value={dateString} />
-    <label for="{idBase}-location" class="location-label">Location</label>
-    <input type="text" id="{idBase}-location" class="location-field" bind:value={location} />
+    {#if warnAboutPast && (new Date(dateString)).valueOf() < (new Date()).valueOf()}
+        <p>This concert is in the past. It will automatically appear in the past concerts list once saved if you reload the page.</p>
+    {/if}
+
+    <div class="editor-grid">
+        <label for="{idBase}-date" class="date-label">Date</label>
+        <input type="date" id="{idBase}-date" class="date-field" bind:value={dateString} />
+        <label for="{idBase}-location" class="location-label">Location</label>
+        <input type="text" id="{idBase}-location" class="location-field" bind:value={location} />
+        
+        <label for="{idBase}-description" class="description-label">Description</label>
+        <textarea id="{idBase}-description" class="description-field" cols="4" bind:value={description} />
     
-    <label for="{idBase}-description" class="description-label">Description</label>
-    <textarea id="{idBase}-description" class="description-field" cols="4" bind:value={description} />
-
-    <label for="{idBase}-url" class="url-label">Website url (optional)</label>
-    <input type="url" id="{idBase}-url" class="url-field" bind:value={url} />
-
-    <div class="delete-button">
-        <button on:click={deleteConcert}>Delete concert</button>
+        <label for="{idBase}-url" class="url-label">Website url (optional)</label>
+        <input type="url" id="{idBase}-url" class="url-field" bind:value={url} />
+    
+        <div class="delete-button">
+            <button class="toolbar-button" on:click={deleteConcert}>Delete concert</button>
+        </div>
     </div>
 </div>
 
 <style>
 
-.editor-container {
+.editor-grid {
         grid-template-areas:
             "date-label location-label delete-button"
             "date-field location-field delete-button"

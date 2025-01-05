@@ -9,6 +9,7 @@
         bioText: "Bio",
         newsText: "News",
         concertsText: "Concerts",
+        compositionsText: "Compositions",
         mediaText: "Media",
         contactText: "Contact"
     };

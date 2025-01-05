@@ -117,52 +117,54 @@
 </script>
 
 <div class="editor-container" class:modified={modified}>
-    <!-- svelte-ignore a11y-img-redundant-alt -->
-    <img src={thumbnailUrl} alt="Image thumbnail" class="thumb-img" />
-
-    <div class="thumb-url">
-        <div>{thumbnailUrl}</div>
-
-        {#if thumbnailUploadProgress >= 0}
-            <div>Uploading thumbnail ({thumbnailUploadProgress}%)</div>
-        {:else}
-            <label class="custom-file-upload cta-inverted">
-                <input type="file" accept="image/*" bind:this={thumbnailInput} on:change={uploadThumbnail} />
-                Upload thumbnail image
-            </label>
-        {/if}
-        <div class="info">Make sure that the thumbnail is roughly a square or that the subject is at the center of the picture</div>
-    </div>
-
-    <div class="url">
-        <div>{url}</div>
-        {#if fullresUploadProgress >= 0}
-            <div>Uploading image ({fullresUploadProgress}%)</div>
-        {:else}
-            <label class="custom-file-upload cta-inverted">
-                <input type="file" accept="image/*" bind:this={fullresInput} on:change={uploadFullres} />
-                Upload full resolution image
-            </label>
-        {/if}
-    </div>
+    <div class="editor-grid">
+        <!-- svelte-ignore a11y-img-redundant-alt -->
+        <img src={thumbnailUrl} alt="Image thumbnail" class="thumb-img" />
     
-    <div class="copyright">
-        <label for="{idBase}-copyright" class="copyright-label">Copyright</label>
-        <input type="text" id="{idBase}-copyright" class="copyright-field" bind:value={copyright} />
-    </div>
-
-    <div class="uploaded">
-        Uploaded on <br />
-        { date.toLocaleDateString() }
-    </div>
-
-    <div class="delete-button">
-        <button on:click={deletePicture}>Delete picture</button>
+        <div class="thumb-url">
+            <div>{thumbnailUrl}</div>
+    
+            {#if thumbnailUploadProgress >= 0}
+                <div>Uploading thumbnail ({thumbnailUploadProgress}%)</div>
+            {:else}
+                <label class="custom-file-upload cta-inverted">
+                    <input type="file" accept="image/*" bind:this={thumbnailInput} on:change={uploadThumbnail} />
+                    Upload thumbnail image
+                </label>
+            {/if}
+            <div class="info">Make sure that the thumbnail is roughly a square or that the subject is at the center of the picture</div>
+        </div>
+    
+        <div class="url">
+            <div>{url}</div>
+            {#if fullresUploadProgress >= 0}
+                <div>Uploading image ({fullresUploadProgress}%)</div>
+            {:else}
+                <label class="custom-file-upload cta-inverted">
+                    <input type="file" accept="image/*" bind:this={fullresInput} on:change={uploadFullres} />
+                    Upload full resolution image
+                </label>
+            {/if}
+        </div>
+        
+        <div class="copyright">
+            <label for="{idBase}-copyright" class="copyright-label">Copyright</label>
+            <input type="text" id="{idBase}-copyright" class="copyright-field" bind:value={copyright} />
+        </div>
+    
+        <div class="uploaded">
+            Uploaded on <br />
+            { date.toLocaleDateString() }
+        </div>
+    
+        <div class="delete-button">
+            <button class="toolbar-button" on:click={deletePicture}>Delete picture</button>
+        </div>
     </div>
 </div>
 
 <style>
-    .editor-container {
+    .editor-grid {
         grid-template-areas:
             "thumb-img thumb-url url delete-button"
             "thumb-img copyright uploaded delete-button";

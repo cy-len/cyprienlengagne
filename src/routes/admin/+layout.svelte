@@ -27,6 +27,7 @@
                 <NavLink href="/admin/socialmedias">Edit Social Medias</NavLink>
                 <NavLink href="/admin/news">Edit News</NavLink>
                 <NavLink href="/admin/concerts">Edit Concerts</NavLink>
+                <NavLink href="/admin/compositions">Edit Compositions</NavLink>
                 <NavLink href="/admin/videos">Edit Videos</NavLink>
                 <NavLink href="/admin/gallery">Edit Gallery</NavLink>
                 <NavLink href="/admin/postgenerator">Post generator</NavLink>
@@ -35,9 +36,9 @@
             <slot />
         </div>
     {:else}
-    <div class="center">
-        <LoginForm />
-    </div>
+        <div class="center">
+            <LoginForm />
+        </div>
     {/if}
 </PageStructure>
 <footer>
@@ -46,6 +47,7 @@
 </footer>
 
 <style>
+    
     .center {
         margin: 2rem;
         display: flex;
@@ -53,12 +55,4 @@
         justify-content: center;
     }
 
-    nav {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .admin-nav :global(a) {
-        color: black;
-    }
 </style>

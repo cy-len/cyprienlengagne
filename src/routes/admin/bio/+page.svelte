@@ -40,7 +40,7 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button on:click={save}>Save</button>
+            <button class="toolbar-button" on:click={save}>Save</button>
         </div>
     
         {#if saving}
