@@ -7,7 +7,7 @@ html, body {
 
     --color-primary: rgb(53, 115, 191);
     --color-primary-light: rgba(61, 132, 219, 0.7);
-    --color-primary-super-light: rgba(69, 149, 248, 0.7);
+    --color-primary-super-light: rgba(51, 153, 255, 0.7);
 
     font-family: var(--ff-text);
 }

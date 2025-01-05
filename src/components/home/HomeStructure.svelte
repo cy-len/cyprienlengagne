@@ -207,6 +207,12 @@
     }
 
     @media screen and (max-width: 65rem) {
+        .grid {
+            grid-template-areas:
+                "mini-bio"
+                "news"
+                "concerts";
+        }
         .mini-bio {
             grid-template-columns: 1fr;
             grid-template-areas:
