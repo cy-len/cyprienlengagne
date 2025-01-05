@@ -96,7 +96,7 @@
     
     #home-bg {
         position: fixed;
-        height: 100vh;
+        height: 100dvh;
         width: 100%;
         z-index: -1;
 
