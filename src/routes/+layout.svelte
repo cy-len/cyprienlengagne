@@ -13,7 +13,7 @@
 
 <svelte:head>
     <title>{$openGaphProps.title} - Cyprien Lengagne</title>
-    <meta property="og:title" content="{$openGaphProps.title} - Tuvens" />
+    <meta property="og:title" content="{$openGaphProps.title} - Cyprien Lengagne" />
     <meta property="og:type" content="website" />
     <meta property="description" content={$openGaphProps.description ?? ""} />
     <meta property="og:description" content={$openGaphProps.description ?? ""} />
