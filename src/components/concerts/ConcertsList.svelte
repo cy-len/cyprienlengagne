@@ -5,6 +5,7 @@
     import { page } from "$app/stores";
     import ConcertListItem from "./ConcertListItem.svelte";
     import { capitalize } from "../../utils/stringUtils";
+    import { groupBy } from "../../utils/objectUtils";
 
     export let concertsList: Concert[];
     export let maxCount = -1;
@@ -28,7 +29,7 @@
     });
 
     $: truncatedConcerts = maxCount > 0 ? concertsList.slice(0, maxCount) : concertsList;
-    $: groupedConcertObj = Object.groupBy(truncatedConcerts, (item, i) => `${item.date.getFullYear()}${item.date.getMonth().toString().padStart(2, "0")}`);
+    $: groupedConcertObj = groupBy(truncatedConcerts, (item) => `${item.date.getFullYear()}${item.date.getMonth().toString().padStart(2, "0")}`);
     $: groupedConcert = Object.values(groupedConcertObj).filter(g => !!g);
 
     $: compact = forceCompact || autoCompact;
