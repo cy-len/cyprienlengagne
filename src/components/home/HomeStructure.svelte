@@ -96,7 +96,7 @@
     
     #home-bg {
         position: fixed;
-        height: 100dvh;
+        height: 100svh;
         width: 100%;
         z-index: -1;
 
@@ -127,7 +127,7 @@
     .splash {
         position: relative;
         z-index: 1;
-        min-height: 100dvh;
+        min-height: 100svh;
     }
 
     .splash .text {
