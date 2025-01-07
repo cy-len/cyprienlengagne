@@ -16,7 +16,7 @@
 </script>
 
 <nav id="nav-wrapper" class="backdrop-blur-strong">
-    <div class="logo">Cyprien Lengagne</div>
+    <a href="/{navParams.langURL}" class="logo">Cyprien Lengagne</a>
 
     <div class="links">
         <NavLinks params={navParams} />
@@ -52,6 +52,8 @@
     .logo {
         font-family: var(--ff-heading);
         font-size: 1.5rem;
+        color: inherit;
+        text-decoration: none;
     }
 
     .links {
