@@ -62,7 +62,7 @@
 
         padding: 1rem;
         background-color: rgba(0, 0, 0, 0.85);
-        height: 100vh;
+        height: 100dvh;
         box-sizing: border-box;
     }
 
