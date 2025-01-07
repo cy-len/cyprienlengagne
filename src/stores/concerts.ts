@@ -90,12 +90,13 @@ export async function updateUpcomingConcerts(limit: number = 100, fetchFunction 
             return;
         }
 
-        const today = new Date();
+        const todayMorning = new Date();
+        todayMorning.setHours(0, 0, 0);
         const upcomingWhere = {
             fieldFilter: {
                 field: { fieldPath: "date" },
                 op: "GREATER_THAN",
-                value: { timestampValue: today.toISOString() },
+                value: { timestampValue: todayMorning.toISOString() },
             },
         };
         const upcomingOrderBy = {
@@ -130,12 +131,13 @@ export async function updatePastConcerts(limit: number = 100, fetchFunction = fe
             return;
         }
         
-        const today = new Date();
+        const todayMorning = new Date();
+        todayMorning.setHours(0, 0, 0);
         const pastWhere = {
             fieldFilter: {
                 field: { fieldPath: "date" },
                 op: "LESS_THAN",
-                value: { timestampValue: today.toISOString() },
+                value: { timestampValue: todayMorning.toISOString() },
             },
         };
         const pastOrderBy = {
