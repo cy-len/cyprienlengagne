@@ -14,7 +14,7 @@
     &#9662;
 </button>
 {#if barOpen}
-    <div class="floating-bar" transition:fade={{ duration: 100 }}>
+    <div class="floating-bar" transition:fade|global={{ duration: 100 }}>
         <LanguagePickerBar />
     </div>
 {/if}
