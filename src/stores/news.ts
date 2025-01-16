@@ -19,6 +19,9 @@ interface RawNews {
     imageUrl: {
         stringValue: string;
     },
+    thumbnailUrl?: {
+        stringValue: string;
+    },
     imageCopyright: {
         stringValue: string;
     },
@@ -54,6 +57,7 @@ interface RawNews {
 function rawNewsToNews(rawFields: RawNews): News {
     return {
         imageUrl: rawFields.imageUrl.stringValue,
+        thumbnailUrl: rawFields.thumbnailUrl?.stringValue,
         imageCopyright: rawFields.imageCopyright.stringValue,
         text: {
             en: {

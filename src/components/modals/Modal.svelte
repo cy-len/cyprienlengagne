@@ -12,7 +12,7 @@
 </script>
 
 <dialog class="bg-mid-light" bind:this={dialog}>
-    <div class="toolbar">
+    <div class="modal-toolbar">
         <slot name="left-button" />
 
         <button class="soft-button" on:click={close}>
@@ -47,7 +47,7 @@
         animation: dialog-appear 0.2s ease-out;
     }
     
-    .toolbar {
+    .modal-toolbar {
         padding: 0.25rem;
         display: flex;
         justify-content: space-between;

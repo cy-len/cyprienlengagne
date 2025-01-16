@@ -64,7 +64,7 @@
     }
 
     function onDelete(event: any) {
-        newsRefs = newsRefs.filter((ref) => ref !== event.detail.ref);
+        newsRefs = newsRefs.filter((ref) => ref.id !== event.detail.id);
     }
 
 </script>

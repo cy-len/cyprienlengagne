@@ -57,7 +57,10 @@
         hash = computeHash();
     }
 
-    async function deleteConcert() {
+    async function deleteComposition() {
+        const areYouSure = prompt(`If you really want to delete ${name}, type YES and select ok`);
+        if (areYouSure !== "YES") return;
+
         await deleteDoc(compositionRef);
         dispatch("deleted", {
             ref: compositionRef
@@ -94,7 +97,7 @@
         <input type="text" id="{idBase}-recording-video" class="recording-video-field" bind:value={recordingVideo} />
     
         <div class="delete-button">
-            <button class="toolbar-button" on:click={deleteConcert}>Delete composition</button>
+            <button class="toolbar-button" on:click={deleteComposition}>Delete composition</button>
         </div>
     </div>
 </div>

@@ -12,11 +12,6 @@
         modal.show(p);
     }
 
-    function keyDown(e: KeyboardEvent, p: GalleryPicture) {
-        if (e.key === "Enter") {
-            openFullPicture(p);
-        }
-    }
 </script>
 
 {#if $gallery.status === Status.PENDING}
@@ -24,11 +19,10 @@
 {:else}
     <div class="gallery auto-grid">
         {#each $gallery.pictures as picture}
-            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-            <div class="gallery-item" tabindex="0" on:keydown={(e) => {keyDown(e, picture);}} on:click={() => {openFullPicture(picture);}}>
+            <button class="gallery-item" tabindex="0" on:click={() => {openFullPicture(picture);}}>
                 <img src={picture.thumbnailUrl} alt="Cyprien Lengagne" class="gallery-image" />
                 <div class="gallery-image-copyright bg-very-light">&#169; { picture.copyright }</div>
-            </div>
+            </button>
         {/each}
     </div>
     <GalleryModal bind:this={modal} />
@@ -44,6 +38,9 @@
 
     .gallery-item {
         position: relative;
+        display: block;
+        outline: none;
+        padding: 0;
         overflow: hidden;
         cursor: pointer;
 

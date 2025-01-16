@@ -51,7 +51,7 @@
     <div class="auto-grid sm-center">
         {#each truncatedNews as newsItem}
             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-            <div class="news" style="background-image: url('{newsItem.imageUrl}');" tabindex="0" on:keydown={(e) => {keyDown(e, newsItem);}} on:click={() => {openNews(newsItem);}}>
+            <div class="news" style="background-image: url('{newsItem.thumbnailUrl ?? newsItem.imageUrl}');" tabindex="0" on:keydown={(e) => {keyDown(e, newsItem);}} on:click={() => {openNews(newsItem);}}>
                 <div class="overlay">
                     <div class="bottom">
                         <h5>{ dateFormatter.format(newsItem.date) }</h5>

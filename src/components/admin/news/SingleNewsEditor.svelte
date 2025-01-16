@@ -14,6 +14,7 @@
     import { onMount, createEventDispatcher } from "svelte";
     import type { NewsContent } from "../../../types/news";
     import NewsContentEditor from "./NewsContentEditor.svelte";
+    import { compressImageBrowser } from "../../../utils/imgUtils";
 
     const dispatch = createEventDispatcher();
 
@@ -22,6 +23,7 @@
     let storageCopy: FirebaseStorage | null = null;
 
     let imageUrl: string = "";
+    let thumbnailUrl: string = "";
     let imageCopyright: string = "";
     let text: { [key: string]: NewsContent } = {};
     let dateString: string = "";
@@ -30,6 +32,7 @@
 
     let imageInput: HTMLInputElement;
     let imageUploadProgress: number = -1;
+    let thumbnailUploadProgress: number = -1;
 
     function getHash(): string {
         let h = imageUrl + imageCopyright + dateString;
@@ -60,11 +63,58 @@
         hash = getHash();
     });
 
-    function uploadImage() {
+    async function uploadWithThumbnail(file: File) {
         if (!storageCopy) return;
 
-        const file = (imageInput.files as FileList)[0];
+        const thumbnail = await compressImageBrowser(file, 1000, 1000);
 
+        const cloudFileName = `news/image/${idBase}-${file.name}`;
+        const cloudRef = ref(storageCopy, cloudFileName);
+
+        const cloudThumbnailFileName = `news/image/${idBase}-thumb-${file.name}`;
+        const cloudThumbnailRef = ref(storageCopy, cloudThumbnailFileName);
+
+        const uploadTask = uploadBytesResumable(cloudRef, file);
+        const thumbnailUploadTask = uploadBytesResumable(cloudThumbnailRef, thumbnail);
+
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                imageUploadProgress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            (error) => {
+                console.log(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                    imageUrl = url;
+                    imageUploadProgress = -1;
+                });
+            },
+        );
+
+        thumbnailUploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                thumbnailUploadProgress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            (error) => {
+                console.log(error);
+            },
+            () => {
+                getDownloadURL(thumbnailUploadTask.snapshot.ref).then((url) => {
+                    thumbnailUrl = url;
+                    thumbnailUploadProgress = -1;
+                });
+            },
+        );
+    }
+
+    function uploadWithoutThumbnail(file: File) {
+        if (!storageCopy) return;
+        
         const cloudFileName = `news/image/${idBase}-${file.name}`;
         const cloudRef = ref(storageCopy, cloudFileName);
 
@@ -88,12 +138,23 @@
         );
     }
 
+    function uploadImage() {
+        const file = (imageInput.files as FileList)[0];
+
+        if (file.size > 50_000) { // auto compress if greater than 50kb
+            uploadWithThumbnail(file);
+        } else {
+            uploadWithoutThumbnail(file);
+        }
+    }
+
     export async function save() {
         if (!modified) return;
 
         const data = {
             imageUrl,
             imageCopyright,
+            thumbnailUrl,
             text: {
                 ...text,
             },
@@ -105,9 +166,12 @@
     }
 
     async function deleteNews() {
+        const areYouSure = prompt(`If you really want to delete ${text["en"]?.title ?? text["fr"]?.title}, type YES and select ok`);
+        if (areYouSure !== "YES") return;
+
         await deleteDoc(newsRef);
         dispatch("deleted", {
-            ref: newsRef,
+            id: newsRef.id,
         });
     }
 
@@ -133,7 +197,14 @@
         <div class="url">
             <div>{imageUrl}</div>
             {#if imageUploadProgress >= 0}
-                <div>Uploading image ({imageUploadProgress}%)</div>
+                <div>
+                    <span>
+                        Uploading image {imageUploadProgress}% 
+                    </span>
+                    {#if thumbnailUploadProgress >= 0}
+                        <span>(Uploading thumbnail {thumbnailUploadProgress}%)</span>
+                    {/if}
+                </div>
             {:else}
                 <label class="custom-file-upload cta-inverted">
                     <input

@@ -5,6 +5,7 @@ export interface NewsContent {
 
 export interface News {
     imageUrl: string;
+    thumbnailUrl?: string;
     imageCopyright: string;
     text: {
         [key: string]: NewsContent;

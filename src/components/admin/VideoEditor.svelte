@@ -41,6 +41,9 @@
     }
 
     async function deletePicture() {
+        const areYouSure = prompt(`If you really want to delete the video ${title}, type YES and select ok`);
+        if (areYouSure !== "YES") return;
+
         await deleteDoc(videoRef);
         dispatch("deleted", {
             ref: videoRef
