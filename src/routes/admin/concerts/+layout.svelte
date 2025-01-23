@@ -1,5 +1,10 @@
 <script lang="ts">
     import NavLink from "../../../components/utils/NavLink.svelte";
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
 
 
 </script>
@@ -12,5 +17,5 @@
         <NavLink href="/admin/concerts/past">Past</NavLink>
     </nav>
 
-    <slot />
+    {@render children?.()}
 </div>

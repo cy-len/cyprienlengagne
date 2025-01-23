@@ -1,10 +1,13 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
-
-    const dispatch = createEventDispatcher();
+    import { onMount } from "svelte";
 
     export const label = "Font";
-    export let font = "Montserrat";
+    interface Props {
+        font?: string;
+        onchange: (font: string) => any;
+    }
+
+    let { font = $bindable("Montserrat"), onchange }: Props = $props();
 
     let select: HTMLSelectElement;
 
@@ -20,9 +23,7 @@
 
     function fontSelected() {
         font = fonts[select.selectedIndex];
-        dispatch("change", {
-            font
-        });
+        onchange(font);
     }
 
     onMount(() => {
@@ -32,7 +33,7 @@
 </script>
 
 <label for={id}>{label}</label>
-<select name={id} id={id} bind:this={select} on:change={fontSelected} style="font-family: {`"${font}"`}">
+<select name={id} id={id} bind:this={select} onchange={fontSelected} style="font-family: {`"${font}"`}">
     {#each fonts as font}
         <option value={font} style="font-family: {`"${font}"`}">{font}</option>
     {/each}

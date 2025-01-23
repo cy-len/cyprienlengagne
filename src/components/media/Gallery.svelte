@@ -1,10 +1,14 @@
 <script lang="ts">
     import GalleryModal from "../../components/modals/GalleryModal.svelte";
-    import { gallery, type GalleryPicture } from "../../stores/gallery";
+    import { galleryManager, type GalleryPicture } from "../../stores/gallery.svelte";
     import { Status } from "../../types/status";
     import LoadingSpinner from "../../components/utils/LoadingSpinner.svelte";
 
-    export let loadingText: string = "Loading gallery";
+    interface Props {
+        loadingText?: string;
+    }
+
+    let { loadingText = "Loading gallery" }: Props = $props();
 
     let modal: GalleryModal;
 
@@ -14,12 +18,12 @@
 
 </script>
 
-{#if $gallery.status === Status.PENDING}
+{#if galleryManager.gallery.status === Status.PENDING}
     <LoadingSpinner message={loadingText} />
 {:else}
     <div class="gallery auto-grid">
-        {#each $gallery.pictures as picture}
-            <button class="gallery-item" tabindex="0" on:click={() => {openFullPicture(picture);}}>
+        {#each galleryManager.gallery.items as picture}
+            <button class="gallery-item" onclick={() => {openFullPicture(picture);}}>
                 <img src={picture.thumbnailUrl} alt="Cyprien Lengagne" class="gallery-image" />
                 <div class="gallery-image-copyright bg-very-light">&#169; { picture.copyright }</div>
             </button>

@@ -32,3 +32,20 @@ export async function queryFirebaseAggregationREST(query: object, fetchFunction 
 
     return res.json();
 }
+
+export async function queryCountREST(collectionId: string, fetchFunction = fetch): Promise<number> {
+    const countRaw = await queryFirebaseAggregationREST({
+        structuredAggregationQuery: {
+            aggregations: [
+                {
+                    count: {},
+                },
+            ],
+            structuredQuery: {
+                from: [{ collectionId }],
+            },
+        },
+    }, fetchFunction);
+
+    return parseInt(countRaw[0]?.result.aggregateFields.field_1?.integerValue ?? "-1");
+}

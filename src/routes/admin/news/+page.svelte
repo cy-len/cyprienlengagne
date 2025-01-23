@@ -1,29 +1,28 @@
 <script lang="ts">
 
-    import { onMount, tick } from "svelte";
-    import { addDoc, type CollectionReference, type DocumentReference } from "firebase/firestore";
+    import { getContext, onMount, tick } from "svelte";
+    import type { DocumentReference } from "firebase/firestore";
     import SingleNewsEditor from "../../../components/admin/news/SingleNewsEditor.svelte";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
-    import type { News } from "../../../types/news";
+    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
+
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     
-    let newsCol: CollectionReference | null = null;
+    let newsRefs: DocumentReference[] = $state([]);
 
-    let newsRefs: DocumentReference[] = [];
+    let singleEditors: SingleNewsEditor[] = $state([]);
 
-    let singleEditors: SingleNewsEditor[] = [];
-
-    let saving: boolean = false;
+    let saving: boolean = $state(false);
 
     onMount(async () => {
-        const { newsCollection, getNews }  = await import("../../../firebase");
-        newsCol = newsCollection;
-        newsRefs = (await getNews()).docs.map((d) => d.ref);
+        if (!firebaseManager) return;
+        newsRefs = (await firebaseManager.getNews()).docs.map((d) => d.ref);
     });
 
     async function addNews() {
-        if (!newsCol) return;
+        if (!firebaseManager) return;
 
-        const docRef = await addDoc(newsCol, {
+        const docRef = await firebaseManager.addNews({
             imageUrl: "/imgs/gallery_default.jpg",
             imageCopyright: "",
             date: new Date(),
@@ -37,7 +36,7 @@
                     content: ""
                 }
             }
-        } as News);
+        });
 
         newsRefs = [...newsRefs, docRef];
 
@@ -63,8 +62,8 @@
         saving = false;
     }
 
-    function onDelete(event: any) {
-        newsRefs = newsRefs.filter((ref) => ref.id !== event.detail.id);
+    function onDelete(id: string) {
+        newsRefs = newsRefs.filter((ref) => ref.id !== id);
     }
 
 </script>
@@ -74,8 +73,8 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button class="toolbar-button" on:click={addNews}>Add news</button>
-            <button class="toolbar-button" on:click={save}>Save</button>
+            <button class="toolbar-button" onclick={addNews}>Add news</button>
+            <button class="toolbar-button" onclick={save}>Save</button>
         </div>
     
         {#if saving}
@@ -84,7 +83,7 @@
             </div>
         {:else}
             {#each newsRefs as news, i}
-                <SingleNewsEditor newsRef={news} bind:this={singleEditors[i]} on:deleted={onDelete} />
+                <SingleNewsEditor newsRef={news} bind:this={singleEditors[i]} ondeleted={onDelete} />
             {/each}
         {/if}
     </div>

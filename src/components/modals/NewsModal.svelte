@@ -2,9 +2,13 @@
     import type { News } from "../../types/news";
     import Modal from "./Modal.svelte";
     
-    export let lang: string = "en";
+    interface Props {
+        lang?: string;
+    }
 
-    let news: News = {
+    let { lang = "en" }: Props = $props();
+
+    let news: News = $state({
         imageUrl: "",
         imageCopyright: "",
         text: {
@@ -14,7 +18,7 @@
             },
         },
         date: new Date()
-    };
+    });
 
     let modal: Modal;
 
@@ -25,8 +29,6 @@
 </script>
 
 <Modal bind:this={modal}>
-    <div slot="left-button"></div>
-
     <div>
         <img src={news.imageUrl} alt={news.text[lang].title} />
         <div class="text">

@@ -1,18 +1,27 @@
 <script lang="ts">
-    import { news, updateNews } from "../../stores/news";
+    import { newsManager } from "../../stores/news.svelte";
     import type { News } from "../../types/news";
     import { Status } from "../../types/status";
     import NewsModal from "../modals/NewsModal.svelte";
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
 
-    export let maxCount: number = -1;
-    export let expandedMax: number = 100;
-    export let lang: string = "en";
-    export let loadMoreText: string = "Load more";
+    interface Props {
+        maxCount?: number;
+        expandedMax?: number;
+        lang?: string;
+        loadMoreText?: string;
+    }
+
+    let {
+        maxCount = $bindable(-1),
+        expandedMax = 100,
+        lang = "en",
+        loadMoreText = "Load more"
+    }: Props = $props();
 
     let modal: NewsModal;
 
-    let loadingMore: boolean = false;
+    let loadingMore: boolean = $state(false);
 
     const dateFormatter = new Intl.DateTimeFormat(lang, {
         year: "numeric",
@@ -24,41 +33,35 @@
         modal.show(n);
     }
 
-    function keyDown(e: KeyboardEvent, n: News) {
-        if (e.key === "Enter") {
-            openNews(n);
-        }
-    }
-
     async function loadMore() {
         if (maxCount === -1) return;
 
-        if (maxCount < $news.news.length) {
-            maxCount = $news.news.length;
+        if (maxCount < newsManager.news.items.length) {
+            maxCount = newsManager.news.items.length;
             return;
         }
 
         loadingMore = true;
-        await updateNews(expandedMax);
+        await newsManager.updateNews(expandedMax);
         maxCount = expandedMax;
         loadingMore = false;
     }
 
-    $: truncatedNews = maxCount < 0 ? $news.news : $news.news.slice(0, maxCount);
+    let truncatedNews = $derived(maxCount < 0 ? newsManager.news.items : newsManager.news.items.slice(0, maxCount));
 </script>
 
-{#if $news.status === Status.OK}
+{#if newsManager.news.status === Status.OK}
     <div class="auto-grid sm-center">
         {#each truncatedNews as newsItem}
-            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-            <div class="news" style="background-image: url('{newsItem.thumbnailUrl ?? newsItem.imageUrl}');" tabindex="0" on:keydown={(e) => {keyDown(e, newsItem);}} on:click={() => {openNews(newsItem);}}>
+            <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+            <button class="news" style="background-image: url('{newsItem.thumbnailUrl ?? newsItem.imageUrl}');" onclick={() => {openNews(newsItem);}}>
                 <div class="overlay">
                     <div class="bottom">
                         <h5>{ dateFormatter.format(newsItem.date) }</h5>
                         <h4>{ newsItem.text[lang].title }</h4>
                     </div>
                 </div>
-            </div>
+            </button>
         {/each}
 
         <NewsModal lang={lang} bind:this={modal} />
@@ -66,12 +69,12 @@
 
     {#if loadingMore}
         <LoadingSpinner message="Loading more news" />
-    {:else if maxCount !== -1 && maxCount < expandedMax && $news.total > maxCount}
-        <button class="cta" on:click={loadMore}>{ loadMoreText }</button>
+    {:else if maxCount !== -1 && maxCount < expandedMax && newsManager.news.total > maxCount}
+        <button class="cta" onclick={loadMore}>{ loadMoreText }</button>
     {/if}
-{:else if $news.status === Status.FAILED}
+{:else if newsManager.news.status === Status.FAILED}
     <p>An error occured while fetching news</p>
-{:else if $news.status === Status.PENDING}
+{:else if newsManager.news.status === Status.PENDING}
     <LoadingSpinner message="Loading news" />
 {/if}
 
@@ -89,18 +92,21 @@
 
     .news {
         position: relative;
+        padding: 0;
+        margin: 0;
+        outline: none;
 
         width: var(--cell-width);
         height: var(--cell-height);
+        overflow: hidden;
 
         background-size: cover;
         background-position: center;
-
-        overflow: hidden;
-
+        
+        border-radius: 2rem;
         cursor: pointer;
 
-        border-radius: 2rem;
+        text-align: left;
 
         transition: 0.25s;
     }
@@ -128,7 +134,7 @@
         margin: 0;
     }
 
-    .auto-grid:has(:hover) > :not(:hover) {
+    .auto-grid:has(:global(:hover)) > :not(:hover) {
         opacity: 0.5;
     }
 

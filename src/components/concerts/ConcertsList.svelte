@@ -7,13 +7,23 @@
     import { capitalize } from "../../utils/stringUtils";
     import { groupBy } from "../../utils/objectUtils";
 
-    export let concertsList: Concert[];
-    export let maxCount = -1;
-    export let forceCompact = false;
-    export let grouping: "off" | "month-asc" | "month-desc" = "month-asc";
-    export let alwaysShowYearInGroups: boolean = false;
+    interface Props {
+        concertsList: Concert[];
+        maxCount?: any;
+        forceCompact?: boolean;
+        grouping?: "off" | "month-asc" | "month-desc";
+        alwaysShowYearInGroups?: boolean;
+    }
 
-    let autoCompact = false;
+    let {
+        concertsList,
+        maxCount = -1,
+        forceCompact = false,
+        grouping = "month-asc",
+        alwaysShowYearInGroups = false
+    }: Props = $props();
+
+    let autoCompact = $state(false);
 
     const monthFormatter = new Intl.DateTimeFormat($page.url.pathname.split("/")[1] ?? "en", {
         month: "long"
@@ -28,11 +38,11 @@
         }
     });
 
-    $: truncatedConcerts = maxCount > 0 ? concertsList.slice(0, maxCount) : concertsList;
-    $: groupedConcertObj = groupBy(truncatedConcerts, (item) => `${item.date.getFullYear()}${item.date.getMonth().toString().padStart(2, "0")}`);
-    $: groupedConcert = Object.values(groupedConcertObj).filter(g => !!g);
+    let truncatedConcerts = $derived(maxCount > 0 ? concertsList.slice(0, maxCount) : concertsList);
+    let groupedConcertObj = $derived(groupBy(truncatedConcerts, (item) => `${item.date.getFullYear()}${item.date.getMonth().toString().padStart(2, "0")}`));
+    let groupedConcert = $derived(Object.values(groupedConcertObj).filter(g => !!g));
 
-    $: compact = forceCompact || autoCompact;
+    let compact = $derived(forceCompact || autoCompact);
 </script>
 
 <ul class:compact={compact}>

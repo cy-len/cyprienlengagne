@@ -1,18 +1,18 @@
 <script lang="ts">
-    import type { GalleryPicture } from "../../stores/gallery";
+    import type { GalleryPicture } from "../../stores/gallery.svelte";
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
     import Modal from "./Modal.svelte";
 
     let modal: Modal;
 
-    let picture: GalleryPicture = {
+    let picture: GalleryPicture = $state({
         copyright: "",
         url: "",
         thumbnailUrl: "",
         uploadedDate: new Date()
-    };
+    });
 
-    let loading: boolean = true;
+    let loading: boolean = $state(true);
 
     export function show(galleryPicture: GalleryPicture) {
         modal.show();
@@ -41,9 +41,11 @@
 </script>
 
 <Modal bind:this={modal}>
-    <button class="soft-button" on:click={downloadPicture} slot="left-button">
-        <img class="icon" src="/icons/download.svg" alt="Download" />
-    </button>
+     {#snippet leftButton()}
+        <button class="soft-button" onclick={downloadPicture}>
+            <img class="icon" src="/icons/download.svg" alt="Download" />
+        </button>
+     {/snippet}
 
     {#if loading}
         <LoadingSpinner message="Loading full resolution picture" />

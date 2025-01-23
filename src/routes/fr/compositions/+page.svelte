@@ -17,8 +17,8 @@
     <CompositionsList
         lang="fr"
         loadMoreText="Afficher plus"
-        premiereTextGenerator={
-            (dateText, performersText, locationText) => `Créée le ${dateText} par ${performersText} à ${locationText}`
-        }
+        premiereText="Création"
+        allCategoryText="Tout"
+        noPieceInCategoryText="Il n'y a pas de pièce dans cette catégorie"
     />
 </PageStructure>

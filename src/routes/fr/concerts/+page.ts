@@ -1,6 +1,9 @@
-import { updatePastConcerts, updateUpcomingConcerts } from "../../../stores/concerts";
+import { concertsManager } from "../../../stores/concerts.svelte";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {
-    await Promise.all([updateUpcomingConcerts(200, fetch), updatePastConcerts(10, fetch)]);
+    await Promise.all([
+        concertsManager.updateUpcoming(200, fetch),
+        concertsManager.updatePast(10, fetch)
+    ]);
 };

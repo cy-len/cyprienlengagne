@@ -1,16 +1,18 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import { upcomingConcerts } from "../../../stores/concerts";
+    import { concertsManager } from "../../../stores/concerts.svelte";
     import type { Concert } from "../../../types/concert";
 
-    const dispatch = createEventDispatcher();
+    interface Props {
+        selection?: { [key: number]: boolean };
+        onSelectionChanged: () => any;
+    }
 
-    export let selection: { [key: number]: boolean } = {};
+    let { selection = $bindable({}), onSelectionChanged }: Props = $props();
 
     function toggleSelection(index: number) {
         selection[index] = !selection[index];
 
-        dispatch("selection-changed");
+        onSelectionChanged();
     }
 
     export function getSelectedConcerts(): Concert[] {
@@ -19,7 +21,7 @@
         for (const index in selection) {
             const isSelected = selection[index];
             if (isSelected) {
-                selectedConcerts.push($upcomingConcerts.concerts[index]);
+                selectedConcerts.push(concertsManager.upcoming.items[index]);
             }
         }
 
@@ -29,8 +31,8 @@
     function autoSelectNextN() {
         let n = parseInt(prompt("How many concerts do you want to include ?", "5") ?? "0");
 
-        if (n >= $upcomingConcerts.concerts.length) {
-            n = $upcomingConcerts.concerts.length;
+        if (n >= concertsManager.upcoming.items.length) {
+            n = concertsManager.upcoming.items.length;
             alert(`The list doesn't contain as many concerts, will select only ${n} concerts`);
         }
 
@@ -38,17 +40,17 @@
             selection[i] = true;
         }
 
-        dispatch("selection-changed");
+        onSelectionChanged();
     }
 
     function autoSelectMonth(month: number, year: number) {
-        $upcomingConcerts.concerts.forEach((concert: Concert, i: number) => {
+        concertsManager.upcoming.items.forEach((concert: Concert, i: number) => {
             if (concert.date.getMonth() === month && concert.date.getFullYear() === year) {
                 selection[i] = true;
             }
         });
 
-        dispatch("selection-changed");
+        onSelectionChanged();
     }
     
     function autoSelectThisMonth() {
@@ -68,22 +70,23 @@
             selection[i] = false;
         });
 
-        dispatch("selection-changed");
+        onSelectionChanged();
     }
 </script>
 
 <div class="mini-toolbar">
-    <button class="toolbar-button" on:click={autoSelectNextN}>Next N</button>
-    <button class="toolbar-button" on:click={autoSelectThisMonth}>This month</button>
-    <button class="toolbar-button" on:click={autoSelectNextMonth}>Next month</button>
-    <button class="toolbar-button" on:click={clearSelection}>Clear</button>
+    <button class="toolbar-button" onclick={autoSelectNextN}>Next N</button>
+    <button class="toolbar-button" onclick={autoSelectThisMonth}>This month</button>
+    <button class="toolbar-button" onclick={autoSelectNextMonth}>Next month</button>
+    <button class="toolbar-button" onclick={clearSelection}>Clear</button>
 </div>
 <ul class="selector">
-    {#each $upcomingConcerts.concerts as concert, i}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <li class:selected={selection[i]} on:click={() => { toggleSelection(i); }}>
-            { concert.date.toLocaleDateString() } <br />
-            {concert.location}
+    {#each concertsManager.upcoming.items as concert, i}
+        <li class:selected={selection[i]}>
+            <button onclick={() => { toggleSelection(i); }}>
+                { concert.date.toLocaleDateString() } <br />
+                {concert.location}
+            </button>
         </li>
     {/each}
 </ul>

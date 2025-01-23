@@ -1,29 +1,29 @@
 <script lang="ts">
 
-    import { onMount, tick } from "svelte";
-    import { addDoc, type CollectionReference, type DocumentReference } from "firebase/firestore";
+    import { getContext, onMount, tick } from "svelte";
+    import type { DocumentReference } from "firebase/firestore";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
-    import type { Composition } from "../../../types/composition";
     import CompositionEditor from "../../../components/admin/CompositionEditor.svelte";
+    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
+
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     
-    let compositionsCol: CollectionReference | null = null;
+    let compositionRefs: DocumentReference[] = $state([]);
 
-    let compositionRefs: DocumentReference[] = [];
+    let singleEditors: CompositionEditor[] = $state([]);
 
-    let singleEditors: CompositionEditor[] = [];
-
-    let saving: boolean = false;
+    let saving: boolean = $state(false);
 
     onMount(async () => {
-        const { compositionsCollection, getCompositions }  = await import("../../../firebase");
-        compositionsCol = compositionsCollection;
-        compositionRefs = (await getCompositions()).docs.map((d) => d.ref);
+        if (!firebaseManager) return;
+
+        compositionRefs = (await firebaseManager.getCompositions()).docs.map((d) => d.ref);
     });
 
     async function addComposition() {
-        if (!compositionsCol) return;
+        if (!firebaseManager) return;
 
-        const docRef = await addDoc(compositionsCol, {
+        const docRef = await firebaseManager.addComposition({
             name: "",
             description: "",
             category: "Orchestra",
@@ -31,7 +31,7 @@
             premiereLocation: "",
             premierePerformers: "",
             recordingVideo: ""
-        } as Composition);
+        });
 
         compositionRefs = [...compositionRefs, docRef];
 
@@ -57,8 +57,8 @@
         saving = false;
     }
 
-    function onDelete(event: any) {
-        compositionRefs = compositionRefs.filter((ref) => ref !== event.detail.ref);
+    function onDelete(id: string) {
+        compositionRefs = compositionRefs.filter((ref) => ref.id !== id);
     }
 
 </script>
@@ -68,8 +68,8 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button class="toolbar-button" on:click={addComposition}>Add composition</button>
-            <button class="toolbar-button" on:click={save}>Save</button>
+            <button class="toolbar-button" onclick={addComposition}>Add composition</button>
+            <button class="toolbar-button" onclick={save}>Save</button>
         </div>
     
         {#if saving}
@@ -78,7 +78,7 @@
             </div>
         {:else}
             {#each compositionRefs as composition, i}
-                <CompositionEditor compositionRef={composition} bind:this={singleEditors[i]} on:deleted={onDelete} />
+                <CompositionEditor compositionRef={composition} bind:this={singleEditors[i]} ondeleted={onDelete} />
             {/each}
         {/if}
     </div>

@@ -2,13 +2,18 @@
 
     import { type DocumentReference, updateDoc, getDoc } from "firebase/firestore";
     import { onMount } from "svelte";
+    import { languages } from "../../utils/languageUtils";
 
-    export let bioRef: DocumentReference;
+    interface Props {
+        bioRef: DocumentReference;
+    }
 
-    let short: string = "";
-    let full: string = "";
+    let { bioRef }: Props = $props();
 
-    let hash: string = "";
+    let short: string = $state("");
+    let full: string = $state("");
+
+    let hash: string = $state("");
 
     onMount(async () => {
         const snapshot = await getDoc(bioRef);
@@ -35,18 +40,21 @@
 
     const idBase = "" + Math.ceil(Math.random() * 10000);
 
-    $: modified = hash !== (short + full);
+    let modified = $derived(hash !== (short + full));
 </script>
 
 <div class="editor-container" class:modified={modified}>
     <div class="editor-grid">
-        <h3 class="language">{ bioRef.id }</h3> <!-- id = "en"/"fr"/"de"... -->
+        <h3 class="language">
+            <img class="lang-icon" src={languages[bioRef.id].icon} alt="{languages[bioRef.id].name} language flag" />
+            <span>{ languages[bioRef.id].name }</span>
+        </h3> <!-- id = "en"/"fr"/"de"... -->
     
         <label for="{idBase}-short" class="short-label">Short bio</label>
-        <textarea id="{idBase}-short" class="short-field" cols="30" bind:value={short} />
+        <textarea id="{idBase}-short" class="short-field" cols="30" bind:value={short}></textarea>
     
         <label for="{idBase}-full" class="full-label">Full bio</label>
-        <textarea id="{idBase}-full" class="full-field" cols="30" rows="30" bind:value={full} />
+        <textarea id="{idBase}-full" class="full-field" cols="30" rows="30" bind:value={full}></textarea>
     </div>
 </div>
 

@@ -1,19 +1,34 @@
 <script lang="ts">
-    import { getContext } from "svelte";
+    import { setContext } from "svelte";
     import type { OpenGraphProps } from "../types/openGraphProps";
-    import type { Writable } from "svelte/store";
 
-    export let title: string = "";
-    export let bgImgName: string = "Valere_Back.jpg";
-    export let bgPositionX: string = "70%";
-    export let bgPositionY: string = "top";
-    export let bgPositionMobileX: string = "70%";
-    export let bgPositionMobileY: string = "top";
-    export let imgName: string = "";
-    export let imgAlt: string = "Cyprien Lengagne";
-    export let layout: "image-left" | "image-right" | "content-only" = "image-left";
+    interface Props {
+        title?: string;
+        bgImgName?: string;
+        bgPositionX?: string;
+        bgPositionY?: string;
+        bgPositionMobileX?: string;
+        bgPositionMobileY?: string;
+        imgName?: string;
+        imgAlt?: string;
+        layout?: "image-left" | "image-right" | "content-only";
+        children?: import('svelte').Snippet;
+    }
 
-    getContext<Writable<OpenGraphProps>>("openGraphProps").set({
+    let {
+        title = "",
+        bgImgName = "Valere_Back.jpg",
+        bgPositionX = "70%",
+        bgPositionY = "top",
+        bgPositionMobileX = "70%",
+        bgPositionMobileY = "top",
+        imgName = "",
+        imgAlt = "Cyprien Lengagne",
+        layout = "image-left",
+        children
+    }: Props = $props();
+
+    setContext<OpenGraphProps>("openGraphProps", {
         title,
         description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
         imageUrl: `https://cyprienlengagne.com/imgs/${bgImgName}`
@@ -30,7 +45,7 @@
                 </div>
             {/if}
             <div class="content">
-                <slot />
+                {@render children?.()}
             </div>
         </div>
     </div>

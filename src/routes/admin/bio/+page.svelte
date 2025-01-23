@@ -1,23 +1,24 @@
 <script lang="ts">
 
-    import { onMount } from "svelte";
-    import type { CollectionReference, DocumentReference } from "firebase/firestore";
+    import { getContext, onMount } from "svelte";
+    import type { DocumentReference } from "firebase/firestore";
     import BioEditor from "../../../components/admin/BioEditor.svelte";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
+    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
     
-    let biosCol: CollectionReference | null = null;
-    let biosRefs: DocumentReference[] = [];
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
-    let saving: boolean = false;
+    let biosRefs: DocumentReference[] = $state([]);
+
+    let saving: boolean = $state(false);
 
     onMount(async () => {
-        const { biosCollection, getBios }  = await import("../../../firebase");
-        biosCol = biosCollection;
+        if (!firebaseManager) return;
 
-        biosRefs = (await getBios()).docs.map((d) => d.ref);
+        biosRefs = (await firebaseManager.getBios()).docs.map((d) => d.ref);
     });
 
-    let singleEditors: BioEditor[] = [];
+    let singleEditors: BioEditor[] = $state([]);
 
     async function save() {
         saving = true;
@@ -40,7 +41,7 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button class="toolbar-button" on:click={save}>Save</button>
+            <button class="toolbar-button" onclick={save}>Save</button>
         </div>
     
         {#if saving}

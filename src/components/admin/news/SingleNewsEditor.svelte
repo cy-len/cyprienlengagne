@@ -6,76 +6,73 @@
         deleteDoc,
     } from "firebase/firestore";
     import {
-        ref,
-        type FirebaseStorage,
-        uploadBytesResumable,
         getDownloadURL,
     } from "firebase/storage";
-    import { onMount, createEventDispatcher } from "svelte";
+    import { onMount, getContext } from "svelte";
     import type { NewsContent } from "../../../types/news";
     import NewsContentEditor from "./NewsContentEditor.svelte";
     import { compressImageBrowser } from "../../../utils/imgUtils";
+    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
+    import Collapsible from "../Collapsible.svelte";
+    import ImageUploader from "../ImageUploader.svelte";
 
-    const dispatch = createEventDispatcher();
-
-    export let newsRef: DocumentReference;
-
-    let storageCopy: FirebaseStorage | null = null;
-
-    let imageUrl: string = "";
-    let thumbnailUrl: string = "";
-    let imageCopyright: string = "";
-    let text: { [key: string]: NewsContent } = {};
-    let dateString: string = "";
-
-    let hash: string = "";
-
-    let imageInput: HTMLInputElement;
-    let imageUploadProgress: number = -1;
-    let thumbnailUploadProgress: number = -1;
-
-    function getHash(): string {
-        let h = imageUrl + imageCopyright + dateString;
-
-        Object.values(text).forEach((v) => {
-            h += v.title + v.content;
-        });
-
-        return h;
+    interface Props {
+        newsRef: DocumentReference;
+        ondeleted: (id: string) => any;
     }
 
+    let { newsRef, ondeleted }: Props = $props();
+
+    interface EditorNews {
+        imageUrl: string;
+        thumbnailUrl: string;
+        imageCopyright: string;
+        dateString: string;
+        text: { [key: string]: NewsContent };
+    }
+
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
+
+    let news = $state<EditorNews>({
+        imageUrl: "",
+        thumbnailUrl: "",
+        imageCopyright: "",
+        text: {},
+        dateString: ""
+    });
+
+    let hash: string = $state("");
+
+    let imageInput: HTMLInputElement;
+    let imageUploadProgress: number = $state(-1);
+    let thumbnailUploadProgress: number = $state(-1);
+
+    let basicDetails: Collapsible;
+    let imageDetails: Collapsible;
+    let contentDetails: Collapsible;
+
     onMount(async () => {
-        const { storage } = await import("../../../firebase");
-
-        storageCopy = storage;
-
         const snapshot = await getDoc(newsRef);
         const data = snapshot.data();
         if (!data) return;
 
-        imageUrl = data.imageUrl;
-        text = {
-            ...data.text,
+        news.dateString = data.date.toDate().toISOString().split("T")[0];
+        news.imageUrl = data.imageUrl;
+        news.imageCopyright = data.imageCopyright;
+        news.text = {
+            ...data.text
         };
-        imageCopyright = data.imageCopyright;
-        dateString = data.date.toDate().toISOString().split("T")[0];
 
-        hash = getHash();
+        hash = JSON.stringify(news);
     });
 
     async function uploadWithThumbnail(file: File) {
-        if (!storageCopy) return;
+        if (!firebaseManager) return;
 
         const thumbnail = await compressImageBrowser(file, 1000, 1000);
 
-        const cloudFileName = `news/image/${idBase}-${file.name}`;
-        const cloudRef = ref(storageCopy, cloudFileName);
-
-        const cloudThumbnailFileName = `news/image/${idBase}-thumb-${file.name}`;
-        const cloudThumbnailRef = ref(storageCopy, cloudThumbnailFileName);
-
-        const uploadTask = uploadBytesResumable(cloudRef, file);
-        const thumbnailUploadTask = uploadBytesResumable(cloudThumbnailRef, thumbnail);
+        const uploadTask = firebaseManager.uploadBytesResumable(`news/image/${idBase}-${file.name}`, file);
+        const thumbnailUploadTask = firebaseManager.uploadBytesResumable(`news/image/${idBase}-thumb-${file.name}`, thumbnail);
 
         uploadTask.on(
             "state_changed",
@@ -88,7 +85,7 @@
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                    imageUrl = url;
+                    news.imageUrl = url;
                     imageUploadProgress = -1;
                 });
             },
@@ -105,7 +102,7 @@
             },
             () => {
                 getDownloadURL(thumbnailUploadTask.snapshot.ref).then((url) => {
-                    thumbnailUrl = url;
+                    news.thumbnailUrl = url;
                     thumbnailUploadProgress = -1;
                 });
             },
@@ -113,12 +110,9 @@
     }
 
     function uploadWithoutThumbnail(file: File) {
-        if (!storageCopy) return;
-        
-        const cloudFileName = `news/image/${idBase}-${file.name}`;
-        const cloudRef = ref(storageCopy, cloudFileName);
+        if (!firebaseManager) return;
 
-        const uploadTask = uploadBytesResumable(cloudRef, file);
+        const uploadTask = firebaseManager.uploadBytesResumable(`news/image/${idBase}-${file.name}`, file);
 
         uploadTask.on(
             "state_changed",
@@ -131,7 +125,7 @@
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                    imageUrl = url;
+                    news.imageUrl = url;
                     imageUploadProgress = -1;
                 });
             },
@@ -150,156 +144,77 @@
 
     export async function save() {
         if (!modified) return;
+        
+        await updateDoc(newsRef, {
+            imageUrl: news.imageUrl,
+            thumbnailUrl: news.thumbnailUrl,
+            imageCopyright: news.imageCopyright,
+            date: new Date(news.dateString),
+            text: news.text
+        });
 
-        const data = {
-            imageUrl,
-            imageCopyright,
-            thumbnailUrl,
-            text: {
-                ...text,
-            },
-            date: new Date(dateString),
-        };
-        console.log(data);
-        await updateDoc(newsRef, data);
-        hash = getHash();
+        hash = JSON.stringify(news);
     }
 
     async function deleteNews() {
-        const areYouSure = prompt(`If you really want to delete ${text["en"]?.title ?? text["fr"]?.title}, type YES and select ok`);
+        const areYouSure = prompt(`If you really want to delete ${news.text["en"]?.title ?? news.text["fr"]?.title}, type YES and select ok`);
         if (areYouSure !== "YES") return;
 
         await deleteDoc(newsRef);
-        dispatch("deleted", {
-            id: newsRef.id,
-        });
+        ondeleted(newsRef.id);
+    }
+
+    function expandAll() {
+        basicDetails.expand();
+        imageDetails.expand();
+        contentDetails.expand();
+    }
+
+    function collapseAll() {
+        basicDetails.collapse();
+        imageDetails.collapse();
+        contentDetails.collapse();
     }
 
     const idBase = "" + Math.ceil(Math.random() * 10000);
 
-    let modified: boolean = false;
-
-    $: {
-        let h = imageUrl + imageCopyright + dateString;
-
-        Object.values(text).forEach((v) => {
-            h += v.title + v.content;
-        });
-        modified = hash !== h;
-    }
+    let modified: boolean = $derived(hash !== JSON.stringify(news));
 </script>
 
 <div class="editor-container" class:modified>
-    <div class="editor-grid">
-        <!-- svelte-ignore a11y-img-redundant-alt -->
-        <img src={imageUrl} alt="Image thumbnail" class="img" />
+    <header>
+        <h3>{news.text["en"]?.title ?? news.text["fr"]?.title ?? "New news item"} ({ (new Date(news.dateString)).toLocaleDateString() })</h3>
+        {#if modified}
+            <div class="info">Has unsaved changes</div>
+        {/if}
 
-        <div class="url">
-            <div>{imageUrl}</div>
-            {#if imageUploadProgress >= 0}
-                <div>
-                    <span>
-                        Uploading image {imageUploadProgress}% 
-                    </span>
-                    {#if thumbnailUploadProgress >= 0}
-                        <span>(Uploading thumbnail {thumbnailUploadProgress}%)</span>
-                    {/if}
-                </div>
-            {:else}
-                <label class="custom-file-upload cta-inverted">
-                    <input
-                        type="file"
-                        accept="image/*"
-                        bind:this={imageInput}
-                        on:change={uploadImage}
-                    />
-                    Upload image
-                </label>
+        <div class="bar">
+            <button class="toolbar-button" onclick={expandAll}>Expand</button>
+            <button class="toolbar-button" onclick={collapseAll}>Collapse</button>
+            {#if modified}
+                <button class="toolbar-button" onclick={save}>Save modifications</button>
             {/if}
+            <button class="toolbar-button red" onclick={deleteNews}>Delete news item</button>
         </div>
+    </header>
 
-        <label for="{idBase}-copyright" class="copyright-label">Copyright</label>
-        <input
-            type="text"
-            id="{idBase}-copyright"
-            class="copyright-field"
-            bind:value={imageCopyright}
-        />
-
-        <label for="{idBase}-date" class="date-label">Date</label>
+    <Collapsible summaryText="Basic details" bind:this={basicDetails}>
+        <label for="{idBase}-date" class="date-label">Publication date</label>
         <input
             type="date"
             id="{idBase}-date"
             class="date-field"
-            bind:value={dateString}
+            bind:value={news.dateString}
         />
+    </Collapsible>
 
-        <div class="texts">
-            {#each Object.keys(text) as lang}
-                <NewsContentEditor langName={lang} text={text[lang]} />
-            {/each}
-        </div>
+    <Collapsible summaryText="Image" bind:this={imageDetails}>
+        <ImageUploader bind:fullresUrl={news.imageUrl} bind:thumbnailUrl={news.thumbnailUrl} />
+    </Collapsible>
 
-        <div class="delete-button">
-            <button class="toolbar-button" on:click={deleteNews}>Delete news</button>
-        </div>
-    </div>
+    <Collapsible summaryText="Article content" bind:this={contentDetails}>
+        {#each Object.keys(news.text) as lang}
+            <NewsContentEditor langName={lang} text={news.text[lang]} />
+        {/each}
+    </Collapsible>
 </div>
-
-<style>
-    .editor-grid {
-        grid-template-areas:
-            "img url delete-button"
-            "img copyright-label delete-button"
-            "img copyright-field delete-button"
-            "img date-label delete-button"
-            "img date-field delete-button"
-            "texts texts delete-button";
-
-        grid-template-columns: 200px 1fr 10rem;
-        grid-template-rows: repeat(min-content);
-    }
-
-    .custom-file-upload {
-        display: inline-block;
-        margin: 0.5rem 0;
-        padding: 0.25rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-    }
-
-    input[type="file"] {
-        display: none;
-    }
-
-    .img {
-        grid-area: img;
-        display: block;
-        max-width: 100%;
-        max-height: 100%;
-    }
-
-    .url {
-        grid-area: url;
-    }
-
-    .copyright-label {
-        grid-area: copyright-label;
-    }
-
-    .copyright-field {
-        grid-area: copyright-field;
-    }
-
-    .date-label {
-        grid-area: date-label;
-    }
-
-    .date-field {
-        grid-area: date-field;
-    }
-
-    .texts {
-        grid-area: texts;
-    }
-</style>

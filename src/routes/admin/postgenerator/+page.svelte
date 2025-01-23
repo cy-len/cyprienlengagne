@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { gallery } from "../../../stores/gallery";
-    import { socialMedias } from "../../../stores/socialMedias";
+    import { galleryManager } from "../../../stores/gallery.svelte";
+    import { socialMediasManager } from "../../../stores/socialMedias.svelte";
     import { onMount } from "svelte";
     import TextModal from "../../../components/admin/postGenerator/TextModal.svelte";
     import ConcertSelector from "../../../components/admin/postGenerator/ConcertSelector.svelte";
@@ -19,17 +19,15 @@
         };
     }
 
-    enum Theme {
-        LIGHT = 0,
-        DARK = 1
-    };
+    type Theme = "LIGHT" | "DARK";
+
 
     const themes = {
-        [Theme.LIGHT]: {
+        "LIGHT": {
             gradientColor: "255, 255, 255",
             textColor: "0, 0, 0"
         },
-        [Theme.DARK]: {
+        "DARK": {
             gradientColor: "0, 0, 0",
             textColor: "255, 255, 255"
         },
@@ -49,18 +47,18 @@
         changeImageSize();
     });
 
-    let zoomFactor: number = 1;
-    let gridEnabled: boolean = false;
-    let gridDivisions: Vector2 = makeVector2(5, 5);
+    let zoomFactor: number = $state(1);
+    let gridEnabled: boolean = $state(false);
+    let gridDivisions: Vector2 = $state(makeVector2(5, 5));
 
-    let title: string = "";
+    let title: string = $state("");
 
-    const bgImage = new Image();
+    const bgImage = $state(new Image());
     bgImage.crossOrigin = "anonymous";
     bgImage.onload = () => {
         draw();
     };
-    let imageCopyright: string = "";
+    let imageCopyright: string = $state("");
 
     const youtubeLogo = new Image();
     youtubeLogo.src = "/icons/youtube.svg";
@@ -69,53 +67,53 @@
     const instagramLogo = new Image();
     instagramLogo.src = "/icons/instagram.svg";
 
-    let imageSize: Vector2 = makeVector2(1600, 1200);
+    let imageSize: Vector2 = $state(makeVector2(1600, 1200));
     
-    let bgOffset: Vector2 = makeVector2();
-    let bgScale: number = 1;
+    let bgOffset: Vector2 = $state(makeVector2());
+    let bgScale: number = $state(1);
 
-    let theme: Theme = Theme.LIGHT;
+    let theme: Theme = $state("LIGHT");
 
-    let enableGradient: boolean = false;
-    let gradientBegin: number = 0;
-    let gradientBeginOpacity: number = 0;
-    let gradientEnd: number = 1;
-    let gradientEndOpacity: number = 0.5;
+    let enableGradient: boolean = $state(false);
+    let gradientBegin: number = $state(0);
+    let gradientBeginOpacity: number = $state(0);
+    let gradientEnd: number = $state(1);
+    let gradientEndOpacity: number = $state(0.5);
 
-    let gradientPosition: Vector2 = makeVector2();
-    let gradientSize: Vector2 = makeVector2(imageSize.x, imageSize.y);
-    let gradientRotation: number = 0;
+    let gradientPosition: Vector2 = $state(makeVector2());
+    let gradientSize: Vector2 = $state(makeVector2(imageSize.x, imageSize.y));
+    let gradientRotation: number = $state(0);
 
-    let titlePosition: Vector2 = makeVector2(imageSize.x / 2, imageSize.y / 2);
-    let titleFontFamily: string = "Aboreto";
-    let titleFontSize: number = 60;
-    let titleShadowRadius: number = 10;
-    let titleShadowStrength: number = 0.5;
+    let titlePosition: Vector2 = $state(makeVector2(imageSize.x / 2, imageSize.y / 2));
+    let titleFontFamily: string = $state("Aboreto");
+    let titleFontSize: number = $state(60);
+    let titleShadowRadius: number = $state(10);
+    let titleShadowStrength: number = $state(0.5);
 
-    let concertListPosition: Vector2 = makeVector2(200, 200);
+    let concertListPosition: Vector2 = $state(makeVector2(200, 200));
 
-    let concertFontFamily: string = "Montserrat";
-    let concertDateFontSize: number = 38;
-    let concertDateLocationGap: number = 10;
-    let concertLocationFontSize: number = 30;
-    let concertGap: number = 20;
-    let concertShadowRadius: number = 10;
-    let concertShadowStrength: number = 0.5;
+    let concertFontFamily: string = $state("Montserrat");
+    let concertDateFontSize: number = $state(38);
+    let concertDateLocationGap: number = $state(10);
+    let concertLocationFontSize: number = $state(30);
+    let concertGap: number = $state(20);
+    let concertShadowRadius: number = $state(10);
+    let concertShadowStrength: number = $state(0.5);
 
-    let enableSocialMedia: boolean = false;
-    let socialMediaPosition: Vector2 = makeVector2(imageSize.x / 2, imageSize.y / 2);
-    let socialMediaGap: number = 200;
-    let socialMediaLogoSize: number = 100;
-    let socialMediaLogoGap: number = 15;
-    let socialMediaFontFamily: string = "Segoe UI";
-    let socialMediaFontSize: number = 30;
+    let enableSocialMedia: boolean = $state(false);
+    let socialMediaPosition: Vector2 = $state(makeVector2(imageSize.x / 2, imageSize.y / 2));
+    let socialMediaGap: number = $state(200);
+    let socialMediaLogoSize: number = $state(100);
+    let socialMediaLogoGap: number = $state(15);
+    let socialMediaFontFamily: string = $state("Segoe UI");
+    let socialMediaFontSize: number = $state(30);
     
-    let enableWebsite: boolean = false;
-    let websitePosition: Vector2 = makeVector2(imageSize.x / 2, imageSize.y / 2);
-    let websiteFontFamily: string = "Segoe UI";
-    let websiteFontSize: number = 50;
+    let enableWebsite: boolean = $state(false);
+    let websitePosition: Vector2 = $state(makeVector2(imageSize.x / 2, imageSize.y / 2));
+    let websiteFontFamily: string = $state("Segoe UI");
+    let websiteFontSize: number = $state(50);
 
-    let copyrightFontSize: number = 30;
+    let copyrightFontSize: number = $state(30);
     
     function changeImageSize() {
         canvas.width = imageSize.x;
@@ -190,9 +188,9 @@
         const brightness = Math.floor(colorSum / (bgImage.naturalWidth * bgImage.naturalHeight));
 
         if (brightness < 128) {
-            theme = Theme.DARK;
+            theme = "DARK";
         } else {
-            theme = Theme.LIGHT;
+            theme = "LIGHT";
         }
 
         draw();
@@ -252,22 +250,22 @@
     function renderSocialMedias() {
         const pairs: { icon: HTMLImageElement; handle: string }[] = [];
 
-        if ($socialMedias.youtube.handle) {
+        if (socialMediasManager.socialMedias.youtube.handle) {
             pairs.push({
                 icon: youtubeLogo,
-                handle: $socialMedias.youtube.handle
+                handle: socialMediasManager.socialMedias.youtube.handle
             });
         }
-        if ($socialMedias.facebook.handle) {
+        if (socialMediasManager.socialMedias.facebook.handle) {
             pairs.push({
                 icon: facebookLogo,
-                handle: $socialMedias.facebook.handle
+                handle: socialMediasManager.socialMedias.facebook.handle
             });
         }
-        if ($socialMedias.instagram.handle) {
+        if (socialMediasManager.socialMedias.instagram.handle) {
             pairs.push({
                 icon: instagramLogo,
-                handle: $socialMedias.instagram.handle
+                handle: socialMediasManager.socialMedias.instagram.handle
             });
         }
 
@@ -397,25 +395,25 @@
             <div class="horizontal-group">
                 <div>
                     <label for="image-width">Width</label>
-                    <input type="number" name="image-width" id="image-width" step="1" min="100" max="10000" bind:value={imageSize.x} on:change={changeImageSize} />
+                    <input type="number" name="image-width" id="image-width" step="1" min="100" max="10000" bind:value={imageSize.x} onchange={changeImageSize} />
                 </div>
                 <div>
                     <label for="image-height">Height</label>
-                    <input type="number" name="image-height" id="image-height" step="1" min="100" max="10000" bind:value={imageSize.y} on:change={changeImageSize} />
+                    <input type="number" name="image-height" id="image-height" step="1" min="100" max="10000" bind:value={imageSize.y} onchange={changeImageSize} />
                 </div>
             </div>
 
             <div class="horizontal-group">
-                <button class="toolbar-button" on:click={setToInstagramPost}>Instagram post</button>
-                <button class="toolbar-button" on:click={setToInstagramStory}>Instagram story</button>
+                <button class="toolbar-button" onclick={setToInstagramPost}>Instagram post</button>
+                <button class="toolbar-button" onclick={setToInstagramStory}>Instagram story</button>
             </div>
             <div class="horizontal-group">
-                <button class="toolbar-button" on:click={setToFacebookVertical}>Facebook feed</button>
-                <button class="toolbar-button" on:click={setTo16by9}>Standard 16/9</button>
+                <button class="toolbar-button" onclick={setToFacebookVertical}>Facebook feed</button>
+                <button class="toolbar-button" onclick={setTo16by9}>Standard 16/9</button>
             </div>
 
             {#if bgImage.src}
-                <button class="toolbar-button" on:click={autoResizeToBackground}>Fit to background</button>
+                <button class="toolbar-button" onclick={autoResizeToBackground}>Fit to background</button>
             {/if}
         </fieldset>
 
@@ -425,16 +423,16 @@
             <div class="horizontal-group">
                 <div>
                     <label for="bg-offset-x">Offset X</label>
-                    <input type="number" name="bg-offset-x" id="bg-offset-x" step="1" min="-1000" max="1000" bind:value={bgOffset.x} on:change={draw} />
+                    <input type="number" name="bg-offset-x" id="bg-offset-x" step="1" min="-1000" max="1000" bind:value={bgOffset.x} onchange={draw} />
                 </div>
                 <div>
                     <label for="bg-offset-y">Offset Y</label>
-                    <input type="number" name="bg-offset-y" id="bg-offset-y" step="1" min="-1000" max="1000" bind:value={bgOffset.y} on:change={draw} />
+                    <input type="number" name="bg-offset-y" id="bg-offset-y" step="1" min="-1000" max="1000" bind:value={bgOffset.y} onchange={draw} />
                 </div>
             </div>
 
             <label for="bg-scale">Scale</label>
-            <input type="number" name="bg-scale" id="bg-scale" step="0.01" min="0.01" max="10" bind:value={bgScale} on:change={draw} />
+            <input type="number" name="bg-scale" id="bg-scale" step="0.01" min="0.01" max="10" bind:value={bgScale} onchange={draw} />
         </fieldset>
 
         <fieldset>
@@ -442,17 +440,17 @@
 
             <div class="horizontal-group">
                 <label for="light-theme-switch" class="checkbox">
-                    <input type="radio" name="theme-switch" id="light-theme-switch" bind:group={theme} value={Theme.LIGHT} on:change={draw} />
+                    <input type="radio" name="theme-switch" id="light-theme-switch" bind:group={theme} value="LIGHT" onchange={draw} />
                     Light
                 </label>
                 <label for="dark-theme-switch" class="checkbox">
-                    <input type="radio" name="theme-switch" id="dark-theme-switch" bind:group={theme} value={Theme.DARK} on:change={draw} />
+                    <input type="radio" name="theme-switch" id="dark-theme-switch" bind:group={theme} value="DARK" onchange={draw} />
                     Dark
                 </label>
             </div>
 
             {#if bgImage.src}
-                <button class="toolbar-button" on:click={autoChooseTheme}>Auto-choose</button>
+                <button class="toolbar-button" onclick={autoChooseTheme}>Auto-choose</button>
             {/if}
         </fieldset>
 
@@ -460,44 +458,44 @@
             <legend>Gradient</legend>
 
             <label for="enable-gradient" class="checkbox">
-                <input type="checkbox" name="enable-gradient" id="enable-gradient" bind:checked={enableGradient} on:change={draw} />
+                <input type="checkbox" name="enable-gradient" id="enable-gradient" bind:checked={enableGradient} onchange={draw} />
                 Enable gradient
             </label>
 
             {#if enableGradient}
                 <label for="gradient-begin">Gradient begin</label>
-                <input type="number" name="gradient-begin" id="gradient-begin" step="0.01" min="0" max="1" bind:value={gradientBegin} on:input={draw} />
+                <input type="number" name="gradient-begin" id="gradient-begin" step="0.01" min="0" max="1" bind:value={gradientBegin} oninput={draw} />
                 <label for="gradient-start-opacity">Start opacity</label>
-                <input type="number" name="gradient-start-opacity" id="gradient-start-opacity" step="0.01" min="0" max="1" bind:value={gradientBeginOpacity} on:input={draw} />
+                <input type="number" name="gradient-start-opacity" id="gradient-start-opacity" step="0.01" min="0" max="1" bind:value={gradientBeginOpacity} oninput={draw} />
                 <label for="gradient-end">Gradient end</label>
-                <input type="number" name="gradient-end" id="gradient-end" step="0.01" min="0" max="1" bind:value={gradientEnd} on:input={draw} />
+                <input type="number" name="gradient-end" id="gradient-end" step="0.01" min="0" max="1" bind:value={gradientEnd} oninput={draw} />
                 <label for="gradient-end-opacity">End opacity</label>
-                <input type="number" name="gradient-end-opacity" id="gradient-end-opacity" step="0.01" min="0" max="1" bind:value={gradientEndOpacity} on:input={draw} />
+                <input type="number" name="gradient-end-opacity" id="gradient-end-opacity" step="0.01" min="0" max="1" bind:value={gradientEndOpacity} oninput={draw} />
 
                 <div class="horizontal-group">
                     <div>
                         <label for="gradient-pos-x">Position X</label>
-                        <input type="number" name="gradient-pos-x" id="gradient-pos-x" step="1" min="-10000" max="10000" bind:value={gradientPosition.x} on:input={draw} />
+                        <input type="number" name="gradient-pos-x" id="gradient-pos-x" step="1" min="-10000" max="10000" bind:value={gradientPosition.x} oninput={draw} />
                     </div>
                     <div>
                         <label for="gradient-pos-y">Position Y</label>
-                        <input type="number" name="gradient-pos-y" id="gradient-pos-y" step="1" min="-10000" max="10000" bind:value={gradientPosition.y} on:input={draw} />
+                        <input type="number" name="gradient-pos-y" id="gradient-pos-y" step="1" min="-10000" max="10000" bind:value={gradientPosition.y} oninput={draw} />
                     </div>
                 </div>
 
                 <div class="horizontal-group">
                     <div>
                         <label for="gradient-width">Width</label>
-                        <input type="number" name="gradient-width" id="gradient-width" step="1" min="-10000" max="10000" bind:value={gradientSize.x} on:input={draw} />
+                        <input type="number" name="gradient-width" id="gradient-width" step="1" min="-10000" max="10000" bind:value={gradientSize.x} oninput={draw} />
                     </div>
                     <div>
                         <label for="gradient-height">Height</label>
-                        <input type="number" name="gradient-height" id="gradient-height" step="1" min="-10000" max="10000" bind:value={gradientSize.y} on:input={draw} />
+                        <input type="number" name="gradient-height" id="gradient-height" step="1" min="-10000" max="10000" bind:value={gradientSize.y} oninput={draw} />
                     </div>
                 </div>
 
                 <label for="gradient-rotation">Rotation</label>
-                <input type="number" name="gradient-rotation" id="gradient-rotation" step="1" min="0" max="359" bind:value={gradientRotation} on:input={draw} />  
+                <input type="number" name="gradient-rotation" id="gradient-rotation" step="1" min="0" max="359" bind:value={gradientRotation} oninput={draw} />  
             {/if}
         </fieldset>
 
@@ -507,30 +505,30 @@
             <div class="horizontal-group">
                 <div>
                     <label for="title-position-x">Position X</label>
-                    <input type="number" name="title-position-x" id="title-position-x" step="1" min="0" max="10000" bind:value={titlePosition.x} on:input={draw} />
+                    <input type="number" name="title-position-x" id="title-position-x" step="1" min="0" max="10000" bind:value={titlePosition.x} oninput={draw} />
                 </div>
                 <div>
                     <label for="title-position-y">Position Y</label>
-                    <input type="number" name="title-position-y" id="title-position-y" step="1" min="0" max="10000" bind:value={titlePosition.y} on:input={draw} />
+                    <input type="number" name="title-position-y" id="title-position-y" step="1" min="0" max="10000" bind:value={titlePosition.y} oninput={draw} />
                 </div>
             </div>
 
             {#if gridEnabled}
-                <button class="toolbar-button" on:click={snapTitleToGrid}>Snap to grid</button>
+                <button class="toolbar-button" onclick={snapTitleToGrid}>Snap to grid</button>
             {/if}
 
-            <FontSelector bind:font={titleFontFamily} on:change={draw} />
+            <FontSelector bind:font={titleFontFamily} onchange={draw} />
             <label for="title-font-size">Font size</label>
-            <input type="number" name="title-font-size" id="title-font-size" step="1" min="0" max="250" bind:value={titleFontSize} on:input={draw} />
+            <input type="number" name="title-font-size" id="title-font-size" step="1" min="0" max="250" bind:value={titleFontSize} oninput={draw} />
             
             <div class="horizontal-group">
                 <div>
                     <label for="title-shadow-radius">Shadow radius</label>
-                    <input type="number" name="title-shadow-radius" id="title-shadow-radius" step="1" min="0" max="100" bind:value={titleShadowRadius} on:input={draw} />
+                    <input type="number" name="title-shadow-radius" id="title-shadow-radius" step="1" min="0" max="100" bind:value={titleShadowRadius} oninput={draw} />
                 </div>
                 <div>
                     <label for="title-shadow-strength">Shadow strength</label>
-                    <input type="number" name="title-shadow-strength" id="title-shadow-strength" step="0.01" min="0" max="1" bind:value={titleShadowStrength} on:input={draw} />
+                    <input type="number" name="title-shadow-strength" id="title-shadow-strength" step="0.01" min="0" max="1" bind:value={titleShadowStrength} oninput={draw} />
                 </div>
             </div>
         </fieldset>
@@ -541,37 +539,37 @@
             <div class="horizontal-group">
                 <div>
                     <label for="concerts-offset-x">Position X</label>
-                    <input type="number" name="concerts-offset-x" id="concerts-offset-x" step="1" min="0" max="10000" bind:value={concertListPosition.x} on:input={draw} />
+                    <input type="number" name="concerts-offset-x" id="concerts-offset-x" step="1" min="0" max="10000" bind:value={concertListPosition.x} oninput={draw} />
                 </div>
                 <div>
                     <label for="concerts-offset-y">Position Y</label>
-                    <input type="number" name="concerts-offset-y" id="concerts-offset-y" step="1" min="0" max="10000" bind:value={concertListPosition.y} on:input={draw} />
+                    <input type="number" name="concerts-offset-y" id="concerts-offset-y" step="1" min="0" max="10000" bind:value={concertListPosition.y} oninput={draw} />
                 </div>
             </div>
 
             {#if gridEnabled}
-                <button class="toolbar-button" on:click={snapConcertsToGrid}>Snap to grid</button>
+                <button class="toolbar-button" onclick={snapConcertsToGrid}>Snap to grid</button>
             {/if}
 
             <label for="concert-date-location-gap">Gap between date and location</label>
-            <input type="number" name="concert-date-location-gap" id="concert-date-location-gap" step="1" min="0" max="100" bind:value={concertDateLocationGap} on:input={draw} />
+            <input type="number" name="concert-date-location-gap" id="concert-date-location-gap" step="1" min="0" max="100" bind:value={concertDateLocationGap} oninput={draw} />
             <label for="concerts-gap">Gap between concerts</label>
-            <input type="number" name="concerts-gap" id="concerts-gap" step="1" min="0" max="100" bind:value={concertGap} on:input={draw} />
+            <input type="number" name="concerts-gap" id="concerts-gap" step="1" min="0" max="100" bind:value={concertGap} oninput={draw} />
             
-            <FontSelector bind:font={concertFontFamily} on:change={draw} />
+            <FontSelector bind:font={concertFontFamily} onchange={draw} />
             <label for="concert-date-font-size">Date font size</label>
-            <input type="number" name="concert-date-font-size" id="concert-date-font-size" step="1" min="0" max="100" bind:value={concertDateFontSize} on:input={draw} />
+            <input type="number" name="concert-date-font-size" id="concert-date-font-size" step="1" min="0" max="100" bind:value={concertDateFontSize} oninput={draw} />
             <label for="concert-location-font-size">Location font size</label>
-            <input type="number" name="concert-location-font-size" id="concert-location-font-size" step="1" min="0" max="100" bind:value={concertLocationFontSize} on:input={draw} />
+            <input type="number" name="concert-location-font-size" id="concert-location-font-size" step="1" min="0" max="100" bind:value={concertLocationFontSize} oninput={draw} />
             
             <div class="horizontal-group">
                 <div>
                     <label for="concert-shadow-radius">Shadow radius</label>
-                    <input type="number" name="concert-shadow-radius" id="concert-shadow-radius" step="1" min="0" max="100" bind:value={concertShadowRadius} on:input={draw} />
+                    <input type="number" name="concert-shadow-radius" id="concert-shadow-radius" step="1" min="0" max="100" bind:value={concertShadowRadius} oninput={draw} />
                 </div>
                 <div>
                     <label for="concert-shadow-strength">Shadow strength</label>
-                    <input type="number" name="concert-shadow-strength" id="concert-shadow-strength" step="0.01" min="0" max="1" bind:value={concertShadowStrength} on:input={draw} />
+                    <input type="number" name="concert-shadow-strength" id="concert-shadow-strength" step="0.01" min="0" max="1" bind:value={concertShadowStrength} oninput={draw} />
                 </div>
             </div>
         </fieldset>
@@ -580,7 +578,7 @@
             <legend>Social medias</legend>
 
             <label for="enable-social-media" class="checkbox">
-                <input type="checkbox" name="enable-social-media" id="enable-social-media" bind:checked={enableSocialMedia} on:change={draw} />
+                <input type="checkbox" name="enable-social-media" id="enable-social-media" bind:checked={enableSocialMedia} onchange={draw} />
                 Enable social medias
             </label>
 
@@ -588,27 +586,27 @@
                 <div class="horizontal-group">
                     <div>
                         <label for="social-offset-x">Position X</label>
-                        <input type="number" name="social-offset-x" id="social-offset-x" step="1" min="0" max="10000" bind:value={socialMediaPosition.x} on:input={draw} />
+                        <input type="number" name="social-offset-x" id="social-offset-x" step="1" min="0" max="10000" bind:value={socialMediaPosition.x} oninput={draw} />
                     </div>
                     <div>
                         <label for="social-offset-y">Position Y</label>
-                        <input type="number" name="social-offset-y" id="social-offset-y" step="1" min="0" max="10000" bind:value={socialMediaPosition.y} on:input={draw} />
+                        <input type="number" name="social-offset-y" id="social-offset-y" step="1" min="0" max="10000" bind:value={socialMediaPosition.y} oninput={draw} />
                     </div>
                 </div>
 
                 {#if gridEnabled}
-                    <button class="toolbar-button" on:click={snapSocialMediasToGrid}>Snap to grid</button>
+                    <button class="toolbar-button" onclick={snapSocialMediasToGrid}>Snap to grid</button>
                 {/if}
                 
                 <label for="social-media-gap">Gap between social medias</label>
-                <input type="number" name="social-media-gap" id="social-media-gap" step="1" min="0" max="1000" bind:value={socialMediaGap} on:input={draw} />
+                <input type="number" name="social-media-gap" id="social-media-gap" step="1" min="0" max="1000" bind:value={socialMediaGap} oninput={draw} />
                 <label for="social-media-logo-size">Logo size</label>
-                <input type="number" name="social-media-logo-size" id="social-media-logo-size" step="1" min="0" max="500" bind:value={socialMediaLogoSize} on:input={draw} />
+                <input type="number" name="social-media-logo-size" id="social-media-logo-size" step="1" min="0" max="500" bind:value={socialMediaLogoSize} oninput={draw} />
                 <label for="social-media-logo-gap">Gap between logo and handle</label>
-                <input type="number" name="social-media-logo-gap" id="social-media-logo-gap" step="1" min="0" max="500" bind:value={socialMediaLogoGap} on:input={draw} />
-                <FontSelector bind:font={socialMediaFontFamily} on:change={draw} />
+                <input type="number" name="social-media-logo-gap" id="social-media-logo-gap" step="1" min="0" max="500" bind:value={socialMediaLogoGap} oninput={draw} />
+                <FontSelector bind:font={socialMediaFontFamily} onchange={draw} />
                 <label for="social-media-font-size">Font size</label>
-                <input type="number" name="social-media-font-size" id="social-media-font-size" step="1" min="0" max="250" bind:value={socialMediaFontSize} on:input={draw} />
+                <input type="number" name="social-media-font-size" id="social-media-font-size" step="1" min="0" max="250" bind:value={socialMediaFontSize} oninput={draw} />
             {/if}
             
         </fieldset>
@@ -617,7 +615,7 @@
             <legend>Website address</legend>
 
             <label for="enable-website" class="checkbox">
-                <input type="checkbox" name="enable-website" id="enable-website" bind:checked={enableWebsite} on:change={draw} />
+                <input type="checkbox" name="enable-website" id="enable-website" bind:checked={enableWebsite} onchange={draw} />
                 Enable website address
             </label>
             
@@ -625,21 +623,21 @@
                 <div class="horizontal-group">
                     <div>
                         <label for="website-offset-x">Position X</label>
-                        <input type="number" name="website-offset-x" id="website-offset-x" step="1" min="0" max="10000" bind:value={websitePosition.x} on:input={draw} />
+                        <input type="number" name="website-offset-x" id="website-offset-x" step="1" min="0" max="10000" bind:value={websitePosition.x} oninput={draw} />
                     </div>
                     <div>
                         <label for="website-offset-y">Position Y</label>
-                        <input type="number" name="website-offset-y" id="website-offset-y" step="1" min="0" max="10000" bind:value={websitePosition.y} on:input={draw} />
+                        <input type="number" name="website-offset-y" id="website-offset-y" step="1" min="0" max="10000" bind:value={websitePosition.y} oninput={draw} />
                     </div>
                 </div>
 
                 {#if gridEnabled}
-                    <button class="toolbar-button" on:click={snapWebsiteToGrid}>Snap to grid</button>
+                    <button class="toolbar-button" onclick={snapWebsiteToGrid}>Snap to grid</button>
                 {/if}
 
-                <FontSelector bind:font={websiteFontFamily} on:change={draw} />
+                <FontSelector bind:font={websiteFontFamily} onchange={draw} />
                 <label for="website-font-size">Font size</label>
-                <input type="number" name="website-font-size" id="website-font-size" step="1" min="0" max="250" bind:value={websiteFontSize} on:input={draw} />
+                <input type="number" name="website-font-size" id="website-font-size" step="1" min="0" max="250" bind:value={websiteFontSize} oninput={draw} />
             {/if}
         </fieldset>
         
@@ -647,7 +645,7 @@
             <legend>Image copyright</legend>
 
             <label for="copyright-font-size">Font size</label>
-            <input type="number" name="copyright-font-size" id="copyright-font-size" step="1" min="0" max="250" bind:value={copyrightFontSize} on:input={draw} />
+            <input type="number" name="copyright-font-size" id="copyright-font-size" step="1" min="0" max="250" bind:value={copyrightFontSize} oninput={draw} />
         </fieldset>
     </div>
     
@@ -660,25 +658,25 @@
                 </div>
                 
                 <label for="enable-grid" class="checkbox">
-                    <input type="checkbox" name="enable-grid" id="enable-grid" bind:checked={gridEnabled} on:change={draw} />
+                    <input type="checkbox" name="enable-grid" id="enable-grid" bind:checked={gridEnabled} onchange={draw} />
                     Enable grid
                 </label>
     
                 {#if gridEnabled}
                     <div>
                         <label for="grid-divisions-x">Divisions X</label>
-                        <input type="number" name="grid-divisions-x" id="grid-divisions-x" step="1" min="0" max="100" bind:value={gridDivisions.x} on:input={draw} />
+                        <input type="number" name="grid-divisions-x" id="grid-divisions-x" step="1" min="0" max="100" bind:value={gridDivisions.x} oninput={draw} />
                     </div>
                     <div>
                         <label for="grid-divisions-y">Divisions Y</label>
-                        <input type="number" name="grid-divisions-y" id="grid-divisions-y" step="1" min="0" max="100" bind:value={gridDivisions.y} on:input={draw} />
+                        <input type="number" name="grid-divisions-y" id="grid-divisions-y" step="1" min="0" max="100" bind:value={gridDivisions.y} oninput={draw} />
                     </div>
                 {/if}
             </div>
 
             <div class="sub-toolbar">
-                <button class="toolbar-button" on:click={generatePostText}>Get post text</button>
-                <button class="toolbar-button" on:click={download}>Download</button>
+                <button class="toolbar-button" onclick={generatePostText}>Get post text</button>
+                <button class="toolbar-button" onclick={download}>Download</button>
                 <TextModal bind:this={textModal} />
             </div>
         </div>
@@ -691,15 +689,17 @@
         <fieldset>
             <legend>Title</legend>
 
-            <input type="text" bind:value={title} on:input={draw} />
+            <input type="text" bind:value={title} oninput={draw} />
         </fieldset>
 
         <fieldset>
             <legend>Background image</legend>
             <ul class="images-list">
-                {#each $gallery.pictures as picture}
-                    <li on:click={() => { setBackground(picture.url); imageCopyright = picture.copyright; }}>
-                        <img src={picture.thumbnailUrl} alt={picture.copyright} />
+                {#each galleryManager.gallery.items as picture}
+                    <li>
+                        <button onclick={() => { setBackground(picture.url); imageCopyright = picture.copyright; }}>
+                            <img src={picture.thumbnailUrl} alt={picture.copyright} />
+                        </button>
                     </li>
                 {/each}
             </ul>
@@ -708,7 +708,7 @@
         <fieldset>
             <legend>Concerts</legend>
 
-            <ConcertSelector bind:this={concertSelector} on:selection-changed={draw} />
+            <ConcertSelector bind:this={concertSelector} onSelectionChanged={draw} />
         </fieldset>
     </div>
 </div>
@@ -799,14 +799,14 @@
         overflow: auto;
     }
 
-    .images-list li {
+    .images-list button {
         padding: 0.5rem;
         cursor: pointer;
 
         transition: 0.25s;
     }
 
-    .images-list li:hover {
+    .images-list button:hover {
         background-color: rgba(0, 0, 0, 0.2);
     }
 

@@ -4,9 +4,13 @@
     import { navigating } from "$app/stores";
     import LanguagePickerBar from "./language/LanguagePickerBar.svelte";
 
-    export let navParams: NavLinksParams;
+    interface Props {
+        navParams: NavLinksParams;
+    }
 
-    let open = false;
+    let { navParams }: Props = $props();
+
+    let open = $state(false);
 
     navigating.subscribe((n) => {
         if (n) {
@@ -16,11 +20,11 @@
 </script>
 
 <div class="wrapper" class:slideover-open={open}>
-    <button class="hamburger soft-button" on:click={() => (open = true)}>
+    <button class="hamburger soft-button" onclick={() => (open = true)}>
         <img class="icon" src="/icons/hamburger-menu.svg" alt="Menu" />
     </button>
     <div class="slideover bg-very-light" class:open>
-        <button class="soft-button" on:click={() => (open = false)}>
+        <button class="soft-button" onclick={() => (open = false)}>
             <img class="icon close" src="/icons/close.svg" alt="Menu" />
         </button>
         <div class="mobile-nav">
@@ -28,7 +32,7 @@
         </div>
         <LanguagePickerBar />
     </div>
-    <div class="backdrop" class:open />
+    <div class="backdrop" class:open></div>
 </div>
 
 <style>

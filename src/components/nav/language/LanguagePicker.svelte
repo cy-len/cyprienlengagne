@@ -1,15 +1,15 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import { languages } from "../../../utils/languageUtils";
     import LanguagePickerBar from "./LanguagePickerBar.svelte";
     import { fade } from "svelte/transition";
-    import { languages } from "./languages";
 
-    let barOpen: boolean = false;
+    let barOpen: boolean = $state(false);
 
-    $: currentFlag = languages[$page.url.pathname.split("/")[1]]?.icon ?? "/icons/english.svg";
+    let currentFlag = $derived(languages[$page.url.pathname.split("/")[1]]?.icon ?? "/icons/english.svg");
 </script>
 
-<button class="language-picker" on:click={() => barOpen = !barOpen}>
+<button class="language-picker" onclick={() => barOpen = !barOpen}>
     <img class="icon" src={currentFlag} alt="Current language flag" />
     &#9662;
 </button>

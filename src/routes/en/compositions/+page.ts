@@ -1,6 +1,6 @@
-import { updateCompositions } from "../../../stores/compositions";
+import { compositionsManager } from "../../../stores/compositions.svelte";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {
-    await Promise.all([updateCompositions(100, fetch)]);
+    await Promise.all([compositionsManager.updateCompositions(500, fetch)]);
 };

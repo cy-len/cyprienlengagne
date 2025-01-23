@@ -8,6 +8,6 @@
     <h2>Upcoming concerts</h2>
     <UpcomingConcertsList />
 
-    <h2>Past concerts</h2>
+    <h2 class="extra-top-margin">Past concerts</h2>
     <PastConcertsList maxCount={10} />
 </PageStructure>

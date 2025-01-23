@@ -3,7 +3,11 @@
     import type { NavLinksParams } from "./NavLinks.svelte";
     import Hamburger from "./Hamburger.svelte";
 
-    export let navParams: NavLinksParams = {
+    interface Props {
+        navParams?: NavLinksParams;
+    }
+
+    let { navParams = {
         langURL: "en",
         homeText: "Home",
         bioText: "Bio",
@@ -12,7 +16,7 @@
         compositionsText: "Compositions",
         mediaText: "Media",
         contactText: "Contact"
-    };
+    } }: Props = $props();
 </script>
 
 <nav id="nav-wrapper" class="backdrop-blur-strong">
