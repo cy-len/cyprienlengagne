@@ -40,21 +40,27 @@
 
     let truncatedConcerts = $derived(maxCount > 0 ? concertsList.slice(0, maxCount) : concertsList);
     let groupedConcertObj = $derived(groupBy(truncatedConcerts, (item) => `${item.date.getFullYear()}${item.date.getMonth().toString().padStart(2, "0")}`));
-    let groupedConcert = $derived(Object.values(groupedConcertObj).filter(g => !!g));
+    let groupedConcert = $derived.by(() => {
+        const filtered = Object.values(groupedConcertObj).filter(g => !!g);
+        if (grouping === "month-desc") {
+            filtered.sort((a, b) => (b[0].date.valueOf() - a[0].date.valueOf()));
+        }
+
+        return filtered;
+    });
+
 
     let compact = $derived(forceCompact || autoCompact);
 </script>
 
 <ul class:compact={compact}>
-    {#if grouping !== "off" && groupedConcert.length > 1}
-        {@const sortedGroups = grouping === "month-desc" ? groupedConcert.toSorted((a, b) => (b[0].date.valueOf() - a[0].date.valueOf())) : groupedConcert}
-        
-        {#each sortedGroups as group, i}
+    {#if grouping !== "off" && groupedConcert.length > 1}        
+        {#each groupedConcert as group, i}
             {#if group}
                 <li class="group-header" class:extra-margin={compact}>
                     <h4>
                         { capitalize(monthFormatter.format(group[0].date)) }
-                        {#if alwaysShowYearInGroups || i === 0 || group[0].date.getFullYear() !== sortedGroups[i - 1][0].date.getFullYear()}
+                        {#if alwaysShowYearInGroups || i === 0 || group[0].date.getFullYear() !== groupedConcert[i - 1][0].date.getFullYear()}
                             { group[0].date.getFullYear() }
                         {/if}
                     </h4>
