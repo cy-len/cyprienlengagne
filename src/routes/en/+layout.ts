@@ -5,11 +5,19 @@ import { socialMediasManager } from "../../stores/socialMedias.svelte";
 
 import type { LayoutLoad } from "./$types";
 
-export const load: LayoutLoad = async ({ fetch }) => {
-    await Promise.all([
+export const load: LayoutLoad = async ({ fetch, url }) => {
+    const promises = [
         bios.updateLanguage("en", fetch),
-        concertsManager.updateUpcoming(5, fetch),
         socialMediasManager.updateSocialMedias(fetch),
-        newsManager.updateNews(3, fetch)
-    ]);
+    ];
+
+    // We skip if already asked by the page to avoid race conditions and useless fetches
+    if (!url.pathname.includes("/concerts")) {
+        promises.push(concertsManager.updateUpcoming(5, fetch));
+    }
+    if (!url.pathname.includes("/news")) {
+        promises.push(newsManager.updateNews(3, fetch));
+    }
+
+    await Promise.all(promises);
 };

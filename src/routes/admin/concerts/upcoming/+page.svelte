@@ -42,7 +42,6 @@
             description: "",
             lingualDescriptions: {},
             date: new Date(),
-            endDate: undefined,
             url: ""
         });
 

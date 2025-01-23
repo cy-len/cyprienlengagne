@@ -113,6 +113,7 @@
     }
 
     .concert-title {
+        padding-bottom: 0.25rem;
         font-size: 1.25rem;
         font-weight: bold;
     }
@@ -134,10 +135,12 @@
         gap: 0.25rem;
         align-items: center;
         font-size: 0.9rem;
+        padding-bottom: 0.25rem;
     }
 
     .icon {
         height: 1rem;
+        width: 1rem;
     }
 
     .concert-description {

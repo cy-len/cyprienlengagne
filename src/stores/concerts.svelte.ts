@@ -106,6 +106,7 @@ class ConcertsManager {
     }
 
     async updateUpcoming(limit: number = 100, fetchFunction = fetch) {
+        console.log(limit);
         try {
             if (this.#upcoming.items.length > limit && this.#upcoming.total < limit) {
                 return;
