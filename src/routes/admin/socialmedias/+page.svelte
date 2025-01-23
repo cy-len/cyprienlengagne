@@ -1,10 +1,11 @@
 <script lang="ts">
-
-    import { onMount } from "svelte";
-    import { doc, getDoc, updateDoc, type CollectionReference, type DocumentReference } from "firebase/firestore";
+    import { preventDefault } from 'svelte/legacy';
+    import { getContext, onMount } from "svelte";
+    import { getDoc, updateDoc, type DocumentReference } from "firebase/firestore";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
+    import type { FirebaseManager } from '../../../firebase/firebaseManager.svelte';
     
-    let socialMediasCol: CollectionReference | null = null;
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     let handlesReference: DocumentReference | null = null;
 
     interface SocialMediasHandles {
@@ -14,20 +15,19 @@
         youtube: string;
     }
 
-    let handles: SocialMediasHandles = {
+    let handles: SocialMediasHandles = $state({
         facebook: "",
         instagram: "",
         twitter: "",
         youtube: "",
-    };
+    });
 
-    let saving: boolean = false;
+    let saving: boolean = $state(false);
 
     onMount(async () => {
-        const { socialMediasCollection }  = await import("../../../firebase");
-        socialMediasCol = socialMediasCollection;
+        if (!firebaseManager) return;
 
-        handlesReference = doc(socialMediasCol, "handles");
+        handlesReference = firebaseManager.socialMediasHandles();
 
         const handlesSnap = await getDoc(handlesReference);
         handles = handlesSnap.data() as SocialMediasHandles;
@@ -49,7 +49,7 @@
 <div>
     <h2>Edit Social Medias Handles</h2>
 
-    <form on:submit|preventDefault={save}>
+    <form onsubmit={preventDefault(save)}>
         <label for="youtube">YouTube</label>
         <input type="text" name="youtube" id="youtube" bind:value={handles.youtube} />
         

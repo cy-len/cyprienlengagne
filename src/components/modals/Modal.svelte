@@ -1,4 +1,13 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
+
+    interface Props {
+        children?: Snippet;
+        leftButton?: Snippet;
+    }
+
+    let { children, leftButton }: Props = $props();
+
     let dialog: HTMLDialogElement;
 
     export function show() {
@@ -13,14 +22,18 @@
 
 <dialog class="bg-mid-light" bind:this={dialog}>
     <div class="modal-toolbar">
-        <slot name="left-button" />
+        {#if leftButton}
+            {@render leftButton()}
+        {:else}
+            <div></div>
+        {/if}
 
-        <button class="soft-button" on:click={close}>
+        <button class="soft-button" onclick={close}>
             <img class="icon" src="/icons/close.svg" alt="Close" />
         </button>
     </div>
 
-    <slot />
+    {@render children?.()}
 </dialog>
 
 <style>

@@ -1,22 +1,23 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { type CollectionReference, type DocumentReference } from "firebase/firestore";
+    import { getContext, onMount } from "svelte";
+    import type { DocumentReference } from "firebase/firestore";
     import LoadingSpinner from "../../../../components/utils/LoadingSpinner.svelte";
     import ConcertEditor from "../../../../components/admin/ConcertEditor.svelte";
+    import type { FirebaseManager } from "../../../../firebase/firebaseManager.svelte";
 
-    let concertsRefs: DocumentReference[] = [];
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
-    let concertsCol: CollectionReference | null = null;
+    let concertsRefs: DocumentReference[] = $state([]);
 
-    let saving: boolean = false;
+    let saving: boolean = $state(false);
 
     onMount(async () => {
-        const { getPastConcerts, concertsCollection }  = await import("../../../../firebase");
-        concertsCol = concertsCollection;
-        concertsRefs = (await getPastConcerts()).docs.map((d) => d.ref);
+        if (!firebaseManager) return;
+
+        concertsRefs = (await firebaseManager.getPastConcerts()).docs.map((d) => d.ref);
     });
 
-    let singleEditors: ConcertEditor[] = [];
+    let singleEditors: ConcertEditor[] = $state([]);
 
     async function save() {
         saving = true;
@@ -32,8 +33,8 @@
         saving = false;
     }
 
-    function onDelete(event: any) {
-        concertsRefs = concertsRefs.filter((ref) => ref !== event.detail.ref);
+    function onDelete(id: string) {
+        concertsRefs = concertsRefs.filter((ref) => ref.id !== id);
     }
 
 </script>
@@ -43,7 +44,7 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button class="toolbar-button" on:click={save}>Save</button>
+            <button class="toolbar-button" onclick={save}>Save all</button>
         </div>
 
         {#if saving}
@@ -52,7 +53,7 @@
             </div>
         {:else}
             {#each concertsRefs as concert, i}
-                <ConcertEditor concertRef={concert} bind:this={singleEditors[i]} on:deleted={onDelete} />
+                <ConcertEditor concertRef={concert} bind:this={singleEditors[i]} ondeleted={onDelete} />
             {/each}
         {/if}
     </div>

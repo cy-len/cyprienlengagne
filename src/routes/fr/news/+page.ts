@@ -1,6 +1,6 @@
-import { updateNews } from "../../../stores/news";
+import { newsManager } from "../../../stores/news.svelte";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {
-    await updateNews(10, fetch);
+    await newsManager.updateNews(10, fetch);
 };

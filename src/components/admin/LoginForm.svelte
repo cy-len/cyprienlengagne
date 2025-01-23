@@ -1,32 +1,31 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { adminUser } from "../../firebase/stores";
+    import { getContext } from "svelte";
+    import { FirebaseManager } from '../../firebase/firebaseManager.svelte';
 
-    let login: () => void;
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
-    onMount(async () => {
-        const { signIn }  = await import("../../firebase");
+    async function login(e: SubmitEvent) {
+        e.preventDefault();
+        if (!firebaseManager) return;
 
-        login = async () => {
-            try {
-                await signIn(email, password);
-                email = "";
-                password = "";
-            } catch (err) {
-                error = "An error has occured";
-                console.log(err);
-                password = "";
-            }
+        try {
+            await firebaseManager.signIn(email, password);
+            email = "";
+            password = "";
+        } catch (err) {
+            error = "An error has occured";
+            console.log(err);
+            password = "";
         }
-    });
+    }
 
-    let email: string = "";
-    let password: string = "";
-    let error: string = "";
+    let email: string = $state("");
+    let password: string = $state("");
+    let error: string = $state("");
 
 </script>
 
-<form on:submit|preventDefault={login}>
+<form onsubmit={login}>
     <label for="email">Email</label>
     <input type="email" name="email" id="email" bind:value={email} />
     <label for="password">Password</label>

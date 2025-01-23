@@ -1,14 +1,18 @@
 <script lang="ts">
-    import { bios } from "../../stores/bios";
+    import { bios } from "../../stores/bios.svelte";
 
-    export let lang: string = "en";
-    export let downloadText: string = "Download biography";
+    interface Props {
+        lang?: string;
+        downloadText?: string;
+    }
+
+    let { lang = "en", downloadText = "Download biography" }: Props = $props();
 </script>
 
-<p class="line-breaks">{$bios[lang].biography.full}</p>
+<p class="line-breaks">{bios.language(lang).biography.full}</p>
 <div class="actions">
     <a
-        href="data:application/octet-stream;charset=utf-16le;base64,{btoa(unescape(encodeURIComponent($bios[lang].biography.full)),)}"
+        href="data:application/octet-stream;charset=utf-16le;base64,{btoa(unescape(encodeURIComponent(bios.language(lang).biography.full)),)}"
         download="Bio_{lang.toUpperCase()}"
         class="cta"
     >

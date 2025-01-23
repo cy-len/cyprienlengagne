@@ -2,48 +2,57 @@
     import emailjs from "@emailjs/browser";
     import LoadingSpinner from "../../components/utils/LoadingSpinner.svelte";
 
-    export let okMessage: string = "Your message has been sent successfully";
-    export let errorMessage: string = "Your message has been sent successfully";
-    export let nameFieldLabel: string = "Your name";
-    export let emailFieldLabel: string = "Your email";
-    export let messageFieldLabel: string = "Message";
-    export let sendButtonText: string = "Send";
+    interface Props {
+        okMessage: string;
+        errorMessage: string;
+        nameFieldLabel: string;
+        emailFieldLabel: string;
+        messageFieldLabel: string;
+        sendButtonText: string;
+    }
 
-    enum FormState {
-        NORMAL,
-        SENDING,
-        SUCCESS,
-        ERROR
-    };
+    let {
+        okMessage = "Your message has been sent successfully",
+        errorMessage = "Your message has been sent successfully",
+        nameFieldLabel = "Your name",
+        emailFieldLabel = "Your email",
+        messageFieldLabel = "Message",
+        sendButtonText = "Send"
+    }: Props = $props();
 
-    let state: FormState = FormState.NORMAL;
+    
+
+    type FormState = "NORMAL" | "SENDING" | "SUCCESS" | "ERROR";
+    let formState: FormState = $state("NORMAL");
 
     async function submit(e: Event) {
+        e.preventDefault();
+
         if (e.target instanceof Element) {
             const form: HTMLFormElement = e.target as HTMLFormElement;
-            state = FormState.SENDING;
+            formState = "SENDING";
 
             try {
                 await emailjs.sendForm("service_n1tzx9e", "template_r3ud1rl", form, "rC7axLGqAK34I4QMx");
-                state = FormState.SUCCESS;
+                formState = "SUCCESS";
                 form.reset();
             } catch (error) {
-                state = FormState.ERROR;
+                formState = "ERROR";
             }
         }
     }
 </script>
 
-{#if state === FormState.SUCCESS}
+{#if formState === "SUCCESS"}
     <div class="success">
         <img src="/icons/ok.svg" alt="Email sent">
         <p>{ okMessage }</p>
     </div>
-{:else if state === FormState.SENDING}
+{:else if formState === "SENDING"}
     <LoadingSpinner message="Sending message" />
 {:else}
-    <form on:submit|preventDefault={submit}>
-        {#if state === FormState.ERROR}
+    <form onsubmit={submit}>
+        {#if formState === "ERROR"}
             <p class="error">{ errorMessage }</p>
         {/if}
         <div class="form-group">
@@ -56,7 +65,7 @@
         </div>
         <div class="form-group">
             <label for="message">{ messageFieldLabel }</label>
-            <textarea id="message" name="message" rows="10" />
+            <textarea id="message" name="message" rows="10"></textarea>
         </div>
 
         <button class="cta-inverted">{ sendButtonText }</button>

@@ -18,9 +18,11 @@
 </script>
 
 <Modal bind:this={modal}>
-    <button class="soft-button" on:click={copyText} slot="left-button">
-        <img class="icon" src="/icons/copy.svg" alt="copy" />
-    </button>
+     {#snippet leftButton()}
+        <button class="soft-button" onclick={copyText}>
+            <img class="icon" src="/icons/copy.svg" alt="copy" />
+        </button>
+     {/snippet}
 
     <div class="textedit" contenteditable="true" bind:textContent={text}></div>
 </Modal>

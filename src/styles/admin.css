@@ -73,6 +73,51 @@ nav {
     animation: opacity 0.25s ease-out forwards;
 }
 
+.lang-icon {
+    height: 1.5rem;
+}
+
+.info {
+    font-style: italic;
+    font-size: 0.8rem;
+}
+
+input:not([type="checkbox"]), select {
+    display: block;
+    font: inherit;
+}
+
+input[type="checkbox"] {
+    width: min-content;
+}
+
+.checkbox-group {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+header {
+    padding: 0.5rem 0;
+}
+
+h3 {
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+}
+
+.field-label {
+    display: block;
+    margin-top: 0.5rem;
+    padding-bottom: 0.25rem;
+}
+
 @keyframes opacity {
     0% {
         opacity: 0;

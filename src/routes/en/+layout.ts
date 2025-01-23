@@ -1,15 +1,15 @@
-import { updateUpcomingConcerts } from "../../stores/concerts";
-import { updateNews } from "../../stores/news";
-import { updateBio } from "../../stores/bios";
-import { updateSocialMedias } from "../../stores/socialMedias";
+import { concertsManager } from "../../stores/concerts.svelte";
+import { newsManager } from "../../stores/news.svelte";
+import { bios } from "../../stores/bios.svelte";
+import { socialMediasManager } from "../../stores/socialMedias.svelte";
 
 import type { LayoutLoad } from "./$types";
 
 export const load: LayoutLoad = async ({ fetch }) => {
     await Promise.all([
-        updateBio("en", fetch),
-        updateUpcomingConcerts(5, fetch),
-        updateSocialMedias(fetch),
-        updateNews(3, fetch)
+        bios.updateLanguage("en", fetch),
+        concertsManager.updateUpcoming(5, fetch),
+        socialMediasManager.updateSocialMedias(fetch),
+        newsManager.updateNews(3, fetch)
     ]);
 };

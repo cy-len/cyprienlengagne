@@ -1,28 +1,60 @@
 <script lang="ts">
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
+    import type { Concert } from "../../types/concert";
     import { capitalize } from "../../utils/stringUtils";
 
-    export let date: Date;
-    export let compact: boolean;
+    interface Props {
+        concert: Concert;
+        compact: boolean;
+    }
 
-    const monthFormatter = new Intl.DateTimeFormat($page.url.pathname.split("/")[1], {
-        month: "short"
-    });
+    let { concert, compact }: Props = $props();
 
-    const fullFormatter = new Intl.DateTimeFormat($page.url.pathname.split("/")[1], {
-        dateStyle: "full"
-    });
+    function formatFull() {
+        const formatter = new Intl.DateTimeFormat(page.url.pathname.split("/")[1], {
+            dateStyle: "full",
+        });
+
+        if (concert.endDate) {
+            return formatter.formatRange(concert.date, concert.endDate);
+        }
+
+        return formatter.format(concert.date);
+    }
+
+    function formatShort(date: Date) {
+        const formatter = new Intl.DateTimeFormat(page.url.pathname.split("/")[1], {
+            month: "short",
+            day: "numeric"
+        });
+
+        return formatter.format(date);
+    }
+
+    function formatMonth(date: Date) {
+        const formatter = new Intl.DateTimeFormat(page.url.pathname.split("/")[1], {
+            month: "short",
+        });
+
+        return formatter.format(date);
+    }
 </script>
 
 {#if compact}
     <div class="compact-wrapper">
-        { capitalize(fullFormatter.format(date)) }
+        { capitalize(formatFull()) }
     </div>
 {:else}
     <div class="wrapper">
-        <div class="year">{ date.getFullYear() }</div>
-        <div class="month">{ capitalize(monthFormatter.format(date)) }</div>
-        <div class="day">{ date.getDate() }</div>
+        <div class="year">{ concert.date.getFullYear() }</div>
+        {#if concert.endDate}
+            <div class="day">{ capitalize(formatShort(concert.date)) }</div>
+            <div class="year">&#9947;</div>
+            <div class="day">{ capitalize(formatShort(concert.endDate)) }</div>
+        {:else}
+            <div class="month">{ capitalize(formatMonth(concert.date)) }</div>
+            <div class="day">{ concert.date.getDate() }</div>
+        {/if}
     </div>
 {/if}
 

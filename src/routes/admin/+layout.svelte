@@ -1,17 +1,26 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import Nav from '../../components/nav/Nav.svelte';
     import SocialLinks from "../../components/utils/SocialLinks.svelte";
     import LoginForm from "../../components/admin/LoginForm.svelte";
     import PageStructure from "../../components/PageStructure.svelte";
     import NavLink from "../../components/utils/NavLink.svelte";
-    import { adminUser } from "../../firebase/stores";
     import "../../styles/admin.css";
     import "../../styles/global.css";
+    import { FirebaseManager } from '../../firebase/firebaseManager.svelte';
+    import { browser } from '$app/environment';
 
-    $: title = $adminUser ? `Admin (${$adminUser.email})` : "Admin (login)";
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+    let { children }: Props = $props();
 
-    onMount(() => {
+    let firebaseManager = $state<FirebaseManager | undefined>(browser ? new FirebaseManager() : undefined);
+    setContext("firebaseManager", () => firebaseManager);
+
+    let title = $derived((firebaseManager && firebaseManager.user) ? `Admin (${firebaseManager.user.email})` : "Admin (login)");
+
+    onMount(async () => {
         document.body.classList.add("animated"); // Prevents animation flashing with SSR
     });
 
@@ -19,10 +28,10 @@
 
 <Nav />
 <PageStructure layout="content-only" title={title}>
-    {#if $adminUser}
+    {#if firebaseManager && firebaseManager.user}
         <div>
             <nav class="admin-nav">
-                <NavLink href="/admin">Analytics</NavLink>
+                <NavLink href="/admin">Home</NavLink>
                 <NavLink href="/admin/bio">Edit Bios</NavLink>
                 <NavLink href="/admin/socialmedias">Edit Social Medias</NavLink>
                 <NavLink href="/admin/news">Edit News</NavLink>
@@ -33,7 +42,7 @@
                 <NavLink href="/admin/postgenerator">Post generator</NavLink>
             </nav>
 
-            <slot />
+            {@render children?.()}
         </div>
     {:else}
         <div class="center">

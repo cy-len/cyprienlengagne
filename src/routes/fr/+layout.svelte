@@ -1,9 +1,14 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import Nav from '../../components/nav/Nav.svelte';
     import type { NavLinksParams } from '../../components/nav/NavLinks.svelte';
     import SocialLinks from "../../components/utils/SocialLinks.svelte";
     import "../../styles/global.css";
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
 
     const navParams: NavLinksParams = {
         langURL: "fr",
@@ -22,7 +27,7 @@
 </script>
 
 <Nav navParams={navParams} />
-<slot />
+{@render children?.()}
 
 <footer>
     <p>

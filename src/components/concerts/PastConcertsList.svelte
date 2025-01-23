@@ -1,43 +1,53 @@
 <script lang="ts">
-    import { pastConcerts, updatePastConcerts } from "../../stores/concerts";
+    import { concertsManager } from "../../stores/concerts.svelte";
     import { Status } from "../../types/status";
     import ConcertsList from "./ConcertsList.svelte";
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
 
-    export let maxCount: number = -1;
-    export let expandedMax: number = 50;
-    export let loadMoreText: string = "Load more";
-    export let grouping: "off" | "month-asc" | "month-desc" = "month-desc";
-    export let alwaysShowYearInGroups: boolean = false;
+    interface Props {
+        maxCount?: number;
+        expandedMax?: number;
+        loadMoreText?: string;
+        grouping?: "off" | "month-asc" | "month-desc";
+        alwaysShowYearInGroups?: boolean;
+    }
 
-    let loadingMore: boolean = false;
+    let {
+        maxCount = $bindable(-1),
+        expandedMax = 50,
+        loadMoreText = "Load more",
+        grouping = "month-desc",
+        alwaysShowYearInGroups = false
+    }: Props = $props();
+
+    let loadingMore: boolean = $state(false);
 
     async function loadMore() {
         if (maxCount === -1) return;
 
-        if (maxCount < $pastConcerts.concerts.length) {
-            maxCount = $pastConcerts.concerts.length;
+        if (maxCount < concertsManager.past.items.length) {
+            maxCount = concertsManager.past.items.length;
             return;
         }
 
         loadingMore = true;
-        await updatePastConcerts(expandedMax);
+        await concertsManager.updatePast(expandedMax);
         maxCount = expandedMax;
         loadingMore = false;
     }
 
 </script>
 
-{#if $pastConcerts.status === Status.OK}
-    <ConcertsList concertsList={$pastConcerts.concerts} maxCount={maxCount} {grouping} {alwaysShowYearInGroups} />
+{#if concertsManager.past.status === Status.OK}
+    <ConcertsList concertsList={concertsManager.past.items} maxCount={maxCount} {grouping} {alwaysShowYearInGroups} />
 
     {#if loadingMore}
         <LoadingSpinner message="Loading more past concerts" />
-    {:else if maxCount !== -1 && maxCount < expandedMax && $pastConcerts.total > maxCount}
-        <button class="cta" on:click={loadMore}>{ loadMoreText }</button>
+    {:else if maxCount !== -1 && maxCount < expandedMax && concertsManager.past.total > maxCount}
+        <button class="cta" onclick={loadMore}>{ loadMoreText }</button>
     {/if}
-{:else if $pastConcerts.status === Status.FAILED}
+{:else if concertsManager.past.status === Status.FAILED}
     <p>An error occured while fetching the upcoming concerts</p>
-{:else if $pastConcerts.status === Status.PENDING}
+{:else if concertsManager.past.status === Status.PENDING}
     <LoadingSpinner message="Loading past concerts" />
 {/if}

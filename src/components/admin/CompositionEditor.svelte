@@ -1,60 +1,97 @@
 <script lang="ts">
-
     import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
-    import { onMount, createEventDispatcher } from "svelte";
+    import { onMount } from "svelte";
     import { extractYouTubeHandle } from "../../utils/stringUtils";
     import { categoryByLanguage } from "../../utils/compositionUtils";
+    import MultilingualEditor from "./MultilingualEditor.svelte";
+    import Collapsible from "./Collapsible.svelte";
+    import YoutubeFetcher from "./YoutubeFetcher.svelte";
 
-    const dispatch = createEventDispatcher();
-
-    export let compositionRef: DocumentReference;
-
-    let name: string = "";
-    let description: string = "";
-    let category: string = "";
-    let premiereDateString: string = "";
-    let premiereLocation: string = "";
-    let premierePerformers: string = "";
-    let recordingVideo: string = "";
-
-    let hash: string = "";
-
-    function computeHash() {
-        return name + description + category + premiereDateString + premiereLocation + premierePerformers + recordingVideo;
+    interface Props {
+        compositionRef: DocumentReference;
+        ondeleted: (id: string) => any;
     }
+
+    let { compositionRef, ondeleted }: Props = $props();
+
+    interface FirebaseComposition {
+        name: string;
+        category: string;
+        duration: string;
+        compositionDateString: string;
+        instrumentation: string;
+        premiered: boolean;
+        premiereDateString: string;
+        premiereLocation: string;
+        premierePerformers: string;
+        description: string;
+        lingualDescriptions: { [key: string]: string };
+        recordingVideo: string;
+    }
+
+    let composition = $state<FirebaseComposition>({
+        name: "",
+        category: "",
+        duration: "",
+        compositionDateString: "",
+        instrumentation: "",
+        premiered: false,
+        premiereDateString: "",
+        premiereLocation: "",
+        premierePerformers: "",
+        description: "",
+        lingualDescriptions: {},
+        recordingVideo: ""
+    });
+
+    let hash: string = $state("");
+
+    let basicDetails: Collapsible;
+    let premiereDetails: Collapsible;
+    let recordingsDetails: Collapsible;
+    let descriptionDetails: Collapsible;
 
     onMount(async () => {
         const snapshot = await getDoc(compositionRef);
         const data = snapshot.data();
         if (!data) return;
 
-        name = data.name;
-        description = data.description;
-        category = data.category;
-        premiereDateString = data.premiereDate.toDate().toISOString().split("T")[0];
-        premiereLocation = data.premiereLocation;
-        premierePerformers = data.premierePerformers;
-        recordingVideo = data.recordingVideo;
+        composition.name = data.name;
+        composition.category = data.category;
+        composition.duration = data.duration ?? "";
+        composition.instrumentation = data.instrumentation ?? "";
+        composition.compositionDateString = data.compositionDate.toDate().toISOString().split("T")[0];
+        composition.description = data.description ?? "";
+        composition.lingualDescriptions = data.lingualDescriptions ?? {};
+        composition.premiered = data.premiered ?? false;
+        composition.premiereDateString = data.premiereDate.toDate().toISOString().split("T")[0];
+        composition.premiereLocation = data.premiereLocation ?? "";
+        composition.premierePerformers = data.premierePerformers ?? "";
+        composition.recordingVideo = data.recordingVideo ?? "";
 
-        hash = computeHash();
+        hash = JSON.stringify(composition);
     });
 
     export async function save() {
         if (!modified) return;
 
-        recordingVideo = extractYouTubeHandle(recordingVideo);
+        composition.recordingVideo = extractYouTubeHandle(composition.recordingVideo);
 
-        const data = {
-            name,
-            description,
-            category,
-            premiereDate: new Date(premiereDateString),
-            premiereLocation,
-            premierePerformers,
-            recordingVideo
-        };
-        await updateDoc(compositionRef, data);
-        hash = computeHash();
+        await updateDoc(compositionRef, {
+            name: composition.name,
+            category: composition.category,
+            duration: composition.duration,
+            instrumentation: composition.instrumentation,
+            compositionDate: new Date(composition.compositionDateString),
+            premiered: composition.premiered,
+            premiereDate: new Date(composition.premiereDateString),
+            premiereLocation: composition.premiereLocation,
+            premierePerformers: composition.premierePerformers,
+            description: composition.description,
+            lingualDescriptions: composition.lingualDescriptions,
+            recordingVideo: composition.recordingVideo
+        });
+        hash = JSON.stringify(composition);
     }
 
     async function deleteComposition() {
@@ -62,121 +99,98 @@
         if (areYouSure !== "YES") return;
 
         await deleteDoc(compositionRef);
-        dispatch("deleted", {
-            ref: compositionRef
-        });
+        ondeleted(compositionRef.id);
+    }
+
+    function expandAll() {
+        basicDetails.expand();
+        premiereDetails.expand();
+        recordingsDetails.expand();
+        descriptionDetails.expand();
+    }
+
+    function collapseAll() {
+        basicDetails.collapse();
+        premiereDetails.collapse();
+        recordingsDetails.collapse();
+        descriptionDetails.collapse();
     }
 
     const idBase = "" + Math.ceil(Math.random() * 10000);
 
-    $: modified = hash !== name + description + category + premiereDateString + premiereLocation + premierePerformers + recordingVideo;
+    let modified = $derived(hash !== JSON.stringify(composition));
 </script>
 
 <div class="editor-container" class:modified={modified}>
-    <div class="editor-grid">
+    <header>
+        <h3>{composition.name || "New composition"} ({ (new Date(composition.compositionDateString)).getFullYear() })</h3>
+        {#if modified}
+            <div class="info">Has unsaved changes</div>
+        {/if}
+
+        <div class="bar">
+            <button class="toolbar-button" onclick={expandAll}>Expand</button>
+            <button class="toolbar-button" onclick={collapseAll}>Collapse</button>
+            {#if modified}
+                <button class="toolbar-button" onclick={save}>Save modifications</button>
+            {/if}
+            <button class="toolbar-button red" onclick={deleteComposition}>Delete composition</button>
+        </div>
+    </header>
+
+    <Collapsible summaryText="Basic details" bind:this={basicDetails}>
         <label for="{idBase}-name" class="name-label">Name</label>
-        <input type="text" id="{idBase}-name" class="name-field" bind:value={name} />
+        <input type="text" id="{idBase}-name" class="name-field" bind:value={composition.name} />
+
+        <label for="{idBase}-composition-date" class="composition-date-label">Date of composition</label>
+        <input type="date" id="{idBase}-composition-date" class="composition-date-field" bind:value={composition.compositionDateString} />
+        
         <label for="{idBase}-category" class="category-label">Category</label>
-        <select name="category-field" id="{idBase}-category" class="category-field" bind:value={category}>
+        <select name="category-field" id="{idBase}-category" class="category-field" bind:value={composition.category}>
             {#each Object.keys(categoryByLanguage["en"]) as category}
                 <option value={category}>{categoryByLanguage["en"][category]}</option>
             {/each}
         </select>
-        
-        <label for="{idBase}-premiere-date" class="premiere-date-label">Premiere date</label>
-        <input type="date" id="{idBase}-premiere-date" class="premiere-date-field" bind:value={premiereDateString} />
-        <label for="{idBase}-premiere-location" class="premiere-location-label">Premiere location</label>
-        <input type="text" id="{idBase}-premiere-location" class="premiere-location-field" bind:value={premiereLocation} />
-        <label for="{idBase}-premiere-performers" class="premiere-performers-label">Premiere performers</label>
-        <input type="text" id="{idBase}-premiere-performers" class="premiere-performers-field" bind:value={premierePerformers} />
-        
-        <label for="{idBase}-description" class="description-label">Description</label>
-        <textarea id="{idBase}-description" class="description-field" cols="4" bind:value={description} />
-    
-        <label for="{idBase}-recording-video" class="recording-video-label">Youtube Video link/handle (will automatically be replaced by video ID on save)</label>
-        <input type="text" id="{idBase}-recording-video" class="recording-video-field" bind:value={recordingVideo} />
-    
-        <div class="delete-button">
-            <button class="toolbar-button" on:click={deleteComposition}>Delete composition</button>
+
+        <label for="{idBase}-instrumentation" class="instrumentation-label">Instrumentation</label>
+        <input type="text" id="{idBase}-instrumentation" class="instrumentation-field" bind:value={composition.instrumentation} />
+
+        <label for="{idBase}-duration" class="duration-label">Duration</label>
+        <input type="time" id="{idBase}-duration" class="duration-field" step="1" bind:value={composition.duration} />
+    </Collapsible>
+
+    <Collapsible summaryText="Premiere" bind:this={premiereDetails}>
+        <div class="checkbox-group">
+            <input type="checkbox" id="{idBase}-premiered" name="{idBase}-premiered" bind:checked={composition.premiered} />
+            <label for="{idBase}-premiered">Has been premiered or has a planned premiere</label>
         </div>
-    </div>
+
+        {#if composition.premiered}
+            <label for="{idBase}-premiere-date" class="premiere-date-label">Premiere date (required)</label>
+            <input type="date" id="{idBase}-premiere-date" class="premiere-date-field" bind:value={composition.premiereDateString} />
+
+            <label for="{idBase}-premiere-location" class="premiere-location-label">Premiere location (optional)</label>
+            <input type="text" id="{idBase}-premiere-location" class="premiere-location-field" bind:value={composition.premiereLocation} />
+
+            <label for="{idBase}-premiere-performers" class="premiere-performers-label">Premiere performers (optional)</label>
+            <input type="text" id="{idBase}-premiere-performers" class="premiere-performers-field" bind:value={composition.premierePerformers} />
+        {/if}
+    </Collapsible>
+
+    <Collapsible summaryText="Recordings" bind:this={recordingsDetails}>
+        <YoutubeFetcher bind:handle={composition.recordingVideo} />
+    </Collapsible>
+
+    <Collapsible summaryText="Description" bind:this={descriptionDetails}>
+        <MultilingualEditor bind:defaultText={composition.description} bind:lingualTexts={composition.lingualDescriptions} />
+    </Collapsible>
 </div>
 
 <style>
 
-.editor-grid {
-        grid-template-areas:
-            "name-label name-label category-label delete-button"
-            "name-field name-field category-field delete-button"
-            "premiere-date-label premiere-location-label premiere-performers-label delete-button"
-            "premiere-date-field premiere-location-field premiere-performers-field delete-button"
-            "description-label . . delete-button"
-            "description-field description-field description-field delete-button"
-            "recording-video-label recording-video-label recording-video-label delete-button"
-            "recording-video-field recording-video-field recording-video-field delete-button";
-        
-        grid-template-columns: 1fr 1fr 1fr 10rem;
-        grid-template-rows: min-content min-content min-content min-content min-content 8rem min-content min-content min-content;
-    }
-
-    input, textarea {
+    input, select {
         display: block;
-        font: inherit;
+        margin-bottom: 0.5rem;
     }
 
-    .name-label {
-        grid-area: name-label;
-    }
-
-    .name-field {
-        grid-area: name-field;
-    }
-
-    .category-label {
-        grid-area: category-label;
-    }
-
-    .category-field {
-        grid-area: category-field;
-    }
-
-    .premiere-date-label {
-        grid-area: premiere-date-label;
-    }
-
-    .premiere-date-field {
-        grid-area: premiere-date-field;
-    }
-
-    .premiere-location-label {
-        grid-area: premiere-location-label;
-    }
-
-    .premiere-location-field {
-        grid-area: premiere-location-field;
-    }
-
-    .premiere-performers-label {
-        grid-area: premiere-performers-label;
-    }
-
-    .premiere-performers-field {
-        grid-area: premiere-performers-field;
-    }
-
-    .description-label {
-        grid-area: description-label;
-    }
-
-    .description-field {
-        grid-area: description-field;
-    }
-
-    .recording-video-label {
-        grid-area: recording-video-label;
-    }
-
-    .recording-video-field {
-        grid-area: recording-video-field;
-    }
 </style>

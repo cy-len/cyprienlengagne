@@ -1,56 +1,60 @@
 <script lang="ts">
-    import { socialMedias } from "../../stores/socialMedias";
+    import { socialMediasManager } from "../../stores/socialMedias.svelte";
 
-    export let text: "media" | "handles" | "off" = "off";
-    export let bigIcons: boolean = false;
+    interface Props {
+        text?: "media" | "handles" | "off";
+        bigIcons?: boolean;
+    }
+
+    let { text = "off", bigIcons = false }: Props = $props();
 </script>
 
 <ul class:big-icons={bigIcons}>
-    {#if $socialMedias.youtube.handle}
+    {#if socialMediasManager.socialMedias.youtube.handle}
         <li>
             <a
-                href="https://www.youtube.com/{$socialMedias.youtube.handle}"
+                href="https://www.youtube.com/{socialMediasManager.socialMedias.youtube.handle}"
                 target="_blank"
                 rel="noopener noreferrer"
             >
                 <img src="/icons/youtube.svg" alt="Youtube" class="icon" />
 
                 {#if text === "handles"}
-                    <span>{$socialMedias.youtube.handle}</span>
+                    <span>{socialMediasManager.socialMedias.youtube.handle}</span>
                 {:else if text === "media"}
                     <span>YouTube</span>
                 {/if}
             </a>
         </li>
     {/if}
-    {#if $socialMedias.facebook.handle}
+    {#if socialMediasManager.socialMedias.facebook.handle}
         <li>
             <a
-                href="https://www.facebook.com/{$socialMedias.facebook.handle}"
+                href="https://www.facebook.com/{socialMediasManager.socialMedias.facebook.handle}"
                 target="_blank"
                 rel="noopener noreferrer"
             >
                 <img src="/icons/facebook.svg" alt="Facebook" class="icon" />
 
                 {#if text === "handles"}
-                    <span>{$socialMedias.facebook.handle}</span>
+                    <span>{socialMediasManager.socialMedias.facebook.handle}</span>
                 {:else if text === "media"}
                     <span>Facebook</span>
                 {/if}
             </a>
         </li>
     {/if}
-    {#if $socialMedias.instagram.handle}
+    {#if socialMediasManager.socialMedias.instagram.handle}
         <li>
             <a
-                href="https://www.instagram.com/{$socialMedias.instagram.handle}"
+                href="https://www.instagram.com/{socialMediasManager.socialMedias.instagram.handle}"
                 target="_blank"
                 rel="noopener noreferrer"
             >
                 <img src="/icons/instagram.svg" alt="Instagram" class="icon" />
 
                 {#if text === "handles"}
-                    <span>{$socialMedias.instagram.handle}</span>
+                    <span>{socialMediasManager.socialMedias.instagram.handle}</span>
                 {:else if text === "media"}
                     <span>Instagram</span>
                 {/if}

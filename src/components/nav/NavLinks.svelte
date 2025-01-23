@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     export interface NavLinksParams {
         langURL: string;
         homeText: string;
@@ -15,8 +15,12 @@
     import NavLink from "../utils/NavLink.svelte";
     import LanguagePicker from "./language/LanguagePicker.svelte";
 
-    export let vertical = false;
-    export let params: NavLinksParams;
+    interface Props {
+        vertical?: boolean;
+        params: NavLinksParams;
+    }
+
+    let { vertical = false, params }: Props = $props();
 </script>
 
 <ul class="links" class:vertical>

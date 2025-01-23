@@ -1,33 +1,32 @@
 <script lang="ts">
 
-    import { onMount } from "svelte";
-    import { addDoc, type CollectionReference, type DocumentReference } from "firebase/firestore";
-    import type { Video } from "../../../stores/videos";
+    import { getContext, onMount } from "svelte";
+    import type { DocumentReference } from "firebase/firestore";
     import VideoEditor from "../../../components/admin/VideoEditor.svelte";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
+    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
     
-    let videosCol: CollectionReference | null = null;
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
-    let videosRefs: DocumentReference[] = [];
+    let videosRefs: DocumentReference[] = $state([]);
 
-    let singleEditors: VideoEditor[] = [];
+    let singleEditors: VideoEditor[] = $state([]);
 
-    let saving: boolean = false;
+    let saving: boolean = $state(false);
 
     onMount(async () => {
-        const { videosCollection, getVideos }  = await import("../../../firebase");
-        videosCol = videosCollection;
-        videosRefs = (await getVideos()).docs.map((d) => d.ref);
+        if (!firebaseManager) return;
+        videosRefs = (await firebaseManager.getVideos()).docs.map((d) => d.ref);
     });
 
     async function addVideo() {
-        if (!videosCol) return;
+        if (!firebaseManager) return;
 
-        const docRef = await addDoc(videosCol, {
+        const docRef = await firebaseManager.addVideo({
             youtubeHandle: "dQw4w9WgXcQ",
             title: "",
             addedDate: new Date()
-        } as Video);
+        });
 
         videosRefs = [...videosRefs, docRef];
     }
@@ -46,8 +45,8 @@
         saving = false;
     }
 
-    function onDelete(event: any) {
-        videosRefs = videosRefs.filter((ref) => ref !== event.detail.ref);
+    function onDelete(id: string) {
+        videosRefs = videosRefs.filter((ref) => ref.id !== id);
     }
 
 </script>
@@ -57,8 +56,8 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button class="toolbar-button" on:click={addVideo}>Add video</button>
-            <button class="toolbar-button" on:click={save}>Save</button>
+            <button class="toolbar-button" onclick={addVideo}>Add video</button>
+            <button class="toolbar-button" onclick={save}>Save</button>
         </div>
     
         
@@ -68,7 +67,7 @@
             </div>
         {:else}
             {#each videosRefs as picture, i}
-                <VideoEditor videoRef={picture} bind:this={singleEditors[i]} on:deleted={onDelete} />
+                <VideoEditor videoRef={picture} bind:this={singleEditors[i]} ondeleted={onDelete} />
             {/each}
         {/if}
     </div>

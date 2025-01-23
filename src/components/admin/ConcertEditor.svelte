@@ -1,44 +1,102 @@
 <script lang="ts">
-
     import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
-    import { onMount, createEventDispatcher } from "svelte";
+    import { onMount } from "svelte";
+    import MultilingualEditor from "./MultilingualEditor.svelte";
+    import Collapsible from "./Collapsible.svelte";
 
-    const dispatch = createEventDispatcher();
+    interface Props {
+        concertRef: DocumentReference;
+        warnAboutPast?: boolean;
+        ondeleted: (id: string) => any;
+    }
 
-    export let concertRef: DocumentReference;
-    export let warnAboutPast: boolean = false;
+    interface FirebaseConcert {
+        location: string;
+        locationPrecise: string;
+        description: string;
+        lingualDescriptions: { [key: string]: string };
+        date: Date;
+        timeEnabled: boolean;
+        endDate?: Date;
+        url?: string;
+    }
 
-    let location: string = "";
-    let description: string = "";
-    let dateString: string = "";
-    let url: string = "";
+    let { concertRef, warnAboutPast = false, ondeleted }: Props = $props();
 
-    let hash: string = "";
+    let concert = $state({
+        location: "",
+        locationPrecise: "",
+        description: "",
+        lingualDescriptions: {},
+        dateString: "",
+        timeEnabled: false,
+        timeString: "",
+        endDateEnabled: false,
+        endDateString: "",
+        endTimeString: "",
+        url: ""
+    });
+
+    let hash: string = $state("");
+
+    let locationDetails: Collapsible;
+    let dateDetails: Collapsible;
+    let infosDetails: Collapsible;
+    let descriptionDetails: Collapsible;
 
     onMount(async () => {
         const snapshot = await getDoc(concertRef);
         const data = snapshot.data();
         if (!data) return;
 
-        location = data.location;
-        description = data.description;
-        dateString = data.date.toDate().toISOString().split("T")[0];
-        url = data.url ?? "";
+        concert.location = data.location;
+        concert.locationPrecise = data.locationPrecise ?? "";
 
-        hash = location + description + dateString + url;
+        concert.timeEnabled = data.timeEnabled ?? false;
+        const startDateParts = data.date.toDate().toISOString().split("T");
+        concert.dateString = startDateParts[0];
+        concert.timeString = startDateParts[1] ?? "";
+
+        if (data.endDate) {
+            concert.endDateEnabled = true;
+            const endDateParts = data.endDate.toDate().toISOString().split("T");
+            concert.endDateString = endDateParts[0];
+            concert.endTimeString = endDateParts[1];
+        } else {
+            concert.endDateEnabled = false;
+        }
+
+        concert.description = data.description;
+        concert.lingualDescriptions = data.lingualDescriptions ?? {};
+        
+        concert.url = data.url ?? "";
+
+        hash = JSON.stringify(concert);
+
+        // If even location is empty, consider it's a new concert and thus expand all the options
+        if (!concert.location) {
+            expandAll();
+        }
     });
 
     export async function save() {
         if (!modified) return;
 
-        const data = {
-            location,
-            description,
-            date: new Date(dateString),
-            url
+        const data: FirebaseConcert = {
+            location: concert.location,
+            locationPrecise: concert.locationPrecise,
+            description: concert.description,
+            lingualDescriptions: concert.lingualDescriptions,
+            url: concert.url,
+            timeEnabled: concert.timeEnabled,
+            date: new Date((concert.timeEnabled && concert.timeString) ? `${concert.dateString}T${concert.timeString}` : concert.dateString),
         };
-        await updateDoc(concertRef, data);
-        hash = location + description + dateString + url;
+        if (concert.endDateEnabled) {
+            data.endDate = new Date((concert.timeEnabled && concert.endTimeString) ? `${concert.endDateString}T${concert.endTimeString}` : concert.endDateString);
+        }
+        await updateDoc(concertRef, data as any);
+
+        hash = JSON.stringify(concert);
     }
 
     async function deleteConcert() {
@@ -46,88 +104,104 @@
         if (areYouSure !== "YES") return;
 
         await deleteDoc(concertRef);
-        dispatch("deleted", {
-            ref: concertRef
-        });
+        ondeleted(concertRef.id);
+    }
+
+    function expandAll() {
+        locationDetails.expand();
+        dateDetails.expand();
+        infosDetails.expand();
+        descriptionDetails.expand();
+    }
+
+    function collapseAll() {
+        locationDetails.collapse();
+        dateDetails.collapse();
+        infosDetails.collapse();
+        descriptionDetails.collapse();
     }
 
     const idBase = "" + Math.ceil(Math.random() * 10000);
 
-    $: modified = hash !== (location + description + dateString + url);
+    let modified = $derived(hash !== JSON.stringify(concert));
+    let dateSettingsToFormattedString = $derived.by(() => {
+        if (!concert.dateString) return "";
+
+        const formatter = new Intl.DateTimeFormat(undefined, {
+            dateStyle: "medium",
+            timeStyle: concert.timeEnabled ? "short" : undefined
+        });
+
+        let startDate = new Date((concert.timeEnabled && concert.timeString) ? `${concert.dateString}T${concert.timeString}` : concert.dateString);
+        if (!concert.endDateEnabled) return formatter.format(startDate);
+
+        let endDate = new Date((concert.timeEnabled && concert.endTimeString) ? `${concert.endDateString}T${concert.endTimeString}` : concert.endDateString);
+        return formatter.formatRange(startDate, endDate);
+    });
 </script>
 
 <div class="editor-container" class:modified={modified}>
-    {#if warnAboutPast && (new Date(dateString)).valueOf() < (new Date()).valueOf()}
-        <p>This concert is in the past. It will automatically appear in the past concerts list once saved if you reload the page.</p>
-    {/if}
+    <header>
+        <h3>{concert.location || "New concert"}, {dateSettingsToFormattedString}</h3>
+        {#if modified}
+            <div class="info">Has unsaved changes</div>
+        {/if}
+        {#if warnAboutPast && (new Date(concert.dateString)).valueOf() < (new Date()).valueOf()}
+            <p>This concert is in the past. It will automatically appear in the past concerts list once saved if you reload the page.</p>
+        {/if}
 
-    <div class="editor-grid">
-        <label for="{idBase}-date" class="date-label">Date</label>
-        <input type="date" id="{idBase}-date" class="date-field" bind:value={dateString} />
-        <label for="{idBase}-location" class="location-label">Location</label>
-        <input type="text" id="{idBase}-location" class="location-field" bind:value={location} />
-        
-        <label for="{idBase}-description" class="description-label">Description</label>
-        <textarea id="{idBase}-description" class="description-field" cols="4" bind:value={description} />
-    
-        <label for="{idBase}-url" class="url-label">Website url (optional)</label>
-        <input type="url" id="{idBase}-url" class="url-field" bind:value={url} />
-    
-        <div class="delete-button">
-            <button class="toolbar-button" on:click={deleteConcert}>Delete concert</button>
+        <div class="bar">
+            <button class="toolbar-button" onclick={expandAll}>Expand</button>
+            <button class="toolbar-button" onclick={collapseAll}>Collapse</button>
+            {#if modified}
+                <button class="toolbar-button" onclick={save}>Save modifications</button>
+            {/if}
+            <button class="toolbar-button red" onclick={deleteConcert}>Delete concert</button>
         </div>
-    </div>
+    </header>
+
+    <Collapsible summaryText="Location" bind:this={locationDetails}>
+        <label for="{idBase}-location" class="field-label">Location/name (ex. Prague Spring Festival)</label>
+        <input type="text" id="{idBase}-location" class="location-field" bind:value={concert.location} />
+
+        <label for="{idBase}-precise-location" class="field-label">Precise location (optional)</label>
+        <input type="text" id="{idBase}-precise-location" class="precise-location-field" bind:value={concert.locationPrecise} />
+    </Collapsible>
+
+    <Collapsible summaryText="Date" bind:this={dateDetails}>
+        <label for="{idBase}-date" class="field-label">Start date</label>
+        <input type="date" id="{idBase}-date" class="date-field" bind:value={concert.dateString} />
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="{idBase}-enable-start-time" name="{idBase}-enable-start-time" bind:checked={concert.timeEnabled} />
+            <label for="{idBase}-enable-start-time">Enable start time</label>
+        </div>
+        {#if concert.timeEnabled}
+            <label for="{idBase}-time" class="field-label">Start time</label>
+            <input type="time" id="{idBase}-time" class="time-field" bind:value={concert.timeString} />
+        {/if}
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="{idBase}-enable-end-date" name="{idBase}-enable-end-date" bind:checked={concert.endDateEnabled} />
+            <label for="{idBase}-enable-end-date">Enable end date</label>
+        </div>
+        {#if concert.endDateEnabled}
+            <label for="{idBase}-end-date" class="field-label">End date</label>
+            <input type="date" id="{idBase}-end-date" class="end-date-field" bind:value={concert.endDateString} />
+
+            {#if concert.timeEnabled}
+                <label for="{idBase}-end-time" class="field-label">End time</label>
+                <input type="time" id="{idBase}-end-time" class="end-time-field" bind:value={concert.endTimeString} />
+            {/if}
+        {/if}
+    </Collapsible>
+
+    <Collapsible summaryText="Other infos" bind:this={infosDetails}>
+        <label for="{idBase}-url" class="field-label">Website url (optional)</label>
+        <input type="url" id="{idBase}-url" class="url-field" bind:value={concert.url} />
+    </Collapsible>
+
+    <Collapsible summaryText="Description" bind:this={descriptionDetails}>
+        <MultilingualEditor bind:defaultText={concert.description} bind:lingualTexts={concert.lingualDescriptions} />
+    </Collapsible>
 </div>
-
-<style>
-
-.editor-grid {
-        grid-template-areas:
-            "date-label location-label delete-button"
-            "date-field location-field delete-button"
-            "description-label . delete-button"
-            "description-field description-field delete-button"
-            "url-label url-label delete-button"
-            "url-field url-field delete-button";
-        
-        grid-template-columns: 1fr 2fr 10rem;
-        grid-template-rows: min-content min-content min-content 8rem min-content min-content;
-    }
-
-    input, textarea {
-        display: block;
-        font: inherit;
-    }
-
-    .date-label {
-        grid-area: date-label;
-    }
-
-    .date-field {
-        grid-area: date-field;
-    }
-
-    .location-label {
-        grid-area: location-label;
-    }
-
-    .location-field {
-        grid-area: location-field;
-    }
-
-    .description-label {
-        grid-area: description-label;
-    }
-
-    .description-field {
-        grid-area: description-field;
-    }
-
-    .url-label {
-        grid-area: url-label;
-    }
-
-    .url-field {
-        grid-area: url-field;
-    }
-</style>

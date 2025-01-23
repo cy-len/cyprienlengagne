@@ -1,26 +1,40 @@
 <script lang="ts">
     import SocialLinks from "../utils/SocialLinks.svelte";
-    import { bios } from "../../stores/bios";
+    import { bios } from "../../stores/bios.svelte";
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
     import { Status } from "../../types/status";
     import { browser } from "$app/environment";
     import NewsList from "../news/NewsList.svelte";
     import ConcertsList from "../concerts/ConcertsList.svelte";
-    import { upcomingConcerts } from "../../stores/concerts";
-    import { getContext } from "svelte";
-    import type { Writable } from "svelte/store";
+    import { concertsManager } from "../../stores/concerts.svelte";
+    import { setContext } from "svelte";
     import type { OpenGraphProps } from "../../types/openGraphProps";
 
-    export let instrument: string = "Cellist & composer";
-    export let aboutTitle: string = "About Cyprien";
-    export let language: string = "en";
-    export let bioLoadingText: string = "Loading bio";
-    export let seeBioText: string = "See Biography";
-    export let newsTitle: string = "Latest News";
-    export let seeNews: string = "See All News";
-    export let concertsTitle: string = "Concerts";
-    export let seeAllConcertsText: string = "See All Concerts";
-    export let seeGalleryText: string = "See Gallery";
+    interface Props {
+        instrument?: string;
+        aboutTitle?: string;
+        language?: string;
+        bioLoadingText?: string;
+        seeBioText?: string;
+        newsTitle?: string;
+        seeNews?: string;
+        concertsTitle?: string;
+        seeAllConcertsText?: string;
+        seeGalleryText?: string;
+    }
+
+    let {
+        instrument = "Cellist & composer",
+        aboutTitle = "About Cyprien",
+        language = "en",
+        bioLoadingText = "Loading bio",
+        seeBioText = "See Biography",
+        newsTitle = "Latest News",
+        seeNews = "See All News",
+        concertsTitle = "Concerts",
+        seeAllConcertsText = "See All Concerts",
+        seeGalleryText = "See Gallery"
+    }: Props = $props();
 
     if (browser) {
         setTimeout(() => {
@@ -28,7 +42,7 @@
         }, 2000);
     }
     
-    getContext<Writable<OpenGraphProps>>("openGraphProps").set({
+    setContext<OpenGraphProps>("openGraphProps", {
         title: `Home`,
         description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
         imageUrl: `https://cyprienlengagne.com/imgs/Valere_Top.webp`
@@ -36,8 +50,9 @@
     
 </script>
 
+
 <div id="home-wrapper">
-    <div id="home-bg" />
+    <div id="home-bg"></div>
     <section class="splash">
         <div class="text">
             <h1 class="name">Cyprien Lengagne</h1>
@@ -51,10 +66,10 @@
             <div class="bio-text">
                 <h3>{ aboutTitle }</h3>
     
-                {#if $bios[language].status === Status.PENDING}
+                {#if bios.language(language).status === Status.PENDING}
                     <LoadingSpinner message={bioLoadingText} />
                 {:else}
-                    <p class="line-breaks">{ $bios[language].biography.short }</p>
+                    <p class="line-breaks">{ bios.language(language).biography.short }</p>
                 {/if}
                 
                 <a href="{language}/bio" class="cta">{ seeBioText }</a>
@@ -73,7 +88,7 @@
 
         <section class="concerts backdrop-blur-very-strong bg-very-light">
             <h3>{ concertsTitle }</h3>
-            <ConcertsList concertsList={$upcomingConcerts.concerts} maxCount={5} grouping="off" />
+            <ConcertsList concertsList={concertsManager.upcoming.items} maxCount={5} grouping="off" />
             <a href="{language}/concerts" class="cta">{ seeAllConcertsText }</a>
         </section>
         
@@ -140,7 +155,7 @@
         opacity: 0;
     }
     
-    .animated .splash .text {
+    :global(.animated .splash .text) {
         animation: title-appear 0.6s ease-out 0.6s forwards;
     }
 
@@ -181,7 +196,7 @@
         box-shadow: 0 -2rem 2rem 2rem rgba(0, 0, 0, 0.4);
     }
     
-    .animated #home-wrapper .grid {
+    :global(.animated #home-wrapper .grid) {
         animation: bottom-appear 0.5s ease-out 0.8s forwards;
     }
     
@@ -206,7 +221,7 @@
         grid-area: listen;
     }
 
-    @media screen and (max-width: 65rem) {
+    @media screen and (max-width: 75rem) {
         .grid {
             grid-template-areas:
                 "mini-bio"
@@ -242,7 +257,7 @@
         grid-area: concerts;
     }
 
-    .gallery {
+    /* .gallery {
         background-image: url("/imgs/Portrait1.jpg");
         background-size: cover;
         background-position: center;
@@ -261,5 +276,5 @@
         flex-direction: column;
         justify-content: flex-end;
         align-items: center;
-    }
+    } */
 </style>

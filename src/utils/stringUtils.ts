@@ -3,5 +3,9 @@ export function capitalize(str: string): string {
 }
 
 export function extractYouTubeHandle(url: string): string {
-    return url.replace("http://", "").replace("https://", "").replace("youtu.be/", "").replace("m.youtube.com/watch?v=", "").replace("youtube.com/watch?v=", "");
+    return url.replace("http://", "").replace("https://", "").replace("youtu.be/", "").replace("m.youtube.com/watch?v=", "").replace("www.youtube.com/watch?v=", "").replace("youtube.com/watch?v=", "");
+}
+
+export function limit(str: string, maxChars = 20) {
+    return str.length > maxChars ? `${str.slice(0, maxChars)}...` : str;
 }

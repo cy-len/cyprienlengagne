@@ -1,35 +1,43 @@
 <script lang="ts">
 
-    import { onMount } from "svelte";
-    import { addDoc, type CollectionReference, type DocumentReference } from "firebase/firestore";
-    import GalleryPicture from "../../../components/admin/GalleryPicture.svelte";
+    import { getContext, onMount, tick } from "svelte";
+    import type { DocumentReference } from "firebase/firestore";
+    import GalleryPictureEditor from "../../../components/admin/GalleryPictureEditor.svelte";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
+    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
+
+    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     
-    let galleryCol: CollectionReference | null = null;
+    let picturesRefs: DocumentReference[] = $state([]);
 
-    let picturesRefs: DocumentReference[] = [];
+    let singleEditors: GalleryPictureEditor[] = $state([]);
 
-    let singleEditors: GalleryPicture[] = [];
-
-    let saving: boolean = false;
+    let saving: boolean = $state(false);
 
     onMount(async () => {
-        const { galleryCollection, getPictures }  = await import("../../../firebase");
-        galleryCol = galleryCollection;
-        picturesRefs = (await getPictures()).docs.map((d) => d.ref);
+        if (!firebaseManager) return;
+
+        picturesRefs = (await firebaseManager.getPictures()).docs.map((d) => d.ref);
     });
 
     async function addPicture() {
-        if (!galleryCol) return;
+        if (!firebaseManager) return;
 
-        const docRef = await addDoc(galleryCol, {
-            url: "/imgs/gallery_default.jpg",
-            thumbnailUrl: "/imgs/gallery_default.jpg",
+        const docRef = await firebaseManager.addGalleryPicture({
+            url: "",
+            thumbnailUrl: "",
             copyright: "Copyright",
             uploadedDate: new Date()
         });
 
         picturesRefs = [...picturesRefs, docRef];
+
+        await tick();
+
+        window.scroll({
+            behavior: "smooth",
+            top: document.documentElement.scrollHeight
+        });
     }
 
     async function save() {
@@ -46,8 +54,8 @@
         saving = false;
     }
 
-    function onDelete(event: any) {
-        picturesRefs = picturesRefs.filter((ref) => ref !== event.detail.ref);
+    function onDelete(id: string) {
+        picturesRefs = picturesRefs.filter((ref) => ref.id !== id);
     }
 
 </script>
@@ -57,8 +65,8 @@
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button class="toolbar-button" on:click={addPicture}>Add picture</button>
-            <button class="toolbar-button" on:click={save}>Save</button>
+            <button class="toolbar-button" onclick={addPicture}>Add picture</button>
+            <button class="toolbar-button" onclick={save}>Save</button>
         </div>
     
         {#if saving}
@@ -67,7 +75,7 @@
             </div>
         {:else}
             {#each picturesRefs as picture, i}
-                <GalleryPicture pictureRef={picture} bind:this={singleEditors[i]} on:deleted={onDelete} />
+                <GalleryPictureEditor pictureRef={picture} bind:this={singleEditors[i]} ondeleted={onDelete} />
             {/each}
         {/if}
     </div>

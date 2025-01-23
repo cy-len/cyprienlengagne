@@ -1,4 +1,4 @@
-export async function compressImageBrowser(file: File, maxWidth: number = 1500, maxHeight: number = 1500): Promise<Blob> {
+export async function compressImageBrowser(file: Blob, maxWidth: number = 1500, maxHeight: number = 1500): Promise<Blob> {
     return new Promise(async (resolve, reject) => {
         const imgUrl = URL.createObjectURL(file);
         const img = await loadImageAsync(imgUrl);

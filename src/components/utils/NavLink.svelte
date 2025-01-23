@@ -1,13 +1,18 @@
 <script lang="ts">
     import { page } from "$app/stores";
 
-    export let href: string;
-    export let aExtraClass: string = "";
+    interface Props {
+        href: string;
+        aExtraClass?: string;
+        children?: import('svelte').Snippet;
+    }
 
-    $: active = $page.url.pathname === href;
+    let { href, aExtraClass = "", children }: Props = $props();
+
+    let active = $derived($page.url.pathname === href);
 </script>
 
-<a href={href} class={aExtraClass} class:active={active}><slot /></a>
+<a href={href} class={aExtraClass} class:active={active}>{@render children?.()}</a>
 
 <style>
     a {

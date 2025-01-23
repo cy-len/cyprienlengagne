@@ -3,3 +3,9 @@ export enum Status {
     FAILED,
     PENDING
 };
+
+export interface FetchResult<T> {
+    items: T[];
+    total: number;
+    status: Status;
+}

@@ -1,5 +1,4 @@
 import { Status } from "../types/status";
-import { writable } from "svelte/store";
 
 export interface Biography {
     short: string;
@@ -15,8 +14,6 @@ export interface BioFetchResult {
 // Key is language code (i.e. "en", "fr", "de")
 export type MultilingualBioFetchResult = { [key: string]: BioFetchResult };
 
-export const bios = writable<MultilingualBioFetchResult>({});
-
 interface RawBio {
     name: string;
     fields: {
@@ -29,10 +26,12 @@ interface RawBio {
     }
 }
 
-export async function updateBio(lang: string = "en", fetchFunction = fetch) {
-    bios.update((bioFetches: MultilingualBioFetchResult): MultilingualBioFetchResult => {
-        return {
-            ...bioFetches,
+class BioManager {
+    #bios: MultilingualBioFetchResult = $state({});
+
+    async updateLanguage(lang: string = "en", fetchFunction = fetch) {
+        this.#bios = {
+            ...this.#bios,
             [lang]: {
                 biography: {
                     short: "",
@@ -41,15 +40,13 @@ export async function updateBio(lang: string = "en", fetchFunction = fetch) {
                 status: Status.PENDING
             }
         };
-    });
-
-    try {
-        const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/bios/${lang}`);
-        const json = await res.json() as RawBio;
-        
-        bios.update((bioFetches: MultilingualBioFetchResult): MultilingualBioFetchResult => {
-            return {
-                ...bioFetches,
+    
+        try {
+            const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/bios/${lang}`);
+            const json = await res.json() as RawBio;
+            
+            this.#bios = {
+                ...this.#bios,
                 [lang]: {
                     biography: {
                         short: json.fields.short.stringValue,
@@ -58,11 +55,9 @@ export async function updateBio(lang: string = "en", fetchFunction = fetch) {
                     status: Status.OK
                 }
             };
-        });
-    } catch (error) {
-        bios.update((bioFetches: MultilingualBioFetchResult): MultilingualBioFetchResult => {
-            return {
-                ...bioFetches,
+        } catch (error) {
+            this.#bios = {
+                ...this.#bios,
                 [lang]: {
                     biography: {
                         short: "",
@@ -71,6 +66,16 @@ export async function updateBio(lang: string = "en", fetchFunction = fetch) {
                     status: Status.FAILED
                 }
             };
-        });
+        }
+    }
+
+    get languages() {
+        return this.#bios;
+    }
+
+    language(lang = "en") {
+        return this.#bios[lang];
     }
 }
+
+export const bios = new BioManager;

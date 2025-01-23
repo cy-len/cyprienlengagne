@@ -1,18 +1,54 @@
 <script lang="ts">
     import type { Concert } from "../../types/concert";
     import ConcertDate from "./ConcertDate.svelte";
+    import { page } from "$app/state";
+    import { limit } from "../../utils/stringUtils";
 
+    interface Props {
+        concert: Concert;
+        compact: boolean;
+    }
 
-    export let concert: Concert;
-    export let compact: boolean;
+    let { concert, compact }: Props = $props();
+
+    let description = $derived.by(() => {
+        const lang = page.url.pathname.split("/")[1];
+        return concert.lingualDescriptions[lang] ?? concert.description;
+    });
+
+    const timeFormatter = new Intl.DateTimeFormat(page.url.pathname.split("/")[1], {
+        timeStyle: "short"
+    });
 
 </script>
 
 <a href={concert.url} target="_blank" rel="noopener noreferrer" class:compact={compact}>
     <div class="concert-container">
-        <div class="concert-date"><ConcertDate date={concert.date} compact={compact} /></div>
-        <div class="concert-title">{ concert.location }</div>
-        <div class="concert-description line-breaks">{ concert.description }</div>
+        <div class="concert-date"><ConcertDate concert={concert} compact={compact} /></div>
+        <header>
+            <div class="concert-title">{ concert.location }</div>
+            <div class="concert-optional">
+                {#if concert.locationPrecise}
+                    <div>
+                        <img src="/icons/map_marker.svg" alt="Map marker" class="icon" />
+                        <span>{ concert.locationPrecise }</span>
+                    </div>
+                {/if}
+                {#if concert.timeEnabled}
+                    <div>
+                        <img src="/icons/clock.svg" alt="Clock" class="icon" />
+                        <span>{ timeFormatter.format(concert.date) }</span>
+                    </div>
+                {/if}
+                {#if concert.url}
+                    <div>
+                        <img src="/icons/link.svg" alt="Link" class="icon" />
+                        <span>{ limit(concert.url, 32) }</span>
+                    </div>
+                {/if}
+            </div>
+        </header>
+        <div class="concert-description line-breaks">{ description }</div>
     </div>
 </a>
 
@@ -54,7 +90,7 @@
     .concert-container {
         display: grid;
         grid-template-areas:
-            "date title"
+            "date header"
             "date description";
         grid-template-columns: 5rem 1fr;
         gap: 0.5rem 1rem;
@@ -67,23 +103,41 @@
     a.compact .concert-container {
         grid-template-areas:
             "date"
-            "title"
+            "header"
             "description";
         grid-template-columns: 1fr;
+    }
+
+    header {
+        grid-area: header;
     }
 
     .concert-title {
         font-size: 1.25rem;
         font-weight: bold;
-        grid-area: title;
     }
 
-    .compact .concert-title {
-        padding: 0 1rem;
+    .compact .concert-title  {
+        padding: 0.5rem 1rem 0.25rem 1rem;
+    }
+
+    .compact .concert-optional  {
+        padding: 0 1rem 0.5rem 1rem;
     }
 
     .concert-date {
         grid-area: date;
+    }
+    
+    .concert-optional > div {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .icon {
+        height: 1rem;
     }
 
     .concert-description {
