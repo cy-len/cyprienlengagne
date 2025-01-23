@@ -96,7 +96,7 @@ class NewsManager {
 
     async updateNews(limit: number = 20, fetchFunction = fetch) {
         try {
-            if (this.#news.items.length > limit && this.#news.total < limit) {
+            if (this.#news.items.length > limit) {
                 return;
             }
             

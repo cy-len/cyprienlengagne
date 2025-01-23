@@ -108,7 +108,7 @@ class ConcertsManager {
     async updateUpcoming(limit: number = 100, fetchFunction = fetch) {
         console.log(limit);
         try {
-            if (this.#upcoming.items.length > limit && this.#upcoming.total < limit) {
+            if (this.#upcoming.items.length > limit) {
                 return;
             }
     
@@ -152,7 +152,7 @@ class ConcertsManager {
 
     async updatePast(limit: number = 100, fetchFunction = fetch) {
         try {
-            if (this.#past.items.length > limit && this.#past.total < limit) {
+            if (this.#past.items.length > limit) {
                 return;
             }
             

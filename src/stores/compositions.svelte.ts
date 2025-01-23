@@ -107,7 +107,7 @@ class CompositionsManager {
 
     async updateCompositions(limit: number = 20, fetchFunction = fetch) {
         try {
-            if (this.#compositions.items.length > limit && this.#compositions.total < limit) {
+            if (this.#compositions.items.length > limit) {
                 return;
             }
             

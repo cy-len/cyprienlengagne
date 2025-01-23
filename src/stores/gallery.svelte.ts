@@ -69,7 +69,7 @@ class GalleryManager {
     
     async updateGallery(limit: number = 20, fetchFunction = fetch) {
         try {
-            if (this.#gallery.items.length > limit && this.#gallery.total < limit) {
+            if (this.#gallery.items.length > limit) {
                 return;
             }
             

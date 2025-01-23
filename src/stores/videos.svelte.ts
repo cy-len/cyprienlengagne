@@ -63,7 +63,7 @@ class VideosManager {
         
         async updateVideos(limit: number = 20, fetchFunction = fetch) {
             try {
-                if (this.#videos.items.length > limit && this.#videos.total < limit) {
+                if (this.#videos.items.length > limit) {
                     return;
                 }
                 
