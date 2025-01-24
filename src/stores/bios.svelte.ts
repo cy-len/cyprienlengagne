@@ -30,6 +30,8 @@ class BioManager {
     #bios: MultilingualBioFetchResult = $state({});
 
     async updateLanguage(lang: string = "en", fetchFunction = fetch) {
+        if (this.#bios[lang]?.status === Status.OK) return;
+
         this.#bios = {
             ...this.#bios,
             [lang]: {

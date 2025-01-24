@@ -3,8 +3,15 @@
     import CompositionsList from "../../../components/compositions/CompositionsList.svelte";
 </script>
 
-<PageStructure title="Compositions" bgImgName="PendereckiResults.webp" bgPositionX="right" bgPositionY="-15rem" bgPositionMobileX="right" bgPositionMobileY="-5rem" imgName="AmandineLauriol_Jaroussky_Face.webp">
-    <h2>Compositions</h2>
-
+<PageStructure
+    title="Compositions"
+    bgImgName="PendereckiResults.webp"
+    bgSize="max(100vw, 1200px)"
+    bgPositionX="right"
+    bgPositionY="-150px"
+    bgPositionMobileX="30rem"
+    bgPositionMobileY="-5rem"
+    imgName="AmandineLauriol_Jaroussky_Face.webp"
+>
     <CompositionsList />
 </PageStructure>

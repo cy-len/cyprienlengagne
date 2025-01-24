@@ -146,7 +146,7 @@
         grid-template-rows: min-content;
     }
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 1100px) {
         .composition {
             grid-template-columns: 1fr;
             grid-template-rows: min-content min-content;

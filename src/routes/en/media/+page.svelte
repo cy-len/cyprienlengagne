@@ -4,7 +4,14 @@
     import Gallery from "../../../components/media/Gallery.svelte";
 </script>
 
-<PageStructure title="Media" bgImgName="JarousskyPapillons.webp" bgPositionY="bottom" bgPositionX="right" layout="content-only">
+<PageStructure
+    title="Media"
+    bgImgName="JarousskyPapillons.webp"
+    bgSize="max(100vw, 1200px)"
+    bgPositionY="-80px"
+    bgPositionX="right"
+    layout="content-only"
+>
     <section>
         <h2>Videos</h2>
 

@@ -3,7 +3,15 @@
     import NewsList from "../../../components/news/NewsList.svelte";
 </script>
 
-<PageStructure title="News" bgImgName="PendereckiWinnerConcert.jpg" bgPositionX="right" bgPositionY="-22rem" bgPositionMobileX="40rem" bgPositionMobileY="-22rem" layout="content-only">
-    <h2>Toutes les actualités</h2>
+<PageStructure
+    title="News"
+    bgImgName="PendereckiWinnerConcert.jpg"
+    bgSize="max(100vw, 1200px)"
+    bgPositionX="right"
+    bgPositionY="max(-20rem, -15vw)"
+    bgPositionMobileX="40rem"
+    bgPositionMobileY="-22rem"
+    layout="content-only"
+>
     <NewsList lang="fr" loadMoreText="Afficher plus" />
 </PageStructure>

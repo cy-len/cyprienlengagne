@@ -5,6 +5,7 @@
     interface Props {
         title?: string;
         bgImgName?: string;
+        bgSize?: string;
         bgPositionX?: string;
         bgPositionY?: string;
         bgPositionMobileX?: string;
@@ -18,6 +19,7 @@
     let {
         title = "",
         bgImgName = "Valere_Back.jpg",
+        bgSize = "cover",
         bgPositionX = "70%",
         bgPositionY = "top",
         bgPositionMobileX = "70%",
@@ -35,7 +37,7 @@
     });
 </script>
 
-<main style="background-image: url(/imgs/{bgImgName}); --bg-pos-x: {bgPositionX}; --bg-pos-y: {bgPositionY}; --bg-pos-mobile-x: {bgPositionMobileX}; --bg-pos-mobile-y: {bgPositionMobileY};">
+<main style="background-image: url(/imgs/{bgImgName}); --bg-size: {bgSize}; --bg-pos-x: {bgPositionX}; --bg-pos-y: {bgPositionY}; --bg-pos-mobile-x: {bgPositionMobileX}; --bg-pos-mobile-y: {bgPositionMobileY};">
     <h1>{ title }</h1>
     <div class="page-content backdrop-blur-very-strong bg-very-light">
         <div class="grid {layout}">
@@ -57,7 +59,7 @@
 
         background-attachment: fixed;
 
-        background-size: cover;
+        background-size: var(--bg-size);
         background-position: var(--bg-pos-x) var(--bg-pos-y);
         background-position-x: var(--bg-pos-x);
         background-position-y: var(--bg-pos-y);

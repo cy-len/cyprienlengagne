@@ -6,14 +6,13 @@
 <PageStructure
     title="Compositions"
     bgImgName="PendereckiResults.webp"
+    bgSize="max(100vw, 1200px)"
     bgPositionX="right"
-    bgPositionY="-15rem"
-    bgPositionMobileX="right"
+    bgPositionY="-5rem"
+    bgPositionMobileX="30rem"
     bgPositionMobileY="-5rem"
     imgName="AmandineLauriol_Jaroussky_Face.webp"
 >
-    <h2>Compositions</h2>
-
     <CompositionsList
         lang="fr"
         loadMoreText="Afficher plus"

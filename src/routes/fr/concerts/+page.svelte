@@ -4,7 +4,16 @@
     import PastConcertsList from "../../../components/concerts/PastConcertsList.svelte";
 </script>
 
-<PageStructure title="Concerts" bgImgName="PendereckiSecondRound.webp" bgPositionX="left" bgPositionY="-15rem" bgPositionMobileX="-8rem" bgPositionMobileY="-5rem" imgName="Zimmermann_Vertical.webp">
+<PageStructure
+    title="Concerts"
+    bgImgName="PendereckiSecondRound.webp"
+    bgSize="max(100vw, 1200px)"
+    bgPositionX="left"
+    bgPositionY="calc(-5rem - 5vw)"
+    bgPositionMobileX="-8rem"
+    bgPositionMobileY="-5rem"
+    imgName="Zimmermann_Vertical.webp"
+>
     <h2>Prochains concerts</h2>
     <UpcomingConcertList />
 
