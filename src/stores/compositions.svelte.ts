@@ -133,6 +133,15 @@ class CompositionsManager {
     get compositions() {
         return this.#compositions;
     }
+
+    get availableCompositionCategories(): Set<string> {
+        const categories = new Set<string>();
+        for (const composition of this.#compositions.items) {
+            categories.add(composition.category);
+        }
+
+        return categories;
+    }
 }
 
 export const compositionsManager = new CompositionsManager();

@@ -5,6 +5,7 @@
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
     import CompositionEditor from "../../../components/admin/CompositionEditor.svelte";
     import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
+    import { slide } from "svelte/transition";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     
@@ -25,8 +26,13 @@
 
         const docRef = await firebaseManager.addComposition({
             name: "",
-            description: "",
             category: "Orchestra",
+            compositionDate: new Date(),
+            duration: "00:00:00",
+            instrumentation: "",
+            description: "",
+            lingualDescriptions: {},
+            premiered: false,
             premiereDate: new Date(),
             premiereLocation: "",
             premierePerformers: "",
@@ -74,11 +80,13 @@
     
         {#if saving}
             <div class="saving-backdrop">
-                <LoadingSpinner message="Saving composition..." />
+                <LoadingSpinner message="Saving compositions..." />
             </div>
         {:else}
             {#each compositionRefs as composition, i}
-                <CompositionEditor compositionRef={composition} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                <div transition:slide={{ duration: 250 }}>
+                    <CompositionEditor compositionRef={composition} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                </div>
             {/each}
         {/if}
     </div>

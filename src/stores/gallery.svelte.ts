@@ -26,7 +26,6 @@ interface RawGalleryPicture {
 }
 
 function rawGalleryPictureToGalleryPicture(rawPicture: RawGalleryPicture): GalleryPicture {
-    console.log(rawPicture);
     return {
         url: rawPicture.url.stringValue,
         thumbnailUrl: rawPicture.thumbnailUrl?.stringValue ?? rawPicture.url.stringValue,

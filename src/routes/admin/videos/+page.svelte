@@ -1,10 +1,11 @@
 <script lang="ts">
 
-    import { getContext, onMount } from "svelte";
+    import { getContext, onMount, tick } from "svelte";
     import type { DocumentReference } from "firebase/firestore";
     import VideoEditor from "../../../components/admin/VideoEditor.svelte";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
     import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
+    import { slide } from "svelte/transition";
     
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
@@ -29,6 +30,13 @@
         });
 
         videosRefs = [...videosRefs, docRef];
+
+        await tick();
+
+        window.scroll({
+            behavior: "smooth",
+            top: document.documentElement.scrollHeight
+        });
     }
 
     async function save() {
@@ -67,7 +75,9 @@
             </div>
         {:else}
             {#each videosRefs as picture, i}
-                <VideoEditor videoRef={picture} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                <div transition:slide={{ duration: 250 }}>
+                    <VideoEditor videoRef={picture} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                </div>
             {/each}
         {/if}
     </div>

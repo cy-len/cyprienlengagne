@@ -100,7 +100,7 @@
     }
 
     async function deleteConcert() {
-        const areYouSure = prompt(`If you really want to delete this concert (${location}), type YES and select ok`);
+        const areYouSure = prompt(`If you really want to delete this concert (${concert.location}, ${(new Date(concert.dateString)).toLocaleDateString()}), type YES and select ok`);
         if (areYouSure !== "YES") return;
 
         await deleteDoc(concertRef);

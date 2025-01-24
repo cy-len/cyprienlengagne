@@ -4,6 +4,7 @@
     import LoadingSpinner from "../../../../components/utils/LoadingSpinner.svelte";
     import ConcertEditor from "../../../../components/admin/ConcertEditor.svelte";
     import type { FirebaseManager } from "../../../../firebase/firebaseManager.svelte";
+    import { slide } from "svelte/transition";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
@@ -53,7 +54,9 @@
             </div>
         {:else}
             {#each concertsRefs as concert, i}
-                <ConcertEditor concertRef={concert} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                <div transition:slide={{ duration: 250 }}>
+                    <ConcertEditor concertRef={concert} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                </div>
             {/each}
         {/if}
     </div>

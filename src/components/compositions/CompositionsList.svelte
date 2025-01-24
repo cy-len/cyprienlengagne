@@ -58,7 +58,7 @@
 
 {#if compositionsManager.compositions.status === Status.OK}
     <div class="filters">
-        {#each ["all", ...Object.keys(categoryByLanguage[lang])] as category}
+        {#each ["all", ...compositionsManager.availableCompositionCategories] as category}
             <button
                 class="{currentCategory === category ? 'cta-inverted' : 'cta'}"
                 onclick={() => currentCategory = category}

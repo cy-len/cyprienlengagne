@@ -22,7 +22,7 @@
         <div class="info">The YouTube handle is the string of random characters that identifies the YouTube video, and can be found in the YouTube page URL after this part: youtube.com/watch?v=</div>
     </div>
 
-    {#if !handle.includes("youtube.com") && !handle.includes("youtu.be")}
+    {#if handle && !handle.includes("youtube.com") && !handle.includes("youtu.be")}
         <iframe class="yt-video youtube-preview" width="560" height="315" src="https://www.youtube.com/embed/{handle}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     {/if}
 </div>

@@ -5,6 +5,7 @@
     import SingleNewsEditor from "../../../components/admin/news/SingleNewsEditor.svelte";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
     import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
+    import { slide } from "svelte/transition";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     
@@ -83,7 +84,9 @@
             </div>
         {:else}
             {#each newsRefs as news, i}
-                <SingleNewsEditor newsRef={news} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                <div transition:slide={{ duration: 250 }}>
+                    <SingleNewsEditor newsRef={news} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                </div>
             {/each}
         {/if}
     </div>
