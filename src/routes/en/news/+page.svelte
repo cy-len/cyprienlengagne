@@ -5,12 +5,12 @@
 
 <PageStructure
     title="News"
-    bgImgName="PendereckiWinnerConcert.jpg"
-    bgSize="max(100vw, 1200px)"
-    bgPositionX="right"
-    bgPositionY="max(-20rem, -15vw)"
-    bgPositionMobileX="40rem"
-    bgPositionMobileY="-22rem"
+    bannerLowresImgName="PendereckiWinnerConcert_ultralowres.jpg"
+    bannerImgName="PendereckiWinnerConcert.jpg"
+    bannerWidth="max(100vw, 1200px)"
+    bannerAnchor="right"
+    bannerPosition="right max(-20rem, -15vw)"
+    bannerMobilePosition="40rem -22rem"
     layout="content-only"
 >
     <NewsList maxCount={10} />

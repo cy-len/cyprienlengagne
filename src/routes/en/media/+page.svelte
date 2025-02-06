@@ -6,10 +6,11 @@
 
 <PageStructure
     title="Media"
-    bgImgName="JarousskyPapillons.webp"
-    bgSize="max(100vw, 1200px)"
-    bgPositionY="-80px"
-    bgPositionX="right"
+    bannerLowresImgName="JarousskyPapillons_ultralowres.jpg"
+    bannerImgName="JarousskyPapillons.webp"
+    bannerWidth="max(100vw, 1200px)"
+    bannerAnchor="right"
+    bannerPosition="right -80px"
     layout="content-only"
 >
     <section>

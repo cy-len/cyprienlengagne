@@ -5,10 +5,11 @@
 
 <PageStructure
     title="Biographie"
-    bgImgName="Valere_Back.jpg"
-    bgSize="max(100vw, 1200px)"
-    bgPositionY="-75px"
-    bgPositionMobileX="-25rem"
+    bannerLowresImgName="Valere_Back_ultralowres.jpg"
+    bannerImgName="Valere_Back.jpg"
+    bannerAnchor="right"
+    bannerPosition="center -75px"
+    bannerMobilePosition="-25rem center"
     imgName="Valere_Front_Vertical.jpg"
 >
     <Biography lang="fr" downloadText="Télécharger la biographie" />

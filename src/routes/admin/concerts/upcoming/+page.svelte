@@ -5,12 +5,14 @@
     import ConcertEditor from "../../../../components/admin/ConcertEditor.svelte";
     import type { FirebaseManager } from "../../../../firebase/firebaseManager.svelte";
     import { slide } from "svelte/transition";
+    import ShareConcertTextModal from "../../../../components/admin/ShareConcertTextModal.svelte";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
     let concertsRefs: DocumentReference[] = $state([]);
 
     let saving: boolean = $state(false);
+    let shareModal: ShareConcertTextModal;
 
     onMount(async () => {
         if (!firebaseManager) return;
@@ -56,6 +58,10 @@
         });
     }
 
+    function share() {
+        shareModal.show(singleEditors.map(editor => editor.toJSON()));
+    }
+
     function onDelete(id: string) {
         concertsRefs = concertsRefs.filter((ref) => ref.id !== id);
     }
@@ -69,6 +75,7 @@
         <div class="toolbar">
             <button class="toolbar-button" onclick={addConcert}>Add concert</button>
             <button class="toolbar-button" onclick={save}>Save all</button>
+            <button class="toolbar-button" onclick={share}>Share all</button>
         </div>
 
         {#if saving}
@@ -84,3 +91,4 @@
         {/if}
     </div>
 </div>
+<ShareConcertTextModal bind:this={shareModal} />

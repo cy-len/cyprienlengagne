@@ -9,6 +9,7 @@
     import { concertsManager } from "../../stores/concerts.svelte";
     import { setContext } from "svelte";
     import type { OpenGraphProps } from "../../types/openGraphProps";
+    import LazyImage from "../utils/LazyImage.svelte";
 
     interface Props {
         instrument?: string;
@@ -33,7 +34,7 @@
         seeNews = "See All News",
         concertsTitle = "Concerts",
         seeAllConcertsText = "See All Concerts",
-        seeGalleryText = "See Gallery"
+        seeGalleryText = "See Gallery",
     }: Props = $props();
 
     if (browser) {
@@ -41,18 +42,24 @@
             document.body.classList.add("no-home-animation");
         }, 2000);
     }
-    
+
     setContext<OpenGraphProps>("openGraphProps", {
         title: `Home`,
-        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
-        imageUrl: `https://cyprienlengagne.com/imgs/Valere_Top.webp`
+        description:
+            "Website of the swiss-french cellist and composer Cyprien Lengagne",
+        imageUrl: `https://cyprienlengagne.com/imgs/Valere_Top.webp`,
     });
-    
 </script>
 
-
 <div id="home-wrapper">
-    <div id="home-bg"></div>
+    <div id="home-bg">
+        <LazyImage
+            lowresSrc="/imgs/Valere_Top_ultralowres.jpg"
+            src="/imgs/Valere_Top.webp"
+            observe={false}
+            alt="Cyprien Lengagne"
+        />
+    </div>
     <section class="splash">
         <div class="text">
             <h1 class="name">Cyprien Lengagne</h1>
@@ -64,34 +71,49 @@
     <div class="grid bg-light">
         <section class="mini-bio backdrop-blur-very-strong bg-very-light">
             <div class="bio-text">
-                <h3>{ aboutTitle }</h3>
-    
+                <h3>{aboutTitle}</h3>
+
                 {#if bios.language(language).status === Status.PENDING}
                     <LoadingSpinner message={bioLoadingText} />
                 {:else}
-                    <p class="line-breaks">{ bios.language(language).biography.short }</p>
+                    <p class="line-breaks">
+                        {bios.language(language).biography.short}
+                    </p>
                 {/if}
-                
-                <a href="{language}/bio" class="cta">{ seeBioText }</a>
+
+                <a href="{language}/bio" class="cta">{seeBioText}</a>
             </div>
 
             <div class="listen">
-                <iframe class="yt-video" width="560" height="315" src="https://www.youtube.com/embed/xongSVmsbSc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe
+                    class="yt-video"
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/xongSVmsbSc"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
             </div>
         </section>
-        
+
         <section class="news backdrop-blur-very-strong bg-very-light">
-            <h3>{ newsTitle }</h3>
+            <h3>{newsTitle}</h3>
             <NewsList lang={language} maxCount={3} />
-            <a href="{language}/news" class="cta force-white-bg">{ seeNews }</a>
+            <a href="{language}/news" class="cta force-white-bg">{seeNews}</a>
         </section>
 
         <section class="concerts backdrop-blur-very-strong bg-very-light">
-            <h3>{ concertsTitle }</h3>
-            <ConcertsList concertsList={concertsManager.upcoming.items} maxCount={5} grouping="off" />
-            <a href="{language}/concerts" class="cta">{ seeAllConcertsText }</a>
+            <h3>{concertsTitle}</h3>
+            <ConcertsList
+                concertsList={concertsManager.upcoming.items}
+                maxCount={5}
+                grouping="off"
+            />
+            <a href="{language}/concerts" class="cta">{seeAllConcertsText}</a>
         </section>
-        
+
         <!--
 
             <section class="gallery backdrop-blur-very-strong bg-very-light">
@@ -104,24 +126,27 @@
 </div>
 
 <style>
-
     #home-wrapper {
         position: relative;
     }
-    
+
     #home-bg {
         position: fixed;
         height: 100svh;
         width: 100%;
         z-index: -1;
 
-        background-image: url("/imgs/Valere_Top.webp");
-        background-size: cover;
-        background-position: top;
-
         opacity: 0;
     }
-    
+
+    #home-bg :global(.lazy-image) {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+    }
+
     :global(.animated) #home-bg {
         animation: zoom-out 0.75s ease-out forwards;
     }
@@ -154,7 +179,7 @@
 
         opacity: 0;
     }
-    
+
     :global(.animated .splash .text) {
         animation: title-appear 0.6s ease-out 0.6s forwards;
     }
@@ -165,19 +190,27 @@
 
     .name {
         font-size: min(4rem, 15vw);
-        text-shadow: 0 0 3rem rgba(0, 0, 0, 1), 0 0 1rem rgba(0, 0, 0, 1);
+        text-shadow:
+            0 0 3rem rgba(0, 0, 0, 1),
+            0 0 1rem rgba(0, 0, 0, 1);
         margin-bottom: 0.5rem;
     }
 
     .instrument {
         font-size: min(3rem, 10vw);
-        text-shadow: 0 0 3rem rgba(0, 0, 0, 1), 0 0 1rem rgba(0, 0, 0, 1);
+        text-shadow:
+            0 0 3rem rgba(0, 0, 0, 1),
+            0 0 1rem rgba(0, 0, 0, 1);
         margin-top: 1rem;
     }
-    
+
     @media screen and (max-width: 75rem) {
         .splash {
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 20rem, rgba(0, 0, 0, 0) 35rem);
+            background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.5) 20rem,
+                rgba(0, 0, 0, 0) 35rem
+            );
         }
 
         .splash .text {
@@ -195,11 +228,11 @@
         opacity: 0;
         box-shadow: 0 -2rem 2rem 2rem rgba(0, 0, 0, 0.4);
     }
-    
+
     :global(.animated #home-wrapper .grid) {
         animation: bottom-appear 0.5s ease-out 0.8s forwards;
     }
-    
+
     :global(.animated.no-home-animation) #home-wrapper .grid {
         animation-delay: 0.4s;
     }

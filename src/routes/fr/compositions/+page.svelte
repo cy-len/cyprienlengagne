@@ -5,12 +5,13 @@
 
 <PageStructure
     title="Compositions"
-    bgImgName="PendereckiResults.webp"
-    bgSize="max(100vw, 1200px)"
-    bgPositionX="right"
-    bgPositionY="-5rem"
-    bgPositionMobileX="30rem"
-    bgPositionMobileY="-5rem"
+    bannerLowresImgName="PendereckiResults_ultralowres.jpg"
+    bannerImgName="PendereckiResults.webp"
+    bannerWidth="max(100vw, 1200px)"
+    bannerAnchor="right"
+    bannerPosition="right 0"
+    bannerMobilePosition="30rem -5rem"
+    imgLowresName="AmandineLauriol_Jaroussky_Face_ultralowres.jpg"
     imgName="AmandineLauriol_Jaroussky_Face.webp"
 >
     <CompositionsList

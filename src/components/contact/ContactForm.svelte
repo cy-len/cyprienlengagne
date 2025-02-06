@@ -3,12 +3,12 @@
     import LoadingSpinner from "../../components/utils/LoadingSpinner.svelte";
 
     interface Props {
-        okMessage: string;
-        errorMessage: string;
-        nameFieldLabel: string;
-        emailFieldLabel: string;
-        messageFieldLabel: string;
-        sendButtonText: string;
+        okMessage?: string;
+        errorMessage?: string;
+        nameFieldLabel?: string;
+        emailFieldLabel?: string;
+        messageFieldLabel?: string;
+        sendButtonText?: string;
     }
 
     let {

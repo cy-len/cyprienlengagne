@@ -29,8 +29,8 @@
             </button>
         {/each}
     </div>
-    <GalleryModal bind:this={modal} />
 {/if}
+<GalleryModal bind:this={modal} />
 
 <style>
 

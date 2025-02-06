@@ -21,9 +21,23 @@
         url?: string;
     }
 
+    interface EditorConcert {
+        location: string;
+        locationPrecise: string;
+        description: string;
+        lingualDescriptions: { [key: string]: string };
+        dateString: string;
+        timeEnabled: boolean;
+        timeString: string;
+        endDateEnabled: boolean;
+        endDateString: string;
+        endTimeString: string;
+        url?: string;
+    }
+
     let { concertRef, warnAboutPast = false, ondeleted }: Props = $props();
 
-    let concert = $state({
+    let concert = $state<EditorConcert>({
         location: "",
         locationPrecise: "",
         description: "",
@@ -97,6 +111,10 @@
         await updateDoc(concertRef, data as any);
 
         hash = JSON.stringify(concert);
+    }
+
+    export function toJSON() {
+        return concert;
     }
 
     async function deleteConcert() {

@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { GalleryPicture } from "../../stores/gallery.svelte";
+    import LazyImage from "../utils/LazyImage.svelte";
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
     import Modal from "./Modal.svelte";
 
@@ -18,9 +19,7 @@
         modal.show();
         picture = galleryPicture;
 
-        const loader = new Image();
-        loader.onload = () => loading = false;
-        loader.src = picture.url;
+        
     }
 
     async function downloadPicture() {
@@ -47,12 +46,15 @@
         </button>
      {/snippet}
 
-    {#if loading}
-        <LoadingSpinner message="Loading full resolution picture" />
-    {:else}
-        <img src={picture.url} alt={picture.copyright} class="image" />
-    {/if}
-    
+     <div class="wrapper">
+        <LazyImage lowresSrc={picture.thumbnailUrl} src={picture.url} alt={picture.copyright} observe={false} onFullResLoaded={() => loading = false} />
+        {#if loading}
+            <div class="loading-wrapper">
+                <LoadingSpinner message="Loading full resolution picture" />
+            </div>
+        {/if}
+     </div>
+
     <div class="copyright">
         &#169; { picture.copyright }
     </div>
@@ -60,9 +62,21 @@
 
 <style>
 
-    .image {
+    .wrapper {
+        position: relative;
+    }
+
+    .wrapper :global(.lazy-image) {
         max-width: 90vw;
         max-height: 70vh;
+    }
+
+    .loading-wrapper {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
 </style>

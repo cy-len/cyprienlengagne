@@ -4,7 +4,14 @@
     import SocialLinks from "../../../components/utils/SocialLinks.svelte";
 </script>
 
-<PageStructure title="Contact" imgName="FromBottom_AmandineLauriol_compressed.jpg" bgImgName="AmandineLauriol_Jaroussky.webp" bgPositionMobileX="-30rem">
+<PageStructure
+    title="Contact"
+    bannerLowresImgName="AmandineLauriol_Jaroussky_ultralowres.jpg"
+    bannerImgName="AmandineLauriol_Jaroussky.webp"
+    bannerPosition="center center"
+    imgLowresName="FromBottom_AmandineLauriol_compressed_ultralowres.jpg"
+    imgName="FromBottom_AmandineLauriol_compressed.jpg"
+>
     <h2>Réseaux sociaux</h2>
 
     <SocialLinks text="media" bigIcons={true} />

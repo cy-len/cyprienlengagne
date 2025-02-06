@@ -1,21 +1,30 @@
 <script lang="ts">
     import { getContext } from "svelte";
     import { FirebaseManager } from '../../firebase/firebaseManager.svelte';
+    import LoadingSpinner from "../utils/LoadingSpinner.svelte";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
+
+    let loggingIn = $state(false);
 
     async function login(e: SubmitEvent) {
         e.preventDefault();
         if (!firebaseManager) return;
 
+        loggingIn = true;
+
         try {
             await firebaseManager.signIn(email, password);
             email = "";
             password = "";
+
+            loggingIn = false;
         } catch (err) {
             error = "An error has occured";
             console.log(err);
             password = "";
+
+            loggingIn = false;
         }
     }
 
@@ -31,7 +40,12 @@
     <label for="password">Password</label>
     <input type="password" name="password" id="password" bind:value={password} />
     <p class="error">{ error }</p>
-    <button class="cta-inverted">Login</button>
+
+    {#if loggingIn}
+        <LoadingSpinner />
+    {:else}
+        <button class="cta-inverted">Login</button>
+    {/if}
 </form>
 
 <style>
