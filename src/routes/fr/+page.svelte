@@ -3,7 +3,7 @@
 </script>
 
 <HomeStructure
-    instrument="Violoncelliste"
+    instrument="Violoncelliste & Compositeur"
     aboutTitle="À propos de Cyprien"
     language="fr"
     bioLoadingText="Chargement de la biographie"
