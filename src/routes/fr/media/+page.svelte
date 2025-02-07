@@ -11,6 +11,7 @@
     bannerWidth="max(100vw, 1200px)"
     bannerAnchor="right"
     bannerPosition="right -80px"
+    bannerMobilePosition="12rem -80px"
     layout="content-only"
 >
     <section>

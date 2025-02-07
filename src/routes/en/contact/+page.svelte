@@ -9,6 +9,7 @@
     bannerLowresImgName="AmandineLauriol_Jaroussky_ultralowres.jpg"
     bannerImgName="AmandineLauriol_Jaroussky.webp"
     bannerPosition="center center"
+    bannerMobilePosition="-28rem center"
     imgLowresName="FromBottom_AmandineLauriol_compressed_ultralowres.jpg"
     imgName="FromBottom_AmandineLauriol_compressed.jpg"
 >

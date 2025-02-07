@@ -10,7 +10,7 @@
     bannerImgName="PendereckiSecondRound.webp"
     bannerWidth="max(100vw, 1200px)"
     bannerPosition="left calc(-5rem - 5vw)"
-    bannerMobilePosition="-8rem 5rem"
+    bannerMobilePosition="-8rem -10rem"
     imgName="Zimmermann_Vertical.webp"
     imgLowresName="Zimmermann_Vertical_ultralowres.webp"
 >

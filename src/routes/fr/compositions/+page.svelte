@@ -10,7 +10,7 @@
     bannerWidth="max(100vw, 1200px)"
     bannerAnchor="right"
     bannerPosition="right 0"
-    bannerMobilePosition="30rem -5rem"
+    bannerMobilePosition="8rem -5rem"
     imgLowresName="AmandineLauriol_Jaroussky_Face_ultralowres.jpg"
     imgName="AmandineLauriol_Jaroussky_Face.webp"
 >
