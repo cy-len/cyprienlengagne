@@ -1,8 +1,8 @@
 <script lang="ts">
     import NavLinks from "./NavLinks.svelte";
     import type { NavLinksParams } from "./NavLinks.svelte";
-    import { navigating } from "$app/stores";
     import LanguagePickerBar from "./language/LanguagePickerBar.svelte";
+    import { onNavigate } from "$app/navigation";
 
     interface Props {
         navParams: NavLinksParams;
@@ -12,10 +12,8 @@
 
     let open = $state(false);
 
-    navigating.subscribe((n) => {
-        if (n) {
-            open = false;
-        }
+    onNavigate(() => {
+        open = false;
     });
 </script>
 

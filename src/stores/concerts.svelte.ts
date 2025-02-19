@@ -35,6 +35,33 @@ interface RawConcert {
     url?: {
         stringValue: string;
     };
+    imgUrl?: {
+        stringValue: string;
+    };
+    imgXOffset?: {
+        integerValue: number;
+    };
+    imgYOffset?: {
+        integerValue: number;
+    };
+    thumbnailUrl?: {
+        stringValue: string;
+    };
+    thumbnailXOffset?: {
+        integerValue: number;
+    };
+    thumbnailYOffset?: {
+        integerValue: number;
+    };
+    tags?: {
+        mapValue: {
+            fields: {
+                [key: string]: {
+                    stringValue: string;
+                };
+            };
+        };
+    }
 };
 
 function rawConcertToConcert(rawFields: RawConcert): Concert {
@@ -42,6 +69,13 @@ function rawConcertToConcert(rawFields: RawConcert): Concert {
     if (rawFields.lingualDescriptions) {
         for (const lang in rawFields.lingualDescriptions.mapValue.fields) {
             lingual[lang] = rawFields.lingualDescriptions.mapValue.fields[lang].stringValue;
+        }
+    }
+    
+    const tags: { [key: string]: string } = {};
+    if (rawFields.tags) {
+        for (const tag in rawFields.tags.mapValue.fields) {
+            tags[tag] = rawFields.tags.mapValue.fields[tag].stringValue;
         }
     }
 
@@ -53,7 +87,18 @@ function rawConcertToConcert(rawFields: RawConcert): Concert {
         timeEnabled: rawFields.timeEnabled?.booleanValue ?? false,
         description: rawFields.description.stringValue,
         lingualDescriptions: lingual,
-        url: rawFields.url?.stringValue ?? ""
+        url: rawFields.url?.stringValue ?? "",
+        image: rawFields.imgUrl ? {
+                url: rawFields.imgUrl.stringValue,
+                xOffset: rawFields.imgXOffset?.integerValue ?? 50,
+                yOffset: rawFields.imgYOffset?.integerValue ?? 50
+            } : undefined,
+        thumbnail: rawFields.thumbnailUrl ? {
+                url: rawFields.thumbnailUrl.stringValue,
+                xOffset: rawFields.thumbnailXOffset?.integerValue ?? 50,
+                yOffset: rawFields.thumbnailYOffset?.integerValue ?? 50
+            } : undefined,
+        tags
     };
 }
 

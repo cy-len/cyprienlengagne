@@ -1,6 +1,9 @@
 <script lang="ts">
     import GalleryModal from "../../components/modals/GalleryModal.svelte";
-    import { galleryManager, type GalleryPicture } from "../../stores/gallery.svelte";
+    import {
+        galleryManager,
+        type GalleryPicture,
+    } from "../../stores/gallery.svelte";
     import { Status } from "../../types/status";
     import LoadingSpinner from "../../components/utils/LoadingSpinner.svelte";
 
@@ -15,7 +18,6 @@
     function openFullPicture(p: GalleryPicture) {
         modal.show(p);
     }
-
 </script>
 
 {#if galleryManager.gallery.status === Status.PENDING}
@@ -23,9 +25,23 @@
 {:else}
     <div class="gallery auto-grid">
         {#each galleryManager.gallery.items as picture}
-            <button class="gallery-item" onclick={() => {openFullPicture(picture);}}>
-                <img src={picture.thumbnailUrl} alt="Cyprien Lengagne" class="gallery-image" />
-                <div class="gallery-image-copyright bg-very-light">&#169; { picture.copyright }</div>
+            <button
+                class="gallery-item"
+                onclick={() => {
+                    openFullPicture(picture);
+                }}
+            >
+                <img
+                    src={picture.thumbnailUrl}
+                    alt="Cyprien Lengagne"
+                    class="gallery-image"
+                    style="
+                        --offset-x: {picture.thumbnailOffset.x ?? '50'}%;
+                        --offset-y: {picture.thumbnailOffset.y ?? '50'}%;"
+                />
+                <div class="gallery-image-copyright bg-very-light">
+                    &#169; {picture.copyright}
+                </div>
             </button>
         {/each}
     </div>
@@ -33,11 +49,10 @@
 <GalleryModal bind:this={modal} />
 
 <style>
-
     .gallery {
         --thumb-max-size: 25rem;
         --cell-width: min(var(--thumb-max-size), 90vw);
-        --cell-height: var(--thumb-max-size);
+        --cell-height: min(var(--thumb-max-size), 90vw);
     }
 
     .gallery-item {
@@ -71,11 +86,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center;
+        object-position: var(--offset-x, center) var(--offset-y, center);
 
         transition: 0.25s ease-out;
     }
-    
+
     .gallery-image-copyright {
         position: absolute;
         bottom: 0;
@@ -84,5 +99,4 @@
 
         transition: 0.25s ease-out;
     }
-
 </style>

@@ -2,6 +2,7 @@
 
     import type { NewsContent } from "../../../types/news";
     import { languages } from "../../../utils/languageUtils";
+    import FormLabel from "../../utils/forms/FormLabel.svelte";
 
     interface Props {
         text: NewsContent;
@@ -20,18 +21,22 @@
         <span>{ languages[langName].name}</span>
     </h3>
 
-
-    <label for="{idBase}-title" class="title-label">Title</label>
-    <input type="text" id="{idBase}-title" class="title-field" bind:value={text.title} />
-    
-    <label for="{idBase}-content" class="content-label">Content</label>
-    <textarea id="{idBase}-content" class="content-field" cols="8" rows="5" bind:value={text.content}></textarea>
+    <FormLabel name="Title">
+        <input type="text" bind:value={text.title} />
+    </FormLabel>
+    <FormLabel name="Content">
+        <textarea cols="8" rows="5" bind:value={text.content}></textarea>
+    </FormLabel>
 </div>
 
 <style>
 
     .news-content-editor {
         margin-bottom: 1rem;
+    }
+
+    .lang-icon {
+        height: 1.5rem;
     }
 
 </style>

@@ -4,6 +4,10 @@ import { Status, type FetchResult } from "../types/status";
 export interface GalleryPicture {
     url: string;
     thumbnailUrl: string;
+    thumbnailOffset: {
+        x: number;
+        y: number;
+    };
     copyright: string;
     uploadedDate: Date;
 }
@@ -17,6 +21,12 @@ interface RawGalleryPicture {
     thumbnailUrl: {
         stringValue: string;
     }
+    thumbnailXOffset?: {
+        integerValue: number;
+    }
+    thumbnailYOffset?: {
+        integerValue: number;
+    }
     copyright: {
         stringValue: string;
     }
@@ -29,6 +39,10 @@ function rawGalleryPictureToGalleryPicture(rawPicture: RawGalleryPicture): Galle
     return {
         url: rawPicture.url.stringValue,
         thumbnailUrl: rawPicture.thumbnailUrl?.stringValue ?? rawPicture.url.stringValue,
+        thumbnailOffset: {
+            x: rawPicture.thumbnailXOffset?.integerValue ?? 0,
+            y: rawPicture.thumbnailYOffset?.integerValue ?? 0
+        },
         copyright: rawPicture.copyright.stringValue,
         uploadedDate: new Date(rawPicture.uploadedDate.timestampValue),
     };

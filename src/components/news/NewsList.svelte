@@ -16,7 +16,7 @@
         maxCount = $bindable(-1),
         expandedMax = 100,
         lang = "en",
-        loadMoreText = "Load more"
+        loadMoreText = "Load more",
     }: Props = $props();
 
     let modal: NewsModal;
@@ -26,7 +26,7 @@
     const dateFormatter = new Intl.DateTimeFormat(lang, {
         year: "numeric",
         month: "long",
-        day: "numeric"
+        day: "numeric",
     });
 
     function openNews(n: News) {
@@ -47,30 +47,43 @@
         loadingMore = false;
     }
 
-    let truncatedNews = $derived(maxCount < 0 ? newsManager.news.items : newsManager.news.items.slice(0, maxCount));
+    let truncatedNews = $derived(
+        maxCount < 0
+            ? newsManager.news.items
+            : newsManager.news.items.slice(0, maxCount),
+    );
 </script>
 
 {#if newsManager.news.status === Status.OK}
     <div class="auto-grid sm-center">
         {#each truncatedNews as newsItem}
             <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-            <button class="news" style="background-image: url('{newsItem.thumbnailUrl ?? newsItem.imageUrl}');" onclick={() => {openNews(newsItem);}}>
+            <button
+                class="news"
+                style="
+                    background-image: url('{newsItem.thumbnailUrl ?? newsItem.imageUrl}');
+                    --x-offset: {newsItem.thumbnailXOffset}%;
+                    --y-offset: {newsItem.thumbnailYOffset}%;"
+                onclick={() => {
+                    openNews(newsItem);
+                }}
+            >
                 <div class="overlay">
                     <div class="bottom">
-                        <h5>{ dateFormatter.format(newsItem.date) }</h5>
-                        <h4>{ newsItem.text[lang].title }</h4>
+                        <h5>{dateFormatter.format(newsItem.date)}</h5>
+                        <h4>{newsItem.text[lang].title}</h4>
                     </div>
                 </div>
             </button>
         {/each}
 
-        <NewsModal lang={lang} bind:this={modal} />
+        <NewsModal {lang} bind:this={modal} />
     </div>
 
     {#if loadingMore}
         <LoadingSpinner message="Loading more news" />
     {:else if maxCount !== -1 && maxCount < expandedMax && newsManager.news.total > maxCount}
-        <button class="cta" onclick={loadMore}>{ loadMoreText }</button>
+        <button class="cta" onclick={loadMore}>{loadMoreText}</button>
     {/if}
 {:else if newsManager.news.status === Status.FAILED}
     <p>An error occured while fetching news</p>
@@ -78,9 +91,7 @@
     <LoadingSpinner message="Loading news" />
 {/if}
 
-
 <style>
-
     .auto-grid {
         --cell-width: 20rem;
         --cell-height: 26rem;
@@ -101,8 +112,10 @@
         overflow: hidden;
 
         background-size: cover;
-        background-position: center;
-        
+        background-position: var(--x-offset, center) var(--x-offset, center);
+        background-position-x: var(--x-offset, center);
+        background-position-y: var(--y-offset, center);
+
         border-radius: 2rem;
         cursor: pointer;
 
@@ -114,7 +127,12 @@
     .overlay {
         position: absolute;
         inset: 0;
-        background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85) 7.5rem, rgba(255, 255, 255, 0) 7.5rem);
+        background: linear-gradient(
+            to top,
+            rgba(255, 255, 255, 0.95),
+            rgba(255, 255, 255, 0.85) 7.5rem,
+            rgba(255, 255, 255, 0) 7.5rem
+        );
 
         display: flex;
         flex-direction: column;
@@ -141,5 +159,4 @@
     .news:hover {
         box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
     }
-
 </style>

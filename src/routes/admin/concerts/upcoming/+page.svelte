@@ -2,10 +2,10 @@
     import { getContext, onMount, tick } from "svelte";
     import type { DocumentReference } from "firebase/firestore";
     import LoadingSpinner from "../../../../components/utils/LoadingSpinner.svelte";
-    import ConcertEditor from "../../../../components/admin/ConcertEditor.svelte";
+    import ConcertEditor from "../../../../components/admin/concerts/ConcertEditor.svelte";
     import type { FirebaseManager } from "../../../../firebase/firebaseManager.svelte";
     import { slide } from "svelte/transition";
-    import ShareConcertTextModal from "../../../../components/admin/ShareConcertTextModal.svelte";
+    import ShareConcertTextModal from "../../../../components/admin/concerts/ShareConcertTextModal.svelte";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
@@ -45,7 +45,8 @@
             description: "",
             lingualDescriptions: {},
             date: new Date(),
-            url: ""
+            url: "",
+            tags: {}
         });
 
         concertsRefs = [...concertsRefs, docRef];
@@ -92,3 +93,12 @@
     </div>
 </div>
 <ShareConcertTextModal bind:this={shareModal} />
+
+<style>
+
+    h3 {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+</style>

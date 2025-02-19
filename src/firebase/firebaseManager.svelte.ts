@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, type User } from "firebase/auth";
 import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query, where } from "firebase/firestore";
-import { getStorage, ref, uploadBytesResumable, type UploadTask } from "firebase/storage";
+import { getDownloadURL, getStorage, list, ref, uploadBytesResumable, type UploadTask } from "firebase/storage";
 import type { Concert } from "../types/concert";
 import type { News } from "../types/news";
 import type { Composition } from "../types/composition";
@@ -50,6 +50,17 @@ export class FirebaseManager {
     uploadBytesResumable(path: string, bytes: Blob): UploadTask {
         const r = ref(this.#storage, path);
         return uploadBytesResumable(r, bytes);
+    }
+
+    async listFilesInFolder(path: string, pagination?: { maxResults: number, pageToken: string }) {
+        const folderRef = ref(this.#storage, path);
+
+        return list(folderRef, pagination);
+    }
+
+    async getDownloadUrlFromPath(path: string) {
+        const fileRef = ref(this.#storage, path);
+        return getDownloadURL(fileRef);
     }
 
     async signIn(email: string, password: string) {

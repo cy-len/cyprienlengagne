@@ -5,16 +5,12 @@
         getDoc,
         deleteDoc,
     } from "firebase/firestore";
-    import {
-        getDownloadURL,
-    } from "firebase/storage";
-    import { onMount, getContext } from "svelte";
+    import { onMount } from "svelte";
     import type { NewsContent } from "../../../types/news";
     import NewsContentEditor from "./NewsContentEditor.svelte";
-    import { compressImageBrowser } from "../../../utils/imgUtils";
-    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
-    import Collapsible from "../Collapsible.svelte";
-    import ImageUploader from "../ImageUploader.svelte";
+    import Collapsible from "../utils/Collapsible.svelte";
+    import FormLabel from "../../utils/forms/FormLabel.svelte";
+    import ImagePicker from "../images/ImagePicker.svelte";
 
     interface Props {
         newsRef: DocumentReference;
@@ -25,27 +21,29 @@
 
     interface EditorNews {
         imageUrl: string;
+        fullresXOffset: number;
+        fullresYOffset: number;
         thumbnailUrl: string;
+        thumbnailXOffset: number;
+        thumbnailYOffset: number;
         imageCopyright: string;
         dateString: string;
         text: { [key: string]: NewsContent };
     }
 
-    let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
-
     let news = $state<EditorNews>({
         imageUrl: "",
+        fullresXOffset: 50,
+        fullresYOffset: 50,
         thumbnailUrl: "",
+        thumbnailXOffset: 50,
+        thumbnailYOffset: 50,
         imageCopyright: "",
         text: {},
-        dateString: ""
+        dateString: "",
     });
 
     let hash: string = $state("");
-
-    let imageInput: HTMLInputElement;
-    let imageUploadProgress: number = $state(-1);
-    let thumbnailUploadProgress: number = $state(-1);
 
     let basicDetails: Collapsible;
     let imageDetails: Collapsible;
@@ -58,106 +56,41 @@
 
         news.dateString = data.date.toDate().toISOString().split("T")[0];
         news.imageUrl = data.imageUrl;
+        news.fullresXOffset = data.fullresXOffset ?? 50;
+        news.fullresYOffset = data.fullresYOffset ?? 50;
+        news.thumbnailUrl = data.thumbnailUrl;
+        news.thumbnailXOffset = data.thumbnailXOffset ?? 50;
+        news.thumbnailYOffset = data.thumbnailYOffset ?? 50;
         news.imageCopyright = data.imageCopyright;
         news.text = {
-            ...data.text
+            ...data.text,
         };
 
         hash = JSON.stringify(news);
     });
 
-    async function uploadWithThumbnail(file: File) {
-        if (!firebaseManager) return;
-
-        const thumbnail = await compressImageBrowser(file, 1000, 1000);
-
-        const uploadTask = firebaseManager.uploadBytesResumable(`news/image/${idBase}-${file.name}`, file);
-        const thumbnailUploadTask = firebaseManager.uploadBytesResumable(`news/image/${idBase}-thumb-${file.name}`, thumbnail);
-
-        uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-                imageUploadProgress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            (error) => {
-                console.log(error);
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                    news.imageUrl = url;
-                    imageUploadProgress = -1;
-                });
-            },
-        );
-
-        thumbnailUploadTask.on(
-            "state_changed",
-            (snapshot) => {
-                thumbnailUploadProgress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            (error) => {
-                console.log(error);
-            },
-            () => {
-                getDownloadURL(thumbnailUploadTask.snapshot.ref).then((url) => {
-                    news.thumbnailUrl = url;
-                    thumbnailUploadProgress = -1;
-                });
-            },
-        );
-    }
-
-    function uploadWithoutThumbnail(file: File) {
-        if (!firebaseManager) return;
-
-        const uploadTask = firebaseManager.uploadBytesResumable(`news/image/${idBase}-${file.name}`, file);
-
-        uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-                imageUploadProgress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            (error) => {
-                console.log(error);
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                    news.imageUrl = url;
-                    imageUploadProgress = -1;
-                });
-            },
-        );
-    }
-
-    function uploadImage() {
-        const file = (imageInput.files as FileList)[0];
-
-        if (file.size > 50_000) { // auto compress if greater than 50kb
-            uploadWithThumbnail(file);
-        } else {
-            uploadWithoutThumbnail(file);
-        }
-    }
-
     export async function save() {
         if (!modified) return;
-        
+
         await updateDoc(newsRef, {
             imageUrl: news.imageUrl,
+            fullresXOffset: news.fullresXOffset,
+            fullresYOffset: news.fullresYOffset,
             thumbnailUrl: news.thumbnailUrl,
+            thumbnailXOffset: news.thumbnailXOffset,
+            thumbnailYOffset: news.thumbnailYOffset,
             imageCopyright: news.imageCopyright,
             date: new Date(news.dateString),
-            text: news.text
+            text: news.text,
         });
 
         hash = JSON.stringify(news);
     }
 
     async function deleteNews() {
-        const areYouSure = prompt(`If you really want to delete ${news.text["en"]?.title ?? news.text["fr"]?.title}, type YES and select ok`);
+        const areYouSure = prompt(
+            `If you really want to delete ${news.text["en"]?.title ?? news.text["fr"]?.title}, type YES and select ok`,
+        );
         if (areYouSure !== "YES") return;
 
         await deleteDoc(newsRef);
@@ -176,14 +109,15 @@
         contentDetails.collapse();
     }
 
-    const idBase = "" + Math.ceil(Math.random() * 10000);
-
     let modified: boolean = $derived(hash !== JSON.stringify(news));
 </script>
 
 <div class="editor-container" class:modified>
     <header>
-        <h3>{news.text["en"]?.title ?? news.text["fr"]?.title ?? "New news item"} ({ (new Date(news.dateString)).toLocaleDateString() })</h3>
+        <h3>
+            {news.text["en"]?.title ?? news.text["fr"]?.title ?? "New news item"}
+            ({new Date(news.dateString,).toLocaleDateString()})
+        </h3>
         {#if modified}
             <div class="info">Has unsaved changes</div>
         {/if}
@@ -199,17 +133,29 @@
     </header>
 
     <Collapsible summaryText="Basic details" bind:this={basicDetails}>
-        <label for="{idBase}-date" class="date-label">Publication date</label>
-        <input
-            type="date"
-            id="{idBase}-date"
-            class="date-field"
-            bind:value={news.dateString}
-        />
+        <FormLabel name="Publication date">
+            <input type="date" bind:value={news.dateString} />
+        </FormLabel>
     </Collapsible>
 
     <Collapsible summaryText="Image" bind:this={imageDetails}>
-        <ImageUploader bind:fullresUrl={news.imageUrl} bind:thumbnailUrl={news.thumbnailUrl} />
+        <ImagePicker
+            bind:fullresUrl={news.imageUrl}
+            bind:thumbnailUrl={news.thumbnailUrl}
+            folderPath="news"
+            allowPickFromFolders={[
+                {
+                    displayName: "Gallery",
+                    path: "gallery"
+                }
+            ]}
+            cropContainerThumbnail={{ width: 20, height: 26 }}
+            bind:thumbnailXOffset={news.thumbnailXOffset}
+            bind:thumbnailYOffset={news.thumbnailYOffset}
+            cropContainerFullres={{ width: 16, height: 9 }}
+            bind:fullresXOffset={news.fullresXOffset}
+            bind:fullresYOffset={news.fullresYOffset}
+        />
     </Collapsible>
 
     <Collapsible summaryText="Article content" bind:this={contentDetails}>

@@ -3,8 +3,8 @@
     import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
     import { onMount } from "svelte";
     import { extractYouTubeHandle } from "../../utils/stringUtils";
-    import Collapsible from "./Collapsible.svelte";
-    import YoutubeFetcher from "./YoutubeFetcher.svelte";
+    import Collapsible from "./utils/Collapsible.svelte";
+    import YoutubeFetcher from "./utils/YoutubeFetcher.svelte";
 
     interface Props {
         videoRef: DocumentReference;

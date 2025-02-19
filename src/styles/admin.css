@@ -73,10 +73,6 @@ nav {
     animation: opacity 0.25s ease-out forwards;
 }
 
-.lang-icon {
-    height: 1.5rem;
-}
-
 .info {
     font-style: italic;
     font-size: 0.8rem;

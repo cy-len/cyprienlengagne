@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { languages } from "../../utils/languageUtils";
-    import Modal from "../modals/Modal.svelte";
+    import { languages } from "../../../utils/languageUtils";
+    import Modal from "../../modals/Modal.svelte";
 
     interface EditorConcert {
         location: string;

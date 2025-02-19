@@ -80,7 +80,7 @@ p {
     font-size: 2rem;
 }
 
-a.cta, a.cta-inverted, button.cta, button.cta-inverted {
+a.cta, a.cta-inverted, button.cta, button.cta-inverted, label.cta-inverted, input.cta-inverted {
     text-decoration: none;
     padding: 0.5rem 1rem;
     border-radius: 2rem;
@@ -96,7 +96,7 @@ a.cta, button.cta {
 }
 
 a.cta.force-white-bg, button.cta.force-white-bg {
-    background: white;
+    background: rgba(255, 255, 255, 0.75);
 }
 
 a.cta:hover, button.cta:hover {
@@ -104,13 +104,18 @@ a.cta:hover, button.cta:hover {
     background-color: var(--color-primary);
 }
 
-a.cta-inverted, button.cta-inverted, label.cta-inverted {
+a.cta-inverted, button.cta-inverted, label.cta-inverted, input.cta-inverted {
     color: white;
     background-color: var(--color-primary);
     box-shadow: 0 0 1rem rgba(255, 255, 255, 0.15);
 }
 
-a.cta-inverted:hover, button.cta-inverted:hover, label.cta-inverted:hover {
+.cta-inverted.red {
+    background-color: red;
+    border-color: red;
+}
+
+a.cta-inverted:hover, button.cta-inverted:hover, label.cta-inverted:hover, input.cta-inverted:hover {
     color: var(--color-primary);
     background-color: white;
 }
@@ -201,6 +206,13 @@ footer {
     cursor: pointer;
     border: none;
     font-size: 1rem;
+}
+
+.toolbar-button:disabled {
+    background: gray;
+}
+.toolbar-button:disabled:hover {
+    background: gray;
 }
 
 .toolbar-button.red {

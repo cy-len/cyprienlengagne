@@ -1,8 +1,13 @@
 <script lang="ts">
     import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
     import { onMount } from "svelte";
-    import MultilingualEditor from "./MultilingualEditor.svelte";
-    import Collapsible from "./Collapsible.svelte";
+    import MultilingualEditor from "../utils/MultilingualEditor.svelte";
+    import Collapsible from "../utils/Collapsible.svelte";
+    import FormLabel from "../../utils/forms/FormLabel.svelte";
+    import FormCheckbox from "../../utils/forms/FormCheckbox.svelte";
+    import { slide } from "svelte/transition";
+    import TagsEditor from "../utils/TagsEditor.svelte";
+    import ImagePicker from "../images/ImagePicker.svelte";
 
     interface Props {
         concertRef: DocumentReference;
@@ -19,6 +24,9 @@
         timeEnabled: boolean;
         endDate?: Date;
         url?: string;
+        imgUrl: string;
+        thumbnailUrl: string;
+        tags: { [key: string]: string };
     }
 
     interface EditorConcert {
@@ -33,6 +41,12 @@
         endDateString: string;
         endTimeString: string;
         url?: string;
+        imgUrl: string;
+        thumbnailUrl: string;
+        tags: {
+            name: string;
+            value: string;
+        }[];
     }
 
     let { concertRef, warnAboutPast = false, ondeleted }: Props = $props();
@@ -48,7 +62,10 @@
         endDateEnabled: false,
         endDateString: "",
         endTimeString: "",
-        url: ""
+        imgUrl: "",
+        thumbnailUrl: "",
+        url: "",
+        tags: []
     });
 
     let hash: string = $state("");
@@ -57,6 +74,7 @@
     let dateDetails: Collapsible;
     let infosDetails: Collapsible;
     let descriptionDetails: Collapsible;
+    let tagsDetails: Collapsible;
 
     onMount(async () => {
         const snapshot = await getDoc(concertRef);
@@ -84,6 +102,14 @@
         concert.lingualDescriptions = data.lingualDescriptions ?? {};
         
         concert.url = data.url ?? "";
+        concert.imgUrl = data.imgUrl ?? "";
+        concert.thumbnailUrl = data.thumbnailUrl ?? "";
+        concert.tags = Object.keys(data.tags ?? {}).map((key) => {
+            return {
+                name: key,
+                value: data.tags[key] ?? ""
+            };
+        });
 
         hash = JSON.stringify(concert);
 
@@ -96,6 +122,11 @@
     export async function save() {
         if (!modified) return;
 
+        const tags: { [key: string]: string } = {};
+        for (const tag of concert.tags) {
+            tags[tag.name] = tag.value;
+        }
+
         const data: FirebaseConcert = {
             location: concert.location,
             locationPrecise: concert.locationPrecise,
@@ -103,6 +134,9 @@
             lingualDescriptions: concert.lingualDescriptions,
             url: concert.url,
             timeEnabled: concert.timeEnabled,
+            imgUrl: concert.imgUrl,
+            thumbnailUrl: concert.thumbnailUrl,
+            tags,
             date: new Date((concert.timeEnabled && concert.timeString) ? `${concert.dateString}T${concert.timeString}` : concert.dateString),
         };
         if (concert.endDateEnabled) {
@@ -130,6 +164,7 @@
         dateDetails.expand();
         infosDetails.expand();
         descriptionDetails.expand();
+        tagsDetails.expand();
     }
 
     function collapseAll() {
@@ -137,6 +172,7 @@
         dateDetails.collapse();
         infosDetails.collapse();
         descriptionDetails.collapse();
+        tagsDetails.collapse();
     }
 
     const idBase = "" + Math.ceil(Math.random() * 10000);
@@ -179,47 +215,79 @@
     </header>
 
     <Collapsible summaryText="Location" bind:this={locationDetails}>
-        <label for="{idBase}-location" class="field-label">Location/name (ex. Prague Spring Festival)</label>
-        <input type="text" id="{idBase}-location" class="location-field" bind:value={concert.location} />
+        <FormLabel name="Location/name (ex. Praque Spring Festival)">
+            <input type="text" bind:value={concert.location} />
+        </FormLabel>
 
-        <label for="{idBase}-precise-location" class="field-label">Precise location (optional)</label>
-        <input type="text" id="{idBase}-precise-location" class="precise-location-field" bind:value={concert.locationPrecise} />
+        <FormLabel name="Precise location (optional)">
+            <input type="text" bind:value={concert.locationPrecise} />
+        </FormLabel>
     </Collapsible>
 
     <Collapsible summaryText="Date" bind:this={dateDetails}>
-        <label for="{idBase}-date" class="field-label">Start date</label>
-        <input type="date" id="{idBase}-date" class="date-field" bind:value={concert.dateString} />
+        <FormLabel name="Start date">
+            <input type="date" bind:value={concert.dateString} />
+        </FormLabel>
 
-        <div class="checkbox-group">
-            <input type="checkbox" id="{idBase}-enable-start-time" name="{idBase}-enable-start-time" bind:checked={concert.timeEnabled} />
-            <label for="{idBase}-enable-start-time">Enable start time</label>
-        </div>
+        <FormCheckbox name="Enable start time">
+            <input type="checkbox" bind:checked={concert.timeEnabled} />
+        </FormCheckbox>
+        
         {#if concert.timeEnabled}
-            <label for="{idBase}-time" class="field-label">Start time</label>
-            <input type="time" id="{idBase}-time" class="time-field" bind:value={concert.timeString} />
+            <div transition:slide={{ duration: 150 }}>
+                <FormLabel name="Start time">
+                    <input type="time" bind:value={concert.timeString} />
+                </FormLabel>
+            </div>
         {/if}
 
-        <div class="checkbox-group">
-            <input type="checkbox" id="{idBase}-enable-end-date" name="{idBase}-enable-end-date" bind:checked={concert.endDateEnabled} />
-            <label for="{idBase}-enable-end-date">Enable end date</label>
-        </div>
+        <FormCheckbox name="Enable end date">
+            <input type="checkbox" bind:checked={concert.endDateEnabled} />
+        </FormCheckbox>
         {#if concert.endDateEnabled}
-            <label for="{idBase}-end-date" class="field-label">End date</label>
-            <input type="date" id="{idBase}-end-date" class="end-date-field" bind:value={concert.endDateString} />
+            <div transition:slide={{ duration: 150 }}>
+                <FormLabel name="End date">
+                    <input type="date" id="{idBase}-end-date" class="end-date-field" bind:value={concert.endDateString} />
+                </FormLabel>
 
-            {#if concert.timeEnabled}
-                <label for="{idBase}-end-time" class="field-label">End time</label>
-                <input type="time" id="{idBase}-end-time" class="end-time-field" bind:value={concert.endTimeString} />
-            {/if}
+                {#if concert.timeEnabled}
+                    <FormLabel name="End time">
+                        <input type="time" id="{idBase}-end-time" class="end-time-field" bind:value={concert.endTimeString} />
+                    </FormLabel>
+                {/if}
+            </div>
         {/if}
     </Collapsible>
 
     <Collapsible summaryText="Other infos" bind:this={infosDetails}>
-        <label for="{idBase}-url" class="field-label">Website url (optional)</label>
-        <input type="url" id="{idBase}-url" class="url-field" bind:value={concert.url} />
+        <FormLabel name="Website url (optional)">
+            <input type="url" id="{idBase}-url" class="url-field" bind:value={concert.url} />
+        </FormLabel>
     </Collapsible>
 
     <Collapsible summaryText="Description" bind:this={descriptionDetails}>
         <MultilingualEditor bind:defaultText={concert.description} bind:lingualTexts={concert.lingualDescriptions} />
+    </Collapsible>
+
+    <Collapsible summaryText="Image" bind:this={tagsDetails}>
+        <ImagePicker
+            bind:fullresUrl={concert.imgUrl}
+            bind:thumbnailUrl={concert.thumbnailUrl}
+            folderPath="concerts"
+            allowPickFromFolders={[
+                {
+                    displayName: "Gallery",
+                    path: "gallery"
+                },
+                {
+                    displayName: "Concerts",
+                    path: "concerts"
+                }
+            ]}
+        />
+    </Collapsible>
+
+    <Collapsible summaryText="Tags" bind:this={tagsDetails}>
+        <TagsEditor bind:tags={concert.tags} />
     </Collapsible>
 </div>

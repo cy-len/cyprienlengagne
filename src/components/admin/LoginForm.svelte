@@ -2,6 +2,7 @@
     import { getContext } from "svelte";
     import { FirebaseManager } from '../../firebase/firebaseManager.svelte';
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
+    import FormLabel from "../utils/forms/FormLabel.svelte";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 
@@ -35,15 +36,17 @@
 </script>
 
 <form onsubmit={login}>
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" bind:value={email} />
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" bind:value={password} />
-    <p class="error">{ error }</p>
-
     {#if loggingIn}
-        <LoadingSpinner />
+        <LoadingSpinner message="Logging in..." />
     {:else}
+        <FormLabel name="Email">
+            <input type="email" name="email" bind:value={email} />
+        </FormLabel>
+        <FormLabel name="Password">
+            <input type="password" name="password" bind:value={password} />
+        </FormLabel>
+
+        <p class="error">{ error }</p>
         <button class="cta-inverted">Login</button>
     {/if}
 </form>

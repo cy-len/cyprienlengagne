@@ -7,13 +7,25 @@ export type NewsFetchResult = FetchResult<News>;
 interface RawNews {
     imageUrl: {
         stringValue: string;
-    },
+    };
+    fullresXOffset?: {
+        integerValue: number;
+    };
+    fullresYOffset?: {
+        integerValue: number;
+    };
     thumbnailUrl?: {
         stringValue: string;
-    },
+    };
+    thumbnailXOffset?: {
+        integerValue: number;
+    };
+    thumbnailYOffset?: {
+        integerValue: number;
+    };
     imageCopyright: {
         stringValue: string;
-    },
+    };
     text: {
         mapValue: {
             fields: {
@@ -34,19 +46,23 @@ interface RawNews {
     }
     title: {
         stringValue: string;
-    },
+    };
     content: {
         stringValue: string;
-    },
+    };
     date: {
         timestampValue: string;
-    }
+    };
 }
 
 function rawNewsToNews(rawFields: RawNews): News {
     return {
         imageUrl: rawFields.imageUrl.stringValue,
+        fullresXOffset: rawFields.fullresXOffset?.integerValue ?? 50,
+        fullresYOffset: rawFields.fullresYOffset?.integerValue ?? 50,
         thumbnailUrl: rawFields.thumbnailUrl?.stringValue,
+        thumbnailXOffset: rawFields.thumbnailXOffset?.integerValue ?? 50,
+        thumbnailYOffset: rawFields.thumbnailYOffset?.integerValue ?? 50,
         imageCopyright: rawFields.imageCopyright.stringValue,
         text: {
             en: {
@@ -102,6 +118,7 @@ class NewsManager {
             
             const countPromise = this.#news.total > -1 ? Promise.resolve(this.#news.total) : this.#queryNewsCount(fetchFunction);
             const [newsCount, newsArray] = await Promise.all([countPromise, this.#queryNews(limit, fetchFunction)]);
+            console.log(newsArray)
 
             this.#news = {
                 items: newsArray,

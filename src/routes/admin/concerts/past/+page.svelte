@@ -2,7 +2,7 @@
     import { getContext, onMount } from "svelte";
     import type { DocumentReference } from "firebase/firestore";
     import LoadingSpinner from "../../../../components/utils/LoadingSpinner.svelte";
-    import ConcertEditor from "../../../../components/admin/ConcertEditor.svelte";
+    import ConcertEditor from "../../../../components/admin/concerts/ConcertEditor.svelte";
     import type { FirebaseManager } from "../../../../firebase/firebaseManager.svelte";
     import { slide } from "svelte/transition";
 

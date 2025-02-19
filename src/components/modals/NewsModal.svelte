@@ -10,6 +10,10 @@
 
     let news: News = $state({
         imageUrl: "",
+        fullresXOffset: 50,
+        fullresYOffset: 50,
+        thumbnailXOffset: 50,
+        thumbnailYOffset: 50,
         imageCopyright: "",
         text: {
             [lang]: {
@@ -24,13 +28,14 @@
 
     export function show(newsItem: News) {
         news = newsItem;
+        console.log($state.snapshot(news));
         modal.show();
     }
 </script>
 
 <Modal bind:this={modal}>
     <div>
-        <img src={news.imageUrl} alt={news.text[lang].title} />
+        <img src={news.imageUrl} alt={news.text[lang].title} style="object-position: {news.fullresXOffset}% {news.fullresYOffset}%;" />
         <div class="text">
             <h3>{ news.text[lang].title }</h3>
             <p>{ news.text[lang].content }</p>
@@ -44,6 +49,7 @@
         display: block;
         object-fit: cover;
         max-width: min(90vw, 800px);
+        aspect-ratio: 16 / 9;
     }
 
     @media screen and (min-width: 768px) {

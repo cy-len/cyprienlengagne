@@ -3,9 +3,11 @@
     import { onMount } from "svelte";
     import { extractYouTubeHandle } from "../../utils/stringUtils";
     import { categoryByLanguage } from "../../utils/compositionUtils";
-    import MultilingualEditor from "./MultilingualEditor.svelte";
-    import Collapsible from "./Collapsible.svelte";
-    import YoutubeFetcher from "./YoutubeFetcher.svelte";
+    import MultilingualEditor from "./utils/MultilingualEditor.svelte";
+    import Collapsible from "./utils/Collapsible.svelte";
+    import YoutubeFetcher from "./utils/YoutubeFetcher.svelte";
+    import FormLabel from "../utils/forms/FormLabel.svelte";
+    import FormCheckbox from "../utils/forms/FormCheckbox.svelte";
 
     interface Props {
         compositionRef: DocumentReference;
@@ -116,8 +118,6 @@
         descriptionDetails.collapse();
     }
 
-    const idBase = "" + Math.ceil(Math.random() * 10000);
-
     let modified = $derived(hash !== JSON.stringify(composition));
 </script>
 
@@ -139,41 +139,44 @@
     </header>
 
     <Collapsible summaryText="Basic details" bind:this={basicDetails}>
-        <label for="{idBase}-name" class="name-label">Name</label>
-        <input type="text" id="{idBase}-name" class="name-field" bind:value={composition.name} />
+        <FormLabel name="Name">
+            <input type="text" bind:value={composition.name} />
+        </FormLabel>
+        <FormLabel name="Date of composition">
+            <input type="date" bind:value={composition.compositionDateString} />
+        </FormLabel>
+        <FormLabel name="Category">
+            <select name="category-field" bind:value={composition.category}>
+                {#each Object.keys(categoryByLanguage["en"]) as category}
+                    <option value={category}>{categoryByLanguage["en"][category]}</option>
+                {/each}
+            </select>
+        </FormLabel>
 
-        <label for="{idBase}-composition-date" class="composition-date-label">Date of composition</label>
-        <input type="date" id="{idBase}-composition-date" class="composition-date-field" bind:value={composition.compositionDateString} />
-        
-        <label for="{idBase}-category" class="category-label">Category</label>
-        <select name="category-field" id="{idBase}-category" class="category-field" bind:value={composition.category}>
-            {#each Object.keys(categoryByLanguage["en"]) as category}
-                <option value={category}>{categoryByLanguage["en"][category]}</option>
-            {/each}
-        </select>
+        <FormLabel name="Instrumentation">
+            <input type="text" bind:value={composition.instrumentation} />
+        </FormLabel>
 
-        <label for="{idBase}-instrumentation" class="instrumentation-label">Instrumentation</label>
-        <input type="text" id="{idBase}-instrumentation" class="instrumentation-field" bind:value={composition.instrumentation} />
-
-        <label for="{idBase}-duration" class="duration-label">Duration</label>
-        <input type="time" id="{idBase}-duration" class="duration-field" step="1" bind:value={composition.duration} />
+        <FormLabel name="Duration">
+            <input type="time" step="1" bind:value={composition.duration} />
+        </FormLabel>
     </Collapsible>
 
     <Collapsible summaryText="Premiere" bind:this={premiereDetails}>
-        <div class="checkbox-group">
-            <input type="checkbox" id="{idBase}-premiered" name="{idBase}-premiered" bind:checked={composition.premiered} />
-            <label for="{idBase}-premiered">Has been premiered or has a planned premiere</label>
-        </div>
+        <FormCheckbox name="Has been premiered or has a planned premiere">
+            <input type="checkbox" bind:checked={composition.premiered} />
+        </FormCheckbox>
 
         {#if composition.premiered}
-            <label for="{idBase}-premiere-date" class="premiere-date-label">Premiere date (required)</label>
-            <input type="date" id="{idBase}-premiere-date" class="premiere-date-field" bind:value={composition.premiereDateString} />
-
-            <label for="{idBase}-premiere-location" class="premiere-location-label">Premiere location (optional)</label>
-            <input type="text" id="{idBase}-premiere-location" class="premiere-location-field" bind:value={composition.premiereLocation} />
-
-            <label for="{idBase}-premiere-performers" class="premiere-performers-label">Premiere performers (optional)</label>
-            <input type="text" id="{idBase}-premiere-performers" class="premiere-performers-field" bind:value={composition.premierePerformers} />
+            <FormLabel name="Premiere date (required)">
+                <input type="date" bind:value={composition.premiereDateString} />
+            </FormLabel>
+            <FormLabel name="Premiere location (optional)">
+                <input type="text" bind:value={composition.premiereLocation} />
+            </FormLabel>
+            <FormLabel name="Premiere performers (optional)">
+                <input type="text" bind:value={composition.premierePerformers} />
+            </FormLabel>
         {/if}
     </Collapsible>
 
