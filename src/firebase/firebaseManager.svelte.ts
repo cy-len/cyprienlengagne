@@ -162,4 +162,10 @@ export class FirebaseManager {
     socialMediasHandles() {
         return doc(this.#socialMediasCollection, "handles");
     }
+
+    #messagesCollection = collection(this.#db, "contactMessages");
+    async getAllContactMessages() {
+        const q = query(this.#messagesCollection, orderBy("date", "desc"));
+        return getDocs(q);
+    }
 }

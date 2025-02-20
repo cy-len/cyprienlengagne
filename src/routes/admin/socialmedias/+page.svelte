@@ -4,6 +4,7 @@
     import { getDoc, updateDoc, type DocumentReference } from "firebase/firestore";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
     import type { FirebaseManager } from '../../../firebase/firebaseManager.svelte';
+    import FormLabel from '../../../components/utils/forms/FormLabel.svelte';
     
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     let handlesReference: DocumentReference | null = null;
@@ -31,7 +32,6 @@
 
         const handlesSnap = await getDoc(handlesReference);
         handles = handlesSnap.data() as SocialMediasHandles;
-        console.log(handles);
     });
 
     async function save() {
@@ -49,34 +49,36 @@
 <div>
     <h2>Edit Social Medias Handles</h2>
 
-    <form onsubmit={preventDefault(save)}>
-        <label for="youtube">YouTube</label>
-        <input type="text" name="youtube" id="youtube" bind:value={handles.youtube} />
-        
-        <label for="facebook">Facebook</label>
-        <input type="text" name="facebook" id="facebook" bind:value={handles.facebook} />
-        
-        <label for="instagram">Instagram</label>
-        <input type="text" name="instagram" id="instagram" bind:value={handles.instagram} />
-        
-        <label for="twitter">Twitter</label>
-        <input type="text" name="twitter" id="twitter" bind:value={handles.twitter} />
+    <div class="form">
+        <FormLabel name="YouTube">
+            <input type="text" bind:value={handles.youtube} />
+        </FormLabel>
+        <FormLabel name="Facebook">
+            <input type="text" bind:value={handles.facebook} />
+        </FormLabel>
+        <FormLabel name="Instagram">
+            <input type="text" bind:value={handles.instagram} />
+        </FormLabel>
+        <FormLabel name="X (Twitter)">
+            <input type="text" bind:value={handles.twitter} />
+        </FormLabel>
 
-        <button class="cta-inverted">Save</button>
+        <button class="cta-inverted" onclick={save}>Save</button>
 
         {#if saving}
             <div class="saving-backdrop">
-                <LoadingSpinner message="Saving short bio" />
+                <LoadingSpinner message="Saving social medias handles" />
             </div>
         {/if}
-    </form>
+        </div>
 </div>
 
 <style>
-    form {
+    .form {
         position: relative;
     }
-    label, button {
+    
+    button {
         margin-block: 0.5rem;
     }
 </style>

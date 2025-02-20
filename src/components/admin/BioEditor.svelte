@@ -3,6 +3,8 @@
     import { type DocumentReference, updateDoc, getDoc } from "firebase/firestore";
     import { onMount } from "svelte";
     import { languages } from "../../utils/languageUtils";
+    import FormLabel from "../utils/forms/FormLabel.svelte";
+    import Collapsible from "./utils/Collapsible.svelte";
 
     interface Props {
         bioRef: DocumentReference;
@@ -50,52 +52,21 @@
             <span>{ languages[bioRef.id].name }</span>
         </h3> <!-- id = "en"/"fr"/"de"... -->
     
-        <label for="{idBase}-short" class="short-label">Short bio</label>
-        <textarea id="{idBase}-short" class="short-field" cols="30" bind:value={short}></textarea>
-    
-        <label for="{idBase}-full" class="full-label">Full bio</label>
-        <textarea id="{idBase}-full" class="full-field" cols="30" rows="30" bind:value={full}></textarea>
+        <Collapsible summaryText="Short">
+            <FormLabel name="Short bio">
+                <textarea cols="30" bind:value={short}></textarea>
+            </FormLabel>
+        </Collapsible>
+        <Collapsible summaryText="Full">
+            <textarea cols="30" rows="30" bind:value={full}></textarea>
+        </Collapsible>
     </div>
 </div>
 
 <style>
 
-    .editor-grid {
-        grid-template-areas:
-            "language language"
-            "short-label full-label"
-            "short-field full-field";
-        
-        grid-template-columns: 1fr 2fr;
-        grid-template-rows: min-content min-content min-content;
-    }
-
-    textarea {
-        display: block;
-        font: inherit;
-    }
-
     h3 {
         margin-block: 0;
     }
-
-    .language {
-        grid-area: language;
-    }
-
-    .short-label {
-        grid-area: short-label;
-    }
-
-    .short-field {
-        grid-area: short-field;
-    }
-
-    .full-label {
-        grid-area: full-label;
-    }
-
-    .full-field {
-        grid-area: full-field;
-    }
+    
 </style>

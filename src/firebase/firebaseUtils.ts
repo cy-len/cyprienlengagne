@@ -49,3 +49,19 @@ export async function queryCountREST(collectionId: string, fetchFunction = fetch
 
     return parseInt(countRaw[0]?.result.aggregateFields.field_1?.integerValue ?? "-1");
 }
+
+export async function createDocumentFirebaseREST(fields: object, collectionPath: string, fetchFunction = fetch) {
+    const response = await fetchFunction(`https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/${collectionPath}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            fields
+        })
+    });
+
+    const json = await response.json();
+
+    return json;
+}

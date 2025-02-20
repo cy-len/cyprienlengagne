@@ -5,6 +5,7 @@
     import { extractYouTubeHandle } from "../../utils/stringUtils";
     import Collapsible from "./utils/Collapsible.svelte";
     import YoutubeFetcher from "./utils/YoutubeFetcher.svelte";
+    import FormLabel from "../utils/forms/FormLabel.svelte";
 
     interface Props {
         videoRef: DocumentReference;
@@ -96,8 +97,9 @@
     </header>
 
     <Collapsible summaryText="Basic infos" bind:this={basicDetails}>
-        <label for="{idBase}-title" class="title-label">Title</label>
-        <input type="text" id="{idBase}-title" class="title-field" bind:value={video.title} />
+        <FormLabel name="Title">
+            <input type="text" bind:value={video.title} />
+        </FormLabel>
     </Collapsible>
 
     <Collapsible summaryText="YouTube video" bind:this={youtubeDetails}>

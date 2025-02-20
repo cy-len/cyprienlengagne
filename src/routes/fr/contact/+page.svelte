@@ -21,10 +21,10 @@
 
     <ContactForm
         okMessage="Message envoyé avec succès !"
-        errorMessage="Une erreur est survenue lors de l'envoi du message"
         nameFieldLabel="Votre nom"
         emailFieldLabel="Votre adresse email"
         messageFieldLabel="Message"
         sendButtonText="Envoyer"
+        requiredFieldText="Ce champ est requis"
     />
 </PageStructure>

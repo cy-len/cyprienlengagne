@@ -188,12 +188,3 @@
         <MultilingualEditor bind:defaultText={composition.description} bind:lingualTexts={composition.lingualDescriptions} />
     </Collapsible>
 </div>
-
-<style>
-
-    input, select {
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-</style>
