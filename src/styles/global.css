@@ -115,6 +115,11 @@ a.cta-inverted, button.cta-inverted, label.cta-inverted, input.cta-inverted {
     border-color: red;
 }
 
+.cta-inverted.red:hover {
+    background-color: white;
+    color: red;
+}
+
 a.cta-inverted:hover, button.cta-inverted:hover, label.cta-inverted:hover, input.cta-inverted:hover {
     color: var(--color-primary);
     background-color: white;

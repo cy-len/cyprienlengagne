@@ -1,3 +1,5 @@
+import type { Recording } from "./recording";
+
 export interface Composition {
     name: string;
     compositionDate: Date;
@@ -10,5 +12,5 @@ export interface Composition {
     premierePerformers: string;
     description: string;
     lingualDescriptions: { [key: string]: string };
-    recordingVideo: string;
+    recordings: Recording[];
 }

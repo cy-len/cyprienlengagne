@@ -4,7 +4,7 @@
     import { onMount } from "svelte";
     import { extractYouTubeHandle } from "../../utils/stringUtils";
     import Collapsible from "./utils/Collapsible.svelte";
-    import YoutubeFetcher from "./utils/YoutubeFetcher.svelte";
+    import YoutubeFetcher from "./fetchers/YoutubeFetcher.svelte";
     import FormLabel from "../utils/forms/FormLabel.svelte";
 
     interface Props {
@@ -73,8 +73,6 @@
         basicDetails.collapse();
         youtubeDetails.collapse();
     }
-
-    const idBase = "video-editor" + Math.ceil(Math.random() * 10000);
 
     let modified = $derived(hash !== JSON.stringify(video));
 </script>

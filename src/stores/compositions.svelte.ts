@@ -1,5 +1,6 @@
 import { queryCountREST, queryFirebaseREST } from "../firebase/firebaseUtils";
 import type { Composition } from "../types/composition";
+import type { PlatformPossibility } from "../types/recording";
 import { Status, type FetchResult } from "../types/status";
 
 export type CompositionFetchResult = FetchResult<Composition>;
@@ -32,9 +33,6 @@ interface RawComposition {
     premierePerformers: {
         stringValue: string;
     };
-    recordingVideo: {
-        stringValue: string;
-    };
     description: {
         stringValue: string;
     };
@@ -47,7 +45,23 @@ interface RawComposition {
             };
         };
     };
-}
+    recordings?: {
+        arrayValue: {
+            values: {
+                mapValue: {
+                    fields: {
+                        platform: {
+                            stringValue: PlatformPossibility;
+                        };
+                        link: {
+                            stringValue: string;
+                        };
+                    };
+                };
+            }[];
+        };
+    };
+};
 
 function rawCompositionToComposition(rawFields: RawComposition): Composition {
     const lingual: { [key: string]: string } = {};
@@ -67,9 +81,14 @@ function rawCompositionToComposition(rawFields: RawComposition): Composition {
         premiereDate: new Date(rawFields.premiereDate.timestampValue),
         premiereLocation: rawFields.premiereLocation.stringValue,
         premierePerformers: rawFields.premierePerformers.stringValue,
-        recordingVideo: rawFields.recordingVideo.stringValue,
         description: rawFields.description.stringValue,
-        lingualDescriptions: lingual
+        lingualDescriptions: lingual,
+        recordings: (rawFields.recordings?.arrayValue.values ?? []).map((v) => {
+            return {
+                platform: v.mapValue.fields.platform.stringValue,
+                link: v.mapValue.fields.link.stringValue,
+            };
+        })
     };
 }
 

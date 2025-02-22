@@ -15,7 +15,7 @@
 </script>
 
 <div class="youtube-fetcher">
-    <FormLabel name="Youtube Video link/handle (will automatically be replaced by video ID)">
+    <FormLabel name="Youtube Video link/handle (will automatically be replaced by video ID)" icon="youtube.svg" iconAlt="YouTube">
         <input type="text" bind:value={handle} onblur={replaceLinkByHandle} />
         <div class="info">The YouTube handle is the string of random characters that identifies the YouTube video, and can be found in the YouTube page URL after this part: youtube.com/watch?v=</div>
     </FormLabel>

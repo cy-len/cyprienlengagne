@@ -3,6 +3,7 @@
     import { Status } from "../../types/status";
     import { categoryByLanguage } from "../../utils/compositionUtils";
     import LoadingSpinner from "../utils/LoadingSpinner.svelte";
+    import RecordingPlayer from "../utils/RecordingPlayer.svelte";
 
     interface Props {
         maxCount?: number;
@@ -112,10 +113,10 @@
 
                     <p>{composition.lingualDescriptions[lang] ?? composition.description}</p>
                 </div>
-                <div class="video-container">
-                    {#if composition.recordingVideo}
-                        <iframe class="yt-video youtube-preview" width="320" height="180" src="https://www.youtube.com/embed/{composition.recordingVideo}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    {/if}
+                <div class="recordings-container">
+                    {#each composition.recordings as recording}
+                        <RecordingPlayer {recording} youtubePlayerHeight={180} />
+                    {/each}
                 </div>
             </div>
         {:else}

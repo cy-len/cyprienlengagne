@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, setContext } from 'svelte';
+    import { onMount, setContext, type Snippet } from 'svelte';
     import Nav from '../../components/nav/Nav.svelte';
     import SocialLinks from "../../components/utils/SocialLinks.svelte";
     import LoginForm from "../../components/admin/LoginForm.svelte";
@@ -11,7 +11,7 @@
     import { browser } from '$app/environment';
 
     interface Props {
-        children?: import('svelte').Snippet;
+        children?: Snippet;
     }
     let { children }: Props = $props();
 
@@ -37,6 +37,7 @@
                 <NavLink href="/admin/news">Edit News</NavLink>
                 <NavLink href="/admin/concerts">Edit Concerts</NavLink>
                 <NavLink href="/admin/compositions">Edit Compositions</NavLink>
+                <NavLink href="/admin/discography">Edit Discography</NavLink>
                 <NavLink href="/admin/videos">Edit Videos</NavLink>
                 <NavLink href="/admin/gallery">Edit Gallery</NavLink>
                 <NavLink href="/admin/messages">See messages</NavLink>
@@ -57,6 +58,10 @@
 </footer>
 
 <style>
+
+    .admin-nav {
+        flex-wrap: wrap;
+    }
     
     .center {
         margin: 2rem;

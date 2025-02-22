@@ -74,6 +74,7 @@
 
     .error {
         color: rgb(180, 0, 0);
+        margin-bottom: 0;
     }
 
 </style>

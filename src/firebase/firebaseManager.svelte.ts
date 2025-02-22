@@ -8,6 +8,7 @@ import type { News } from "../types/news";
 import type { Composition } from "../types/composition";
 import type { GalleryPicture } from "../stores/gallery.svelte";
 import type { Video } from "../stores/videos.svelte";
+import type { Album } from "../stores/discography.svelte";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -156,6 +157,20 @@ export class FirebaseManager {
 
     async addComposition(composition: Composition) {
         return addDoc(this.#compositionsCollection, composition);
+    }
+
+    #albumsCollection = collection(this.#db, "albums");
+    get albumsCollection() {
+        return this.#albumsCollection;
+    }
+
+    async getAlbums() {
+        const q = query(this.#albumsCollection, orderBy("date", "desc"));
+        return getDocs(q);
+    }
+
+    async addAlbum(album: Album) {
+        return addDoc(this.#albumsCollection, album);
     }
 
     #socialMediasCollection = collection(this.#db, "socialMedias");

@@ -3,43 +3,40 @@
     import { getContext, onMount, tick } from "svelte";
     import type { DocumentReference } from "firebase/firestore";
     import LoadingSpinner from "../../../components/utils/LoadingSpinner.svelte";
-    import CompositionEditor from "../../../components/admin/CompositionEditor.svelte";
+    import AlbumEditor from "../../../components/admin/AlbumEditor.svelte";
     import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
     import { slide } from "svelte/transition";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
     
-    let compositionRefs: DocumentReference[] = $state([]);
+    let albumRefs: DocumentReference[] = $state([]);
 
-    let singleEditors: CompositionEditor[] = $state([]);
+    let singleEditors: AlbumEditor[] = $state([]);
 
     let saving: boolean = $state(false);
 
     onMount(async () => {
         if (!firebaseManager) return;
 
-        compositionRefs = (await firebaseManager.getCompositions()).docs.map((d) => d.ref);
+        albumRefs = (await firebaseManager.getAlbums()).docs.map((d) => d.ref);
     });
 
-    async function addComposition() {
+    async function addAlbum() {
         if (!firebaseManager) return;
 
-        const docRef = await firebaseManager.addComposition({
-            name: "",
-            category: "Orchestra",
-            compositionDate: new Date(),
-            duration: "00:00:00",
-            instrumentation: "",
+        const docRef = await firebaseManager.addAlbum({
+            title: "",
+            subtitle: "",
+            date: new Date(),
             description: "",
             lingualDescriptions: {},
-            premiered: false,
-            premiereDate: new Date(),
-            premiereLocation: "",
-            premierePerformers: "",
-            recordings: [],
+            imgUrl: "",
+            thumbnailUrl: "",
+            buyUrl: "",
+            recordings: []
         });
 
-        compositionRefs = [...compositionRefs, docRef];
+        albumRefs = [...albumRefs, docRef];
 
         await tick();
 
@@ -64,28 +61,28 @@
     }
 
     function onDelete(id: string) {
-        compositionRefs = compositionRefs.filter((ref) => ref.id !== id);
+        albumRefs = albumRefs.filter((ref) => ref.id !== id);
     }
 
 </script>
 
 <div>
-    <h2>Edit Compositions</h2>
+    <h2>Edit Discography</h2>
 
     <div class="editor-wrapper">
         <div class="toolbar">
-            <button class="toolbar-button" onclick={addComposition}>Add composition</button>
+            <button class="toolbar-button" onclick={addAlbum}>Add album</button>
             <button class="toolbar-button" onclick={save}>Save</button>
         </div>
     
         {#if saving}
             <div class="saving-backdrop">
-                <LoadingSpinner message="Saving compositions..." />
+                <LoadingSpinner message="Saving albums..." />
             </div>
         {:else}
-            {#each compositionRefs as composition, i}
+            {#each albumRefs as album, i}
                 <div transition:slide={{ duration: 250 }}>
-                    <CompositionEditor compositionRef={composition} bind:this={singleEditors[i]} ondeleted={onDelete} />
+                    <AlbumEditor albumRef={album} bind:this={singleEditors[i]} ondeleted={onDelete} />
                 </div>
             {/each}
         {/if}

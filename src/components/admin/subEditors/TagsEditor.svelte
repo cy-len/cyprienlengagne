@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { slide } from "svelte/transition";
     import FormLabel from "../../utils/forms/FormLabel.svelte";
 
     interface Props {
@@ -15,7 +16,7 @@
 <div class="tags-editor">
     {#each tags as tag, i}
         {#if !blacklist.includes(tag.name)}
-            <div class="tag">
+            <div class="tag" transition:slide={{ duration: 250 }}>
                 <FormLabel name="Tag name">
                     <input type="text" bind:value={tag.name} />
                 </FormLabel>

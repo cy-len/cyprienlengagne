@@ -1,12 +1,12 @@
 <script lang="ts">
     import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
     import { onMount } from "svelte";
-    import MultilingualEditor from "../utils/MultilingualEditor.svelte";
+    import MultilingualEditor from "../subEditors/MultilingualEditor.svelte";
     import Collapsible from "../utils/Collapsible.svelte";
     import FormLabel from "../../utils/forms/FormLabel.svelte";
     import FormCheckbox from "../../utils/forms/FormCheckbox.svelte";
     import { slide } from "svelte/transition";
-    import TagsEditor from "../utils/TagsEditor.svelte";
+    import TagsEditor from "../subEditors/TagsEditor.svelte";
     import ImagePicker from "../images/ImagePicker.svelte";
 
     interface Props {
@@ -74,6 +74,7 @@
     let dateDetails: Collapsible;
     let infosDetails: Collapsible;
     let descriptionDetails: Collapsible;
+    let imageDetails: Collapsible;
     let tagsDetails: Collapsible;
 
     onMount(async () => {
@@ -164,6 +165,7 @@
         dateDetails.expand();
         infosDetails.expand();
         descriptionDetails.expand();
+        imageDetails.expand();
         tagsDetails.expand();
     }
 
@@ -172,6 +174,7 @@
         dateDetails.collapse();
         infosDetails.collapse();
         descriptionDetails.collapse();
+        imageDetails.collapse();
         tagsDetails.collapse();
     }
 
@@ -269,7 +272,7 @@
         <MultilingualEditor bind:defaultText={concert.description} bind:lingualTexts={concert.lingualDescriptions} />
     </Collapsible>
 
-    <Collapsible summaryText="Image" bind:this={tagsDetails}>
+    <Collapsible summaryText="Image" bind:this={imageDetails}>
         <ImagePicker
             bind:fullresUrl={concert.imgUrl}
             bind:thumbnailUrl={concert.thumbnailUrl}

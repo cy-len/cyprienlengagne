@@ -3,11 +3,12 @@
     import { onMount } from "svelte";
     import { extractYouTubeHandle } from "../../utils/stringUtils";
     import { categoryByLanguage } from "../../utils/compositionUtils";
-    import MultilingualEditor from "./utils/MultilingualEditor.svelte";
+    import MultilingualEditor from "./subEditors/MultilingualEditor.svelte";
     import Collapsible from "./utils/Collapsible.svelte";
-    import YoutubeFetcher from "./utils/YoutubeFetcher.svelte";
     import FormLabel from "../utils/forms/FormLabel.svelte";
     import FormCheckbox from "../utils/forms/FormCheckbox.svelte";
+    import RecordingsEditor from "./subEditors/RecordingsEditor.svelte";
+    import type { Recording } from "../../types/composition";
 
     interface Props {
         compositionRef: DocumentReference;
@@ -29,6 +30,8 @@
         description: string;
         lingualDescriptions: { [key: string]: string };
         recordingVideo: string;
+        spotifyTrack: string;
+        recordings: Recording[];
     }
 
     let composition = $state<FirebaseComposition>({
@@ -43,7 +46,9 @@
         premierePerformers: "",
         description: "",
         lingualDescriptions: {},
-        recordingVideo: ""
+        recordingVideo: "",
+        spotifyTrack: "",
+        recordings: []
     });
 
     let hash: string = $state("");
@@ -69,6 +74,7 @@
         composition.premiereDateString = data.premiereDate.toDate().toISOString().split("T")[0];
         composition.premiereLocation = data.premiereLocation ?? "";
         composition.premierePerformers = data.premierePerformers ?? "";
+        composition.recordings = data.recordings ?? [];
         composition.recordingVideo = data.recordingVideo ?? "";
 
         hash = JSON.stringify(composition);
@@ -91,7 +97,8 @@
             premierePerformers: composition.premierePerformers,
             description: composition.description,
             lingualDescriptions: composition.lingualDescriptions,
-            recordingVideo: composition.recordingVideo
+            recordings: composition.recordings,
+            recordingVideo: composition.recordingVideo,
         });
         hash = JSON.stringify(composition);
     }
@@ -181,7 +188,7 @@
     </Collapsible>
 
     <Collapsible summaryText="Recordings" bind:this={recordingsDetails}>
-        <YoutubeFetcher bind:handle={composition.recordingVideo} />
+        <RecordingsEditor bind:recordings={composition.recordings} />
     </Collapsible>
 
     <Collapsible summaryText="Description" bind:this={descriptionDetails}>
