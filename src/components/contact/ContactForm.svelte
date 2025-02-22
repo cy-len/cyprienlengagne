@@ -14,6 +14,7 @@
         messageFieldLabel?: string;
         sendButtonText?: string;
         requiredFieldText?: string;
+        captchaMissingText?: string;
     }
 
     let {
@@ -22,7 +23,8 @@
         emailFieldLabel = "Your email",
         messageFieldLabel = "Message",
         sendButtonText = "Send",
-        requiredFieldText = "This field is required"
+        requiredFieldText = "This field is required",
+        captchaMissingText = "Please complete the captcha"
     }: Props = $props();
 
     interface FormState {
@@ -68,25 +70,19 @@
             <textarea id="message" name="message" rows="10"></textarea>
         </FormLabel>
 
-        {#if formState.result?.data?.captchaMissing}
-            <p class="error">Please complete the captcha</p>
-        {/if}
-        <ReCaptcha bind:captcha />
+        <FormLabel name="" error={formState.result?.data?.messageMissing ? requiredFieldText : undefined}>
+            <ReCaptcha bind:captcha />
+        </FormLabel>
 
-        <button class="cta-inverted">{ sendButtonText }</button>
+        <button class="cta-inverted" disabled={!captcha}>{ sendButtonText }</button>
     </form>
 {/if}
 
 <style>
 
-    button {
+    button.cta-inverted {
         cursor: pointer;
         font-size: 1.25rem;
-    }
-
-    .error {
-        color: rgb(180, 0, 0);
-        margin-bottom: 0;
     }
 
 </style>

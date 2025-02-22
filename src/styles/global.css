@@ -125,6 +125,17 @@ a.cta-inverted:hover, button.cta-inverted:hover, label.cta-inverted:hover, input
     background-color: white;
 }
 
+.cta-inverted:disabled {
+    border-color: gray;
+    background: gray;
+}
+.cta-inverted:disabled:hover {
+    border-color: gray;
+    background: lightgray;
+    color: white;
+}
+
+
 button {
     cursor: pointer;
     background: none;

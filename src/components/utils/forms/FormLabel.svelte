@@ -74,6 +74,7 @@
 
     .error {
         color: rgb(180, 0, 0);
+        margin-top: 0.25rem;
         margin-bottom: 0;
     }
 
