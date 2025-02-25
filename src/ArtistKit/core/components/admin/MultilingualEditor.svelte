@@ -16,8 +16,6 @@
         lingualTexts = $bindable()
     }: Props = $props();
 
-    const idBase = `multilingual-${Math.round(Math.random() * 10000)}`;
-
     function setSameAsDefault(langKey: string) {
         if (lingualTexts[langKey]) {
             const langName = languages[langKey].name;
@@ -53,7 +51,7 @@
                 iconAlt="{lang.name} language flag"
             >
                 {#if lingualTexts[langKey] !== undefined}
-                    <textarea id="{idBase}-lang-{langKey}" class="lang-{langKey}-field" rows="4" bind:value={lingualTexts[langKey]}></textarea>
+                    <textarea rows="4" bind:value={lingualTexts[langKey]}></textarea>
                     <button class="toolbar-button" onclick={() => setSameAsDefault(langKey)}>Make same as default</button>
                 {:else}
                     <div class="info">Currently set to be the same as default</div>

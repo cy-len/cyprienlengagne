@@ -1,7 +1,7 @@
 <script lang="ts">
+    import PastConcertsList from "../../../ArtistKit/modules/concerts/user/components/PastConcertsList.svelte";
+    import UpcomingConcertsList from "../../../ArtistKit/modules/concerts/user/components/UpcomingConcertsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
-    import UpcomingConcertList from "../../../components/concerts/UpcomingConcertsList.svelte";
-    import PastConcertsList from "../../../components/concerts/PastConcertsList.svelte";
 </script>
 
 <PageStructure
@@ -15,7 +15,7 @@
     imgLowresName="Zimmermann_Vertical_ultralowres.webp"
 >
     <h2>Prochains concerts</h2>
-    <UpcomingConcertList />
+    <UpcomingConcertsList />
 
     <h2 class="extra-top-margin">Concerts passés</h2>
     <PastConcertsList maxCount={10} loadMoreText="Voir plus" />

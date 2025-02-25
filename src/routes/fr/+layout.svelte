@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { onMount, setContext } from 'svelte';
-    import Nav from '../../components/nav/Nav.svelte';
-    import type { NavLinksParams } from '../../components/nav/NavLinks.svelte';
-    import SocialLinks from "../../components/utils/SocialLinks.svelte";
+    import { onMount, type Snippet } from 'svelte';
     import "../../styles/global.css";
+    import Nav from '../../ArtistKit/core/components/nav/Nav.svelte';
+    import type { NavLinksParams } from '../../ArtistKit/core/components/nav/NavLinks.svelte';
+    import SocialLinks from '../../ArtistKit/core/components/SocialLinks.svelte';
+    
     interface Props {
-        children?: import('svelte').Snippet;
+        children?: Snippet;
     }
 
     let { children }: Props = $props();

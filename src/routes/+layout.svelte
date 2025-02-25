@@ -1,17 +1,19 @@
 <script lang="ts">
-    import { setContext } from "svelte";
+    import type { Snippet } from "svelte";
     import type { OpenGraphProps } from "../types/openGraphProps";
+    import { setOpenGraph } from "../ArtistKit/core/utils/openGraphManager";
+
     interface Props {
-        children?: import('svelte').Snippet;
+        children?: Snippet;
     }
 
     let { children }: Props = $props();
 
     const openGaphProps: OpenGraphProps = $state({
-        title: "Cyprien Lengagne"
+        title: "Home"
     });
 
-    setContext("openGraphProps", openGaphProps);
+    setOpenGraph(openGaphProps);
 
 </script>
 

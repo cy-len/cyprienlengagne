@@ -1,15 +1,15 @@
 <script lang="ts">
-    import SocialLinks from "../utils/SocialLinks.svelte";
-    import { bios } from "../../stores/bios.svelte";
-    import LoadingSpinner from "../utils/LoadingSpinner.svelte";
     import { Status } from "../../types/status";
     import { browser } from "$app/environment";
-    import NewsList from "../news/NewsList.svelte";
-    import ConcertsList from "../concerts/ConcertsList.svelte";
-    import { concertsManager } from "../../stores/concerts.svelte";
     import { setContext } from "svelte";
     import type { OpenGraphProps } from "../../types/openGraphProps";
-    import LazyImage from "../utils/LazyImage.svelte";
+    import LazyImage from "../../ArtistKit/core/components/images/LazyImage.svelte";
+    import LoadingSpinner from "../../ArtistKit/core/components/LoadingSpinner.svelte";
+    import SocialLinks from "../../ArtistKit/core/components/SocialLinks.svelte";
+    import { bios } from "../../ArtistKit/modules/bio/biosManager.svelte";
+    import { concertsManager } from "../../ArtistKit/modules/concerts/concertsManager.svelte";
+    import ConcertsList from "../../ArtistKit/modules/concerts/user/components/ConcertsList.svelte";
+    import NewsList from "../../ArtistKit/modules/news/user/components/NewsList.svelte";
 
     interface Props {
         instrument?: string;

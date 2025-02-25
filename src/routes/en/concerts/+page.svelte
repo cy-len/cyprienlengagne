@@ -1,7 +1,7 @@
 <script lang="ts">
+    import PastConcertsList from "../../../ArtistKit/modules/concerts/user/components/PastConcertsList.svelte";
+    import UpcomingConcertsList from "../../../ArtistKit/modules/concerts/user/components/UpcomingConcertsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
-    import PastConcertsList from "../../../components/concerts/PastConcertsList.svelte";
-    import UpcomingConcertsList from "../../../components/concerts/UpcomingConcertsList.svelte";
 </script>
 
 <PageStructure

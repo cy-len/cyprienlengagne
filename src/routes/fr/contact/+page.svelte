@@ -1,7 +1,7 @@
 <script lang="ts">
+    import SocialLinks from "../../../ArtistKit/core/components/SocialLinks.svelte";
+    import ContactForm from "../../../ArtistKit/modules/contact/user/components/ContactForm.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
-    import ContactForm from "../../../components/contact/ContactForm.svelte";
-    import SocialLinks from "../../../components/utils/SocialLinks.svelte";
 </script>
 
 <PageStructure

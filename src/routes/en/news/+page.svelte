@@ -1,6 +1,6 @@
 <script lang="ts">
+    import NewsList from "../../../ArtistKit/modules/news/user/components/NewsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
-    import NewsList from "../../../components/news/NewsList.svelte";
 </script>
 
 <PageStructure

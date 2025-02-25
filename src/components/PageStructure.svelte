@@ -1,7 +1,7 @@
 <script lang="ts">
     import { setContext, type Snippet } from "svelte";
     import type { OpenGraphProps } from "../types/openGraphProps";
-    import LazyImage from "./utils/LazyImage.svelte";
+    import LazyImage from "../ArtistKit/core/components/images/LazyImage.svelte";
 
     interface Props {
         title?: string;
@@ -36,31 +36,47 @@
         imgAlt = "Cyprien Lengagne",
         layout = "image-left",
 
-        children
+        children,
     }: Props = $props();
 
     setContext<OpenGraphProps>("openGraphProps", {
         title,
-        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
-        imageUrl: `https://cyprienlengagne.com/imgs/${bannerImgName}`
+        description:
+            "Website of the swiss-french cellist and composer Cyprien Lengagne",
+        imageUrl: `https://cyprienlengagne.com/imgs/${bannerImgName}`,
     });
 </script>
 
 <div class="page-structure">
     <header
         style="--banner-width: {bannerWidth}; --banner-pos: {bannerPosition}; --banner-mobile-pos: {bannerMobilePosition};"
-        class={{ "anchor-left": bannerAnchor === "left", "anchor-right": bannerAnchor === "right" }}
+        class={{
+            "anchor-left": bannerAnchor === "left",
+            "anchor-right": bannerAnchor === "right",
+        }}
     >
-        <LazyImage lowresSrc={bannerLowresImgName ? `/imgs/${bannerLowresImgName}` : undefined} src="/imgs/{bannerImgName}" alt="background" />
+        <LazyImage
+            lowresSrc={bannerLowresImgName
+                ? `/imgs/${bannerLowresImgName}`
+                : undefined}
+            src="/imgs/{bannerImgName}"
+            alt="background"
+        />
     </header>
 
     <main>
-        <h1>{ title }</h1>
+        <h1>{title}</h1>
         <div class="page-content backdrop-blur-very-strong bg-very-light">
             <div class="grid {layout}">
                 {#if layout !== "content-only"}
                     <div class="picture">
-                        <LazyImage lowresSrc={imgLowresName ? `/imgs/${imgLowresName}` : undefined} src="/imgs/{imgName}" alt={imgAlt} />
+                        <LazyImage
+                            lowresSrc={imgLowresName
+                                ? `/imgs/${imgLowresName}`
+                                : undefined}
+                            src="/imgs/{imgName}"
+                            alt={imgAlt}
+                        />
                     </div>
                 {/if}
                 <div class="content">
@@ -111,7 +127,7 @@
 
         opacity: 0;
     }
-    
+
     :global(.animated) .page-content {
         animation: content-appear 0.5s ease-out forwards;
     }
@@ -120,7 +136,7 @@
         display: grid;
         gap: 1rem;
     }
-    
+
     .grid.image-left {
         grid-template-columns: 1fr 2fr;
         grid-template-areas: "picture content";
@@ -147,7 +163,8 @@
             object-position: var(--banner-mobile-pos);
         }
 
-        .grid.image-left, .grid.image-right {
+        .grid.image-left,
+        .grid.image-right {
             grid-template-columns: 1fr;
             grid-template-rows: 1fr min-content;
             grid-template-areas:
@@ -160,7 +177,7 @@
         grid-area: picture;
         position: relative;
     }
-    
+
     .picture :global(img) {
         width: 100%;
         position: sticky;
@@ -178,7 +195,7 @@
 
         opacity: 0;
     }
-    
+
     :global(.animated) h1 {
         animation: title-appear 0.6s ease-out 0.2s forwards;
     }
