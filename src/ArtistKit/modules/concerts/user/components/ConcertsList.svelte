@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { Concert } from "../../types/concert";
+    import type { Concert } from '../../concertsManager.svelte';
     import { browser } from '$app/environment';
-    import { onMount, type Snippet } from "svelte";
-    import { page } from "$app/stores";
-    import ConcertListItem from "./ConcertListItem.svelte";
-    import { capitalize } from "../../utils/stringUtils";
-    import { groupBy } from "../../utils/objectUtils";
+    import { onMount } from "svelte";
+    import { page } from "$app/state";
+    import ConcertListItem from "./defaults/ConcertListItem.svelte";
+    import { capitalize } from "../../../../core/utils/stringUtils";
+    import { groupBy } from "../../../../core/utils/objectUtils";
 
     interface Props {
         concertsList: Concert[];
@@ -13,8 +13,6 @@
         forceCompact?: boolean;
         grouping?: "off" | "month-asc" | "month-desc";
         alwaysShowYearInGroups?: boolean;
-
-        concertItemSnippet?: Snippet<[{ concert: Concert, compact: boolean }]>;
     }
 
     let {
@@ -22,13 +20,12 @@
         maxCount = -1,
         forceCompact = false,
         grouping = "month-asc",
-        alwaysShowYearInGroups = false,
-        concertItemSnippet
+        alwaysShowYearInGroups = false
     }: Props = $props();
 
     let autoCompact = $state(false);
 
-    const monthFormatter = new Intl.DateTimeFormat($page.url.pathname.split("/")[1] ?? "en", {
+    const monthFormatter = new Intl.DateTimeFormat(page.url.pathname.split("/")[1] ?? "en", {
         month: "long"
     });
 
@@ -71,7 +68,6 @@
                 
                 {#each group as concert}
                     <li>
-
                         <ConcertListItem {concert} {compact} />
                     </li>
                 {/each}
@@ -80,11 +76,7 @@
     {:else}
         {#each truncatedConcerts as concert}
             <li>
-                {#if concertItemSnippet}
-                    {@render concertItemSnippet({ concert, compact })}
-                {:else}
-                    <ConcertListItem {concert} {compact} />
-                {/if}
+                <ConcertListItem {concert} {compact} />
             </li>
         {/each}
     {/if}
