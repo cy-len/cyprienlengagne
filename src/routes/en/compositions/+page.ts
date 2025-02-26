@@ -1,4 +1,4 @@
-import { compositionsManager } from "../../../stores/compositions.svelte";
+import { compositionsManager } from "../../../ArtistKit/modules/compositions/compositionsManager.svelte";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {

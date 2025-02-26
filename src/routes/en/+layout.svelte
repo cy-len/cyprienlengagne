@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { onMount, setContext, type Snippet } from 'svelte';
-    import Nav from '../../components/nav/Nav.svelte';
-    import SocialLinks from "../../components/utils/SocialLinks.svelte";
+    import { onMount, type Snippet } from 'svelte';
     import "../../styles/global.css";
+    import Nav from '../../ArtistKit/core/components/nav/Nav.svelte';
+    import SocialLinks from '../../ArtistKit/core/components/SocialLinks.svelte';
 
     interface Props {
         children?: Snippet;

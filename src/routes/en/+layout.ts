@@ -1,8 +1,7 @@
-import { concertsManager } from "../../stores/concerts.svelte";
-import { newsManager } from "../../stores/news.svelte";
-import { bios } from "../../stores/bios.svelte";
-import { socialMediasManager } from "../../stores/socialMedias.svelte";
-
+import { bios } from "../../ArtistKit/modules/bio/biosManager.svelte";
+import { concertsManager } from "../../ArtistKit/modules/concerts/concertsManager.svelte";
+import { newsManager } from "../../ArtistKit/modules/news/newsManager.svelte";
+import { socialMediasManager } from "../../ArtistKit/modules/socialMedias/socialMediasManager.svelte";
 import type { LayoutLoad } from "./$types";
 
 export const load: LayoutLoad = async ({ fetch, url }) => {

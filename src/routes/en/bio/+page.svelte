@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Biography from "../../../components/bio/Biography.svelte";
+    import Biography from "../../../ArtistKit/modules/bio/user/components/Biography.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
 </script>
 

@@ -1,5 +1,6 @@
-import { galleryManager } from "../../../stores/gallery.svelte";
-import { videosManager } from "../../../stores/videos.svelte";
+
+import { galleryManager } from "../../../ArtistKit/modules/gallery/galleryManager.svelte";
+import { videosManager } from "../../../ArtistKit/modules/videos/videosManager.svelte";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {

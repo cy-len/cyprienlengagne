@@ -1,6 +1,6 @@
 <script lang="ts">
+    import CompositionsList from "../../../ArtistKit/modules/compositions/user/components/CompositionsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
-    import CompositionsList from "../../../components/compositions/CompositionsList.svelte";
 </script>
 
 <PageStructure
