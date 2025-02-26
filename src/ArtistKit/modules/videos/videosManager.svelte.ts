@@ -10,6 +10,7 @@ export interface Video {
 }
 
 export type VideosFetchResult = FetchResult<Video>;
+export type FirebaseVideo = Video;
 
 interface RawVideo {
     youtubeHandle: FirebaseString;

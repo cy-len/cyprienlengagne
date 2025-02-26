@@ -11,6 +11,7 @@ export interface GalleryPicture {
 }
 
 export type GalleryFetchResult = FetchResult<GalleryPicture>;
+export type FirebaseGalleryPicture = GalleryPicture;
 
 interface RawGalleryPicture {
     url: FirebaseString;

@@ -3,12 +3,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, type User } from "firebase/auth";
 import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query, where } from "firebase/firestore";
 import { getDownloadURL, getStorage, list, ref, uploadBytesResumable, type UploadTask } from "firebase/storage";
-import type { Concert } from "../../modules/concerts/concertsManager.svelte";
+import type { Concert, FirebaseConcert } from "../../modules/concerts/concertsManager.svelte";
 import type { FirebaseNews, News } from "../../modules/news/newsManager.svelte";
-import type { GalleryPicture } from "../../modules/gallery/galleryManager.svelte";
-import type { Video } from "../../modules/videos/videosManager.svelte";
-import type { Composition } from "../../modules/compositions/compositionsManager.svelte";
-import type { Album } from "../../modules/discography/discographyManager.svelte";
+import type { FirebaseGalleryPicture, GalleryPicture } from "../../modules/gallery/galleryManager.svelte";
+import type { FirebaseVideo, Video } from "../../modules/videos/videosManager.svelte";
+import type { Composition, FirebaseComposition } from "../../modules/compositions/compositionsManager.svelte";
+import type { Album, FirebaseAlbum } from "../../modules/discography/discographyManager.svelte";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -92,7 +92,7 @@ export class FirebaseManager {
         return getDocs(q);
     }
 
-    async addConcert(concert: Concert) {
+    async addConcert(concert: FirebaseConcert) {
         return addDoc(this.#concertsCollection, concert);
     }
 
@@ -128,7 +128,7 @@ export class FirebaseManager {
         return getDocs(this.#galleryCollection);
     }
 
-    async addGalleryPicture(picture: GalleryPicture) {
+    async addGalleryPicture(picture: FirebaseGalleryPicture) {
         return addDoc(this.#galleryCollection, picture);
     }
 
@@ -141,7 +141,7 @@ export class FirebaseManager {
         return getDocs(this.#videosCollection);
     }
 
-    async addVideo(video: Video) {
+    async addVideo(video: FirebaseVideo) {
         return addDoc(this.#videosCollection, video);
     }
 
@@ -155,7 +155,7 @@ export class FirebaseManager {
         return getDocs(q);
     }
 
-    async addComposition(composition: Composition) {
+    async addComposition(composition: FirebaseComposition) {
         return addDoc(this.#compositionsCollection, composition);
     }
 
@@ -169,7 +169,7 @@ export class FirebaseManager {
         return getDocs(q);
     }
 
-    async addAlbum(album: Album) {
+    async addAlbum(album: FirebaseAlbum) {
         return addDoc(this.#albumsCollection, album);
     }
 

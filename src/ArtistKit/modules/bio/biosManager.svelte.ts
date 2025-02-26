@@ -6,6 +6,8 @@ export interface Biography {
     full: string;
 }
 
+export type FirebaseBiography = Biography;
+
 export interface BioFetchResult {
     biography: Biography;
     status: Status;

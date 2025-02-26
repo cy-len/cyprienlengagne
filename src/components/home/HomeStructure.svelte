@@ -9,7 +9,7 @@
     import ConcertsList from "../../ArtistKit/modules/concerts/user/components/ConcertsList.svelte";
     import NewsList from "../../ArtistKit/modules/news/user/components/NewsList.svelte";
     import { Status } from "../../ArtistKit/core/types/fetchTypes";
-    import type { OpenGraphProps } from "../../ArtistKit/core/types/openGraphProps";
+    import { setOpenGraph } from "../../ArtistKit/core/utils/openGraphManager.svelte";
 
     interface Props {
         instrument?: string;
@@ -43,10 +43,9 @@
         }, 2000);
     }
 
-    setContext<OpenGraphProps>("openGraphProps", {
-        title: `Home`,
-        description:
-            "Website of the swiss-french cellist and composer Cyprien Lengagne",
+    setOpenGraph({
+        title: "Cyprien Lengagne",
+        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
         imageUrl: `https://cyprienlengagne.com/imgs/Valere_Top.webp`,
     });
 </script>

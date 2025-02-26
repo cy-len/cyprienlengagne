@@ -16,6 +16,8 @@ export interface SocialMediaFetchResult {
     status: Status;
 }
 
+export type FirebaseSocialMedia = SocialMediaFetchResult;
+
 class SocialMediaManager {
     #socialMedias: SocialMediaFetchResult = $state({
         facebook: {

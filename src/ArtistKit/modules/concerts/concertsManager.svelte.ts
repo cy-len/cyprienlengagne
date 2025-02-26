@@ -24,6 +24,8 @@ export interface Concert {
 
 export type ConcertFetchResult = FetchResult<Concert>;
 
+export type FirebaseConcert = Concert;
+
 interface RawConcert {
     location: FirebaseString;
     locationPrecise: FirebaseString;

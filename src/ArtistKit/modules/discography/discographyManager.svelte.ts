@@ -17,6 +17,7 @@ export interface Album {
 }
 
 export type AlbumFetchResult = FetchResult<Album>;
+export type FirebaseAlbum = Album;
 
 interface RawAlbum {
     title: FirebaseString;

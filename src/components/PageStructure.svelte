@@ -4,7 +4,7 @@
     import {
         setOpenGraph,
         type OpenGraphProps,
-    } from "../ArtistKit/core/utils/openGraphManager";
+    } from "../ArtistKit/core/utils/openGraphManager.svelte";
 
     interface Props {
         title?: string;
@@ -44,8 +44,7 @@
 
     setOpenGraph({
         title,
-        description:
-            "Website of the swiss-french cellist and composer Cyprien Lengagne",
+        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
         imageUrl: `https://cyprienlengagne.com/imgs/${bannerImgName}`,
     });
 </script>

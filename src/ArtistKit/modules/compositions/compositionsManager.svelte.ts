@@ -22,6 +22,7 @@ export interface Composition {
 }
 
 export type CompositionFetchResult = FetchResult<Composition>;
+export type FirebaseComposition = Composition;
 
 interface RawComposition {
     name: FirebaseString;
