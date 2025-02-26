@@ -3,12 +3,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, type User } from "firebase/auth";
 import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query, where } from "firebase/firestore";
 import { getDownloadURL, getStorage, list, ref, uploadBytesResumable, type UploadTask } from "firebase/storage";
-import type { Concert, FirebaseConcert } from "../../modules/concerts/concertsManager.svelte";
-import type { FirebaseNews, News } from "../../modules/news/newsManager.svelte";
-import type { FirebaseGalleryPicture, GalleryPicture } from "../../modules/gallery/galleryManager.svelte";
-import type { FirebaseVideo, Video } from "../../modules/videos/videosManager.svelte";
-import type { Composition, FirebaseComposition } from "../../modules/compositions/compositionsManager.svelte";
-import type { Album, FirebaseAlbum } from "../../modules/discography/discographyManager.svelte";
+import type { FirebaseConcert } from "../../modules/concerts/concertsManager.svelte";
+import type { FirebaseNews } from "../../modules/news/newsManager.svelte";
+import type { FirebaseGalleryPicture } from "../../modules/gallery/galleryManager.svelte";
+import type { FirebaseVideo } from "../../modules/videos/videosManager.svelte";
+import type { FirebaseComposition } from "../../modules/compositions/compositionsManager.svelte";
+import type { FirebaseAlbum } from "../../modules/discography/discographyManager.svelte";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 

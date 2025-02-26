@@ -37,12 +37,6 @@
         seeGalleryText = "See Gallery",
     }: Props = $props();
 
-    if (browser) {
-        setTimeout(() => {
-            document.body.classList.add("no-home-animation");
-        }, 2000);
-    }
-
     setOpenGraph({
         title: "Cyprien Lengagne",
         description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
@@ -134,8 +128,6 @@
         height: 100svh;
         width: 100%;
         z-index: -1;
-
-        opacity: 0;
     }
 
     #home-bg :global(.lazy-image) {
@@ -147,12 +139,8 @@
     }
 
     :global(.animated) #home-bg {
+        opacity: 0;
         animation: zoom-out 0.75s ease-out forwards;
-    }
-
-    :global(.animated.no-home-animation) #home-bg {
-        opacity: 1;
-        animation: none;
     }
 
     section {
@@ -183,7 +171,7 @@
         animation: title-appear 0.6s ease-out 0.6s forwards;
     }
 
-    :global(.animated.no-home-animation) .splash .text {
+    :global(.animated:not(.first-page)) .splash .text {
         animation-delay: 0.2s;
     }
 
@@ -224,15 +212,15 @@
             "mini-bio mini-bio"
             "concerts news";
 
-        opacity: 0;
         box-shadow: 0 -2rem 2rem 2rem rgba(0, 0, 0, 0.4);
     }
 
-    :global(.animated #home-wrapper .grid) {
+    :global(.animated.first-page #home-wrapper .grid) {
+        opacity: 0;
         animation: bottom-appear 0.5s ease-out 0.8s forwards;
     }
 
-    :global(.animated.no-home-animation) #home-wrapper .grid {
+    :global(.animated:not(.first-page)) #home-wrapper .grid {
         animation-delay: 0.4s;
     }
 

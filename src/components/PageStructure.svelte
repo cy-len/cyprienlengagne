@@ -195,10 +195,11 @@
         z-index: 10;
         margin-left: 5vw;
 
-        opacity: 0;
+        view-transition-name: page-title;
     }
 
-    :global(.animated) h1 {
+    :global(.animated.first-page) h1 {
+        opacity: 0;
         animation: title-appear 0.6s ease-out 0.2s forwards;
     }
 </style>

@@ -2,14 +2,15 @@
 
     interface Props {
         message?: string;
+        color?: string;
     }
 
-    let { message = "" }: Props = $props();
+    let { message = "", color = "rgba(0, 0, 0, 0.4)" }: Props = $props();
 
 </script>
 
 
-<div class="spinner">
+<div class="spinner" style="--color: {color};">
     <div class="lds-dual-ring"></div>
 
     {#if message}
