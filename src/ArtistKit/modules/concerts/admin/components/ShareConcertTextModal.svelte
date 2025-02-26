@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { languages } from "../../../utils/languageUtils";
-    import Modal from "../../modals/Modal.svelte";
+    import Modal from "../../../../core/components/Modal.svelte";
+    import { languageKeyToDisplayProperties } from "../../../../core/utils/languageUtils";
+
 
     interface EditorConcert {
         location: string;
@@ -94,8 +95,8 @@
         <div>
             <label for="lang">Language</label>
             <select name="lang" id="lang" bind:value={language}>
-                {#each Object.keys(languages) as langKey}
-                    <option value={langKey}>{ languages[langKey].name }</option>
+                {#each Object.keys(languageKeyToDisplayProperties) as langKey}
+                    <option value={langKey}>{ languageKeyToDisplayProperties[langKey].name }</option>
                 {/each}
             </select>
         </div>

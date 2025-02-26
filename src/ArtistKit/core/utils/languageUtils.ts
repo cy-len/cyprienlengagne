@@ -1,4 +1,4 @@
-export const languages: { [key: string]: { name: string; code: string; icon: string; } } = {
+export const languageKeyToDisplayProperties: { [key: string]: { name: string; code: string; icon: string; } } = {
     en: {
         name: "English",
         code: "en",

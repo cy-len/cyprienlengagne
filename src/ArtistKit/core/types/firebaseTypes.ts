@@ -1,3 +1,5 @@
+import type { ImageSource } from "./imageTypes";
+
 export type FirebaseString = {
     stringValue: string;
 }
@@ -47,4 +49,27 @@ export function stringFirebaseMapValueToObject(firebaseMap: FirebaseStringMap): 
 
 export function optionalStringFirebaseMapValueToObject(firebaseMap?: FirebaseStringMap): ObjectMap<string> {
     return firebaseMap ? stringFirebaseMapValueToObject(firebaseMap) : {};
+}
+
+export type FirebaseImageSource = FirebaseObject<{
+    url: FirebaseString;
+    offset: FirebaseObject<{
+        x: FirebaseInteger;
+        y: FirebaseInteger;
+    }>;
+}>;
+
+export function firebaseImageSourceToImageSource(fis: FirebaseImageSource): ImageSource {
+    return {
+        url: fis.mapValue.fields.url.stringValue,
+        offset: {
+            x: fis.mapValue.fields.offset.mapValue.fields.x.integerValue ?? 50,
+            y: fis.mapValue.fields.offset.mapValue.fields.y.integerValue ?? 50,
+        }
+    }
+}
+
+export function optionalFirebaseImageSourceToOptionalImageSource(fis?: FirebaseImageSource): ImageSource | undefined {
+    if (!fis) return undefined;
+    return firebaseImageSourceToImageSource(fis);
 }

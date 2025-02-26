@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { page } from "$app/stores";
-    import { languages } from "../../../utils/languageUtils";
+    import { page } from "$app/state";
+    import { languageKeyToDisplayProperties } from "../../../utils/languageUtils";
     import LanguagePickerBar from "./LanguagePickerBar.svelte";
     import { fade } from "svelte/transition";
 
     let barOpen: boolean = $state(false);
 
-    let currentFlag = $derived(languages[$page.url.pathname.split("/")[1]]?.icon ?? "/icons/english.svg");
+    let currentFlag = $derived(languageKeyToDisplayProperties[page.url.pathname.split("/")[1]]?.icon ?? "/icons/english.svg");
 </script>
 
 <button class="language-picker" onclick={() => barOpen = !barOpen}>

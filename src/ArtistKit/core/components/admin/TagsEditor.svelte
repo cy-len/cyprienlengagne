@@ -1,6 +1,6 @@
 <script lang="ts">
     import { slide } from "svelte/transition";
-    import FormLabel from "../../utils/forms/FormLabel.svelte";
+    import FormLabel from "../forms/FormLabel.svelte";
 
     interface Props {
         tags: {

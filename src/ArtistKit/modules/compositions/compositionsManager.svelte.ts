@@ -1,8 +1,7 @@
-import type { PlatformPossibility } from "../../../types/recording";
 import { queryCountREST, queryFirebaseREST } from "../../core/rest/firebase";
 import { Status, type FetchResult } from "../../core/types/fetchTypes";
 import { optionalStringFirebaseMapValueToObject, type FirebaseArray, type FirebaseBoolean, type FirebaseDate, type FirebaseMap, type FirebaseObject, type FirebaseString, type FirebaseStringEnum, type FirebaseStringMap } from "../../core/types/firebaseTypes";
-import type { Recording } from "../../core/types/recording";
+import type { PlatformPossibility, Recording } from "../../core/types/recording";
 
 export interface Composition {
     name: string;
@@ -38,7 +37,7 @@ interface RawComposition {
 
     description: FirebaseString;
     lingualDescriptions: FirebaseStringMap;
-    
+
     recordings?: FirebaseArray<FirebaseObject<{
         platform: FirebaseStringEnum<PlatformPossibility>;
         link: FirebaseString;

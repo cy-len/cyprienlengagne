@@ -1,14 +1,14 @@
 <script lang="ts">
     import { onMount, setContext, type Snippet } from 'svelte';
-    import "../../styles/admin.css";
-    import "../../styles/global.css";
+    import "../../../styles/admin.css";
+    import "../../../styles/global.css";
     import { browser } from '$app/environment';
     import LoginForm from '../../../ArtistKit/core/components/admin/LoginForm.svelte';
     import Nav from '../../../ArtistKit/core/components/nav/Nav.svelte';
-    import NavLink from '../../../ArtistKit/core/components/NavLink.svelte';
     import SocialLinks from '../../../ArtistKit/core/components/SocialLinks.svelte';
     import { FirebaseManager } from '../../../ArtistKit/core/libs/firebaseManager.svelte';
     import PageStructure from '../../../components/PageStructure.svelte';
+    import NavLink from '../../../ArtistKit/core/components/nav/NavLink.svelte';
 
     interface Props {
         children?: Snippet;
@@ -61,6 +61,18 @@
 
     .admin-nav {
         flex-wrap: wrap;
+    }
+
+    .admin-nav :global(a) {
+        color: black;
+    }
+
+    .admin-nav :global(a:hover) {
+        border-bottom-color: var(--color-primary);
+    }
+
+    .admin-nav :global(a.active) {
+        color: var(--color-primary);
     }
     
     .center {

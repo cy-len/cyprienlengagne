@@ -24,12 +24,12 @@
         if (!firebaseManager) return;
 
         const docRef = await firebaseManager.addNews({
-            imageUrl: "/imgs/gallery_default.jpg",
-            fullresXOffset: 0,
-            fullresYOffset: 0,
-            thumbnailUrl: "",
-            thumbnailXOffset: 0,
-            thumbnailYOffset: 0,
+            image: {
+                url: ""
+            },
+            thumbnail: {
+                url: ""
+            },
             imageCopyright: "",
             date: new Date(),
             text: {

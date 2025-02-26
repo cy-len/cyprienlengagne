@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { socialMediasManager } from "../../stores/socialMedias.svelte";
+    import { socialMediasManager } from "../../modules/socialMedias/socialMediasManager.svelte";
 
     interface Props {
         text?: "media" | "handles" | "off";

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import type { Concert } from "../../types/concert";
-    import { capitalize } from "../../utils/stringUtils";
+    import { capitalize } from "../../../../../core/utils/stringUtils";
+    import type { Concert } from "../../../concertsManager.svelte";
 
     interface Props {
         concert: Concert;

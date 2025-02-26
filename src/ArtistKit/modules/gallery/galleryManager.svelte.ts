@@ -1,14 +1,11 @@
 import { queryCountREST, queryFirebaseREST } from "../../core/rest/firebase";
 import { Status, type FetchResult } from "../../core/types/fetchTypes";
-import type { FirebaseDate, FirebaseInteger, FirebaseString } from "../../core/types/firebaseTypes";
+import { firebaseImageSourceToImageSource, type FirebaseDate, type FirebaseImageSource, type FirebaseInteger, type FirebaseString } from "../../core/types/firebaseTypes";
+import type { ImageSource } from "../../core/types/imageTypes";
 
 export interface GalleryPicture {
     url: string;
-    thumbnailUrl: string;
-    thumbnailOffset: {
-        x: number;
-        y: number;
-    };
+    thumbnail: ImageSource;
     copyright: string;
     uploadedDate: Date;
 }
@@ -17,10 +14,7 @@ export type GalleryFetchResult = FetchResult<GalleryPicture>;
 
 interface RawGalleryPicture {
     url: FirebaseString;
-
-    thumbnailUrl: FirebaseString;
-    thumbnailXOffset?: FirebaseInteger;
-    thumbnailYOffset?: FirebaseInteger;
+    thumbnail: FirebaseImageSource;
 
     copyright: FirebaseString;
 
@@ -30,11 +24,7 @@ interface RawGalleryPicture {
 function rawGalleryPictureToGalleryPicture(rawPicture: RawGalleryPicture): GalleryPicture {
     return {
         url: rawPicture.url.stringValue,
-        thumbnailUrl: rawPicture.thumbnailUrl?.stringValue ?? rawPicture.url.stringValue,
-        thumbnailOffset: {
-            x: rawPicture.thumbnailXOffset?.integerValue ?? 0,
-            y: rawPicture.thumbnailYOffset?.integerValue ?? 0
-        },
+        thumbnail: firebaseImageSourceToImageSource(rawPicture.thumbnail),
         copyright: rawPicture.copyright.stringValue,
         uploadedDate: new Date(rawPicture.uploadedDate.timestampValue),
     };

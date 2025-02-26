@@ -4,7 +4,7 @@ import { getAuth, signInWithEmailAndPassword, type User } from "firebase/auth";
 import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query, where } from "firebase/firestore";
 import { getDownloadURL, getStorage, list, ref, uploadBytesResumable, type UploadTask } from "firebase/storage";
 import type { Concert } from "../../modules/concerts/concertsManager.svelte";
-import type { News } from "../../modules/news/newsManager.svelte";
+import type { FirebaseNews, News } from "../../modules/news/newsManager.svelte";
 import type { GalleryPicture } from "../../modules/gallery/galleryManager.svelte";
 import type { Video } from "../../modules/videos/videosManager.svelte";
 import type { Composition } from "../../modules/compositions/compositionsManager.svelte";
@@ -106,7 +106,7 @@ export class FirebaseManager {
         return getDocs(q);
     }
 
-    async addNews(news: News) {
+    async addNews(news: FirebaseNews) {
         return addDoc(this.#newsCollection, news);
     }
 

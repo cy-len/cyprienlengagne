@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { languages } from "../../../utils/languageUtils";
+    import { languageKeyToDisplayProperties } from "../../utils/languageUtils";
     import FormLabel from "../forms/FormLabel.svelte";
 
     interface Props {
@@ -10,7 +10,7 @@
     }
 
     let {
-        supportedLanguages = Object.keys(languages),
+        supportedLanguages = Object.keys(languageKeyToDisplayProperties),
         useEnglishAsDefault = true,
         defaultText = $bindable(),
         lingualTexts = $bindable()
@@ -18,7 +18,7 @@
 
     function setSameAsDefault(langKey: string) {
         if (lingualTexts[langKey]) {
-            const langName = languages[langKey].name;
+            const langName = languageKeyToDisplayProperties[langKey].name;
             const areYouSure = prompt(`This will make the text in ${langName} the same as the default one. The custom text for ${langName} will be lost. If you want to proceed, type YES`);
             if (areYouSure !== "YES") return;
         }
@@ -34,7 +34,7 @@
     <div class="lang">
         <FormLabel
             name={useEnglishAsDefault ? "Default/English (appears if the language requested is not provided)" : "Default (appears if the language requested is not provided)"}
-            icon={useEnglishAsDefault ? languages["en"].icon : undefined}
+            icon={useEnglishAsDefault ? languageKeyToDisplayProperties["en"].icon : undefined}
             iconAlt="English language flag"
         >
             <textarea cols="4" bind:value={defaultText}></textarea>
@@ -42,7 +42,7 @@
     </div>
 
     {#each correctedSupportedLanguages as langKey}
-        {@const lang = languages[langKey]}
+        {@const lang = languageKeyToDisplayProperties[langKey]}
 
         <div class="lang">
             <FormLabel

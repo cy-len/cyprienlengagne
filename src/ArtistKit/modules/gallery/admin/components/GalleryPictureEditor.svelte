@@ -62,9 +62,13 @@
             copyright: galleryPicture.copyright,
             date: galleryPicture.date,
             url: galleryPicture.url,
-            thumbnailUrl: galleryPicture.thumbnailUrl,
-            thumbnailXOffset: galleryPicture.xOffset,
-            thumbnailYOffset: galleryPicture.yOffset,
+            thumbnail: {
+                url: galleryPicture.thumbnailUrl,
+                offset: {
+                    x: galleryPicture.xOffset,
+                    y: galleryPicture.yOffset
+                }
+            }
         });
 
         hash = JSON.stringify(galleryPicture);

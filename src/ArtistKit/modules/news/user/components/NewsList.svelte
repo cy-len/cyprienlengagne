@@ -60,9 +60,9 @@
             <button
                 class="news"
                 style="
-                    background-image: url('{newsItem.thumbnailUrl ?? newsItem.imageUrl}');
-                    --x-offset: {newsItem.thumbnailXOffset}%;
-                    --y-offset: {newsItem.thumbnailYOffset}%;"
+                    background-image: url('{newsItem.thumbnail.url ?? newsItem.image.url}');
+                    --x-offset: {newsItem.thumbnail.offset?.x ?? 50}%;
+                    --y-offset: {newsItem.thumbnail.offset?.y ?? 50}%;"
                 onclick={() => {
                     openNews(newsItem);
                 }}

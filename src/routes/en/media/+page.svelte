@@ -1,7 +1,7 @@
 <script lang="ts">
+    import Gallery from "../../../ArtistKit/modules/gallery/user/components/Gallery.svelte";
+    import VideoList from "../../../ArtistKit/modules/videos/user/components/VideoList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
-    import VideoList from "../../../components/media/VideoList.svelte";
-    import Gallery from "../../../components/media/Gallery.svelte";
 </script>
 
 <PageStructure

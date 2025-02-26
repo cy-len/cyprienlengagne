@@ -1,6 +1,7 @@
 import { queryCountREST, queryFirebaseREST } from "../../core/rest/firebase";
 import { Status, type FetchResult } from "../../core/types/fetchTypes";
-import type { FirebaseDate, FirebaseInteger, FirebaseMap, FirebaseObject, FirebaseString } from "../../core/types/firebaseTypes";
+import { firebaseImageSourceToImageSource, type FirebaseDate, type FirebaseImageSource, type FirebaseInteger, type FirebaseMap, type FirebaseObject, type FirebaseString } from "../../core/types/firebaseTypes";
+import type { ImageSource } from "../../core/types/imageTypes";
 
 export interface NewsContent {
     title: string;
@@ -8,12 +9,8 @@ export interface NewsContent {
 }
 
 export interface News {
-    imageUrl: string;
-    fullresXOffset: number;
-    fullresYOffset: number;
-    thumbnailUrl?: string;
-    thumbnailXOffset: number;
-    thumbnailYOffset: number;
+    image: ImageSource;
+    thumbnail: ImageSource;
     imageCopyright: string;
     text: {
         [key: string]: NewsContent;
@@ -23,14 +20,11 @@ export interface News {
 
 export type NewsFetchResult = FetchResult<News>;
 
-interface RawNews {
-    imageUrl: FirebaseString;
-    fullresXOffset?: FirebaseInteger;
-    fullresYOffset?: FirebaseInteger;
+export type FirebaseNews = News;
 
-    thumbnailUrl?: FirebaseString;
-    thumbnailXOffset?: FirebaseInteger;
-    thumbnailYOffset?: FirebaseInteger;
+interface RawNews {
+    image: FirebaseImageSource;
+    thumbnail: FirebaseImageSource;
 
     imageCopyright: FirebaseString;
 
@@ -45,12 +39,8 @@ interface RawNews {
 
 function rawNewsToNews(rawFields: RawNews): News {
     return {
-        imageUrl: rawFields.imageUrl.stringValue,
-        fullresXOffset: rawFields.fullresXOffset?.integerValue ?? 50,
-        fullresYOffset: rawFields.fullresYOffset?.integerValue ?? 50,
-        thumbnailUrl: rawFields.thumbnailUrl?.stringValue,
-        thumbnailXOffset: rawFields.thumbnailXOffset?.integerValue ?? 50,
-        thumbnailYOffset: rawFields.thumbnailYOffset?.integerValue ?? 50,
+        image: firebaseImageSourceToImageSource(rawFields.image),
+        thumbnail: firebaseImageSourceToImageSource(rawFields.thumbnail),
         imageCopyright: rawFields.imageCopyright.stringValue,
         text: {
             en: {
@@ -106,7 +96,6 @@ class NewsManager {
             
             const countPromise = this.#news.total > -1 ? Promise.resolve(this.#news.total) : this.#queryNewsCount(fetchFunction);
             const [newsCount, newsArray] = await Promise.all([countPromise, this.#queryNews(limit, fetchFunction)]);
-            console.log(newsArray)
 
             this.#news = {
                 items: newsArray,

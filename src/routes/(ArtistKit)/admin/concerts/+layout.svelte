@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import NavLink from '../../../../ArtistKit/core/components/NavLink.svelte';
+    import NavLink from '../../../../ArtistKit/core/components/nav/NavLink.svelte';
 
     interface Props {
         children?: Snippet;

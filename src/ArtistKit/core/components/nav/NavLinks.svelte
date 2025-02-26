@@ -12,7 +12,7 @@
 </script>
 
 <script lang="ts">
-    import NavLink from "../utils/NavLink.svelte";
+    import NavLink from "./NavLink.svelte";
     import LanguagePicker from "./language/LanguagePicker.svelte";
 
     interface Props {

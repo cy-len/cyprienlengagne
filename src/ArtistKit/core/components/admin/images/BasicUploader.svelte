@@ -2,9 +2,9 @@
 
     import { getDownloadURL, type UploadTaskSnapshot } from "firebase/storage";
     import { getContext } from "svelte";
-    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
-    import ProgressBar from "../utils/ProgressBar.svelte";
     import { compressImageBrowser } from "../../../utils/imgUtils";
+    import type { FirebaseManager } from "../../../libs/firebaseManager.svelte";
+    import ProgressBar from "../../ProgressBar.svelte";
 
     interface Props {
         fullresUrl: string;

@@ -73,12 +73,20 @@
         if (!modified) return;
 
         await updateDoc(newsRef, {
-            imageUrl: news.imageUrl,
-            fullresXOffset: news.fullresXOffset,
-            fullresYOffset: news.fullresYOffset,
-            thumbnailUrl: news.thumbnailUrl,
-            thumbnailXOffset: news.thumbnailXOffset,
-            thumbnailYOffset: news.thumbnailYOffset,
+            image: {
+                url: news.imageUrl,
+                offset: {
+                    x: news.fullresXOffset,
+                    y: news.fullresYOffset
+                }
+            },
+            thumbnail: {
+                url: news.thumbnailUrl,
+                offset: {
+                    x: news.thumbnailXOffset,
+                    y: news.thumbnailYOffset
+                }
+            },
             imageCopyright: news.imageCopyright,
             date: new Date(news.dateString),
             text: news.text,
@@ -147,6 +155,10 @@
                 {
                     displayName: "Gallery",
                     path: "gallery"
+                },
+                {
+                    displayName: "Other News",
+                    path: "news"
                 }
             ]}
             cropContainerThumbnail={{ width: 20, height: 26 }}

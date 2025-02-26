@@ -1,9 +1,9 @@
 <script lang="ts">
 
     import { getDownloadURL, type StorageReference } from "firebase/storage";
-    import { getContext, onMount } from "svelte";
-    import type { FirebaseManager } from "../../../firebase/firebaseManager.svelte";
-    import LoadingSpinner from "../../utils/LoadingSpinner.svelte";
+    import { getContext } from "svelte";
+    import { FirebaseManager } from "../../../libs/firebaseManager.svelte";
+    import LoadingSpinner from "../../LoadingSpinner.svelte";
 
     interface Props {
         folderPath: string;

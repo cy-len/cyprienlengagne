@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import type { OpenGraphProps } from "../types/openGraphProps";
-    import { setOpenGraph } from "../ArtistKit/core/utils/openGraphManager";
+    import { setOpenGraph, type OpenGraphProps } from "../ArtistKit/core/utils/openGraphManager";
 
     interface Props {
         children?: Snippet;

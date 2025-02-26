@@ -1,8 +1,8 @@
 <script lang="ts">
     import { getContext } from "svelte";
-    import { FirebaseManager } from '../../firebase/firebaseManager.svelte';
-    import LoadingSpinner from "../utils/LoadingSpinner.svelte";
-    import FormLabel from "../utils/forms/FormLabel.svelte";
+    import type { FirebaseManager } from "../../libs/firebaseManager.svelte";
+    import FormLabel from "../forms/FormLabel.svelte";
+    import LoadingSpinner from "../LoadingSpinner.svelte";
 
     let firebaseManager = getContext<() => FirebaseManager | undefined>("firebaseManager")();
 

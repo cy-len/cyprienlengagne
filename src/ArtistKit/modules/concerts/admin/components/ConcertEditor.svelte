@@ -1,13 +1,13 @@
 <script lang="ts">
     import { type DocumentReference, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
     import { onMount } from "svelte";
-    import MultilingualEditor from "../subEditors/MultilingualEditor.svelte";
-    import Collapsible from "../utils/Collapsible.svelte";
-    import FormLabel from "../../utils/forms/FormLabel.svelte";
-    import FormCheckbox from "../../utils/forms/FormCheckbox.svelte";
     import { slide } from "svelte/transition";
-    import TagsEditor from "../subEditors/TagsEditor.svelte";
-    import ImagePicker from "../images/ImagePicker.svelte";
+    import ImagePicker from "../../../../core/components/admin/images/ImagePicker.svelte";
+    import MultilingualEditor from "../../../../core/components/admin/MultilingualEditor.svelte";
+    import TagsEditor from "../../../../core/components/admin/TagsEditor.svelte";
+    import Collapsible from "../../../../core/components/Collapsible.svelte";
+    import FormCheckbox from "../../../../core/components/forms/FormCheckbox.svelte";
+    import FormLabel from "../../../../core/components/forms/FormLabel.svelte";
 
     interface Props {
         concertRef: DocumentReference;

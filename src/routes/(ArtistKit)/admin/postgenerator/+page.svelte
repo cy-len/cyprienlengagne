@@ -2,10 +2,10 @@
     import { onMount } from "svelte";
     import { galleryManager } from "../../../../ArtistKit/modules/gallery/galleryManager.svelte";
     import { socialMediasManager } from "../../../../ArtistKit/modules/socialMedias/socialMediasManager.svelte";
-    import ConcertSelector from "../../../../components/admin/postGenerator/ConcertSelector.svelte";
-    import FontSelector from "../../../../components/admin/postGenerator/FontSelector.svelte";
-    import TextModal from "../../../../components/admin/postGenerator/TextModal.svelte";
-    import type { Concert } from "../../../../types/concert";
+    import type { Concert } from "../../../../ArtistKit/modules/concerts/concertsManager.svelte";
+    import ConcertSelector from "../../../../ArtistKit/modules/postGenerator/ConcertSelector.svelte";
+    import FontSelector from "../../../../ArtistKit/modules/postGenerator/FontSelector.svelte";
+    import TextModal from "../../../../ArtistKit/modules/postGenerator/TextModal.svelte";
 
     interface Vector2 {
         x: number;

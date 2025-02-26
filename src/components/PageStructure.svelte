@@ -1,7 +1,10 @@
 <script lang="ts">
     import { setContext, type Snippet } from "svelte";
-    import type { OpenGraphProps } from "../types/openGraphProps";
     import LazyImage from "../ArtistKit/core/components/images/LazyImage.svelte";
+    import {
+        setOpenGraph,
+        type OpenGraphProps,
+    } from "../ArtistKit/core/utils/openGraphManager";
 
     interface Props {
         title?: string;
@@ -39,7 +42,7 @@
         children,
     }: Props = $props();
 
-    setContext<OpenGraphProps>("openGraphProps", {
+    setOpenGraph({
         title,
         description:
             "Website of the swiss-french cellist and composer Cyprien Lengagne",

@@ -1,6 +1,7 @@
 import { queryFirebaseAggregationREST, queryFirebaseREST } from "../../core/rest/firebase";
 import { Status, type FetchResult } from "../../core/types/fetchTypes";
-import { optionalStringFirebaseMapValueToObject, type FirebaseBoolean, type FirebaseDate, type FirebaseInteger, type FirebaseString, type FirebaseStringMap } from "../../core/types/firebaseTypes";
+import { optionalFirebaseImageSourceToOptionalImageSource, optionalStringFirebaseMapValueToObject, type FirebaseBoolean, type FirebaseDate, type FirebaseImageSource, type FirebaseInteger, type FirebaseString, type FirebaseStringMap } from "../../core/types/firebaseTypes";
+import type { ImageSource } from "../../core/types/imageTypes";
 
 export interface Concert {
     location: string;
@@ -15,16 +16,9 @@ export interface Concert {
     
     url?: string;
     
-    image?: {
-        url: string;
-        xOffset: number;
-        yOffset: number;
-    };
-    thumbnail?: {
-        url: string;
-        xOffset: number;
-        yOffset: number;
-    }
+    image?: ImageSource;
+    thumbnail?: ImageSource;
+
     tags: { [key: string]: string };
 }
 
@@ -42,13 +36,9 @@ interface RawConcert {
     lingualDescriptions: FirebaseStringMap;
 
     url?: FirebaseString;
-    
-    imgUrl?: FirebaseString;
-    imgXOffset?: FirebaseInteger;
-    imgYOffset?: FirebaseInteger;
-    thumbnailUrl?: FirebaseString;
-    thumbnailXOffset?: FirebaseInteger;
-    thumbnailYOffset?: FirebaseInteger;
+
+    image?: FirebaseImageSource;
+    thumbnail?: FirebaseImageSource;
 
     tags?: FirebaseStringMap;
 };
@@ -63,16 +53,8 @@ function rawConcertToConcert(rawFields: RawConcert): Concert {
         description: rawFields.description.stringValue,
         lingualDescriptions: optionalStringFirebaseMapValueToObject(rawFields.lingualDescriptions),
         url: rawFields.url?.stringValue ?? "",
-        image: rawFields.imgUrl ? {
-                url: rawFields.imgUrl.stringValue,
-                xOffset: rawFields.imgXOffset?.integerValue ?? 50,
-                yOffset: rawFields.imgYOffset?.integerValue ?? 50
-            } : undefined,
-        thumbnail: rawFields.thumbnailUrl ? {
-                url: rawFields.thumbnailUrl.stringValue,
-                xOffset: rawFields.thumbnailXOffset?.integerValue ?? 50,
-                yOffset: rawFields.thumbnailYOffset?.integerValue ?? 50
-            } : undefined,
+        image: optionalFirebaseImageSourceToOptionalImageSource(rawFields.image),
+        thumbnail: optionalFirebaseImageSourceToOptionalImageSource(rawFields.image),
         tags: optionalStringFirebaseMapValueToObject(rawFields.tags)
     };
 }

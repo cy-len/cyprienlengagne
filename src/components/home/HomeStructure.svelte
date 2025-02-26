@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { Status } from "../../types/status";
     import { browser } from "$app/environment";
     import { setContext } from "svelte";
-    import type { OpenGraphProps } from "../../types/openGraphProps";
     import LazyImage from "../../ArtistKit/core/components/images/LazyImage.svelte";
     import LoadingSpinner from "../../ArtistKit/core/components/LoadingSpinner.svelte";
     import SocialLinks from "../../ArtistKit/core/components/SocialLinks.svelte";
@@ -10,6 +8,8 @@
     import { concertsManager } from "../../ArtistKit/modules/concerts/concertsManager.svelte";
     import ConcertsList from "../../ArtistKit/modules/concerts/user/components/ConcertsList.svelte";
     import NewsList from "../../ArtistKit/modules/news/user/components/NewsList.svelte";
+    import { Status } from "../../ArtistKit/core/types/fetchTypes";
+    import type { OpenGraphProps } from "../../ArtistKit/core/types/openGraphProps";
 
     interface Props {
         instrument?: string;

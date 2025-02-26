@@ -1,9 +1,7 @@
 <script lang="ts">
-    import type { Recording } from "../../types/composition";
-    import {
-        extractSpotifyHandle,
-        extractYouTubeHandle,
-    } from "../../utils/stringUtils";
+    import type { Recording } from "../types/recording";
+    import { extractYouTubeHandle, extractSpotifyHandle } from "../utils/stringUtils";
+
 
     interface Props {
         recording: Recording;

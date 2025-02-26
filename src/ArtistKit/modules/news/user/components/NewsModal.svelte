@@ -9,11 +9,12 @@
     let { lang = "en" }: Props = $props();
 
     let news: News = $state({
-        imageUrl: "",
-        fullresXOffset: 50,
-        fullresYOffset: 50,
-        thumbnailXOffset: 50,
-        thumbnailYOffset: 50,
+        image: {
+            url: ""
+        },
+        thumbnail: {
+            url: ""
+        },
         imageCopyright: "",
         text: {
             [lang]: {
@@ -28,14 +29,13 @@
 
     export function show(newsItem: News) {
         news = newsItem;
-        console.log($state.snapshot(news));
         modal.show();
     }
 </script>
 
 <Modal bind:this={modal}>
     <div>
-        <img src={news.imageUrl} alt={news.text[lang].title} style="object-position: {news.fullresXOffset}% {news.fullresYOffset}%;" />
+        <img src={news.image.url} alt={news.text[lang].title} style="object-position: {news.image.offset?.x ?? 50}% {news.image.offset?.y ?? 50}%;" />
         <div class="text">
             <h3>{ news.text[lang].title }</h3>
             <p>{ news.text[lang].content }</p>

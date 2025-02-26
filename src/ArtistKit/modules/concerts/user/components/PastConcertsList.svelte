@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { concertsManager } from "../../stores/concerts.svelte";
-    import { Status } from "../../types/status";
+    import LoadingSpinner from "../../../../core/components/LoadingSpinner.svelte";
+    import { Status } from "../../../../core/types/fetchTypes";
+    import { concertsManager } from "../../concertsManager.svelte";
     import ConcertsList from "./ConcertsList.svelte";
-    import LoadingSpinner from "../utils/LoadingSpinner.svelte";
 
     interface Props {
         maxCount?: number;

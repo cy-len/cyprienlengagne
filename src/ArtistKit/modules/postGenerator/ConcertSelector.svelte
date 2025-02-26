@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { concertsManager } from "../../../stores/concerts.svelte";
-    import type { Concert } from "../../../types/concert";
+    import { type Concert, concertsManager } from "../../../ArtistKit/modules/concerts/concertsManager.svelte";
+
 
     interface Props {
         selection?: { [key: number]: boolean };

@@ -2,9 +2,9 @@
 
     import { type DocumentReference, updateDoc, getDoc } from "firebase/firestore";
     import { onMount } from "svelte";
-    import { languages } from "../../utils/languageUtils";
     import FormLabel from "../../../../core/components/forms/FormLabel.svelte";
     import Collapsible from "../../../../core/components/Collapsible.svelte";
+    import { languageKeyToDisplayProperties } from "../../../../core/utils/languageUtils";
 
     interface Props {
         bioRef: DocumentReference;
@@ -48,8 +48,8 @@
 <div class="editor-container" class:modified={modified}>
     <div class="editor-grid">
         <h3 class="language">
-            <img class="lang-icon" src={languages[bioRef.id].icon} alt="{languages[bioRef.id].name} language flag" />
-            <span>{ languages[bioRef.id].name }</span>
+            <img class="lang-icon" src={languageKeyToDisplayProperties[bioRef.id].icon} alt="{languageKeyToDisplayProperties[bioRef.id].name} language flag" />
+            <span>{ languageKeyToDisplayProperties[bioRef.id].name }</span>
         </h3> <!-- id = "en"/"fr"/"de"... -->
     
         <Collapsible summaryText="Short">

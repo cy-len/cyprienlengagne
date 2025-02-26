@@ -30,12 +30,12 @@
                 }}
             >
                 <img
-                    src={picture.thumbnailUrl}
+                    src={picture.thumbnail.url}
                     alt="Cyprien Lengagne"
                     class="gallery-image"
                     style="
-                        --offset-x: {picture.thumbnailOffset.x ?? '50'}%;
-                        --offset-y: {picture.thumbnailOffset.y ?? '50'}%;"
+                        --offset-x: {picture.thumbnail.offset?.x ?? '50'}%;
+                        --offset-y: {picture.thumbnail.offset?.y ?? '50'}%;"
                 />
                 <div class="gallery-image-copyright bg-very-light">
                     &#169; {picture.copyright}

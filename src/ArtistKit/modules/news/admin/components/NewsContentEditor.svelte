@@ -1,7 +1,7 @@
 <script lang="ts">
     import FormLabel from "../../../../core/components/forms/FormLabel.svelte";
+    import { languageKeyToDisplayProperties } from "../../../../core/utils/languageUtils";
     import type { NewsContent } from "../../newsManager.svelte";
-
 
     interface Props {
         text: NewsContent;
@@ -14,8 +14,8 @@
 
 <div class="news-content-editor">
     <h3>
-        <img class="lang-icon" src={languages[langName].icon} alt="{languages[langName].name} language flag" />
-        <span>{ languages[langName].name}</span>
+        <img class="lang-icon" src={languageKeyToDisplayProperties[langName].icon} alt="{languageKeyToDisplayProperties[langName].name} language flag" />
+        <span>{ languageKeyToDisplayProperties[langName].name}</span>
     </h3>
 
     <FormLabel name="Title">

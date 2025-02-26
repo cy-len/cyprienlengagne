@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import { languages } from "../../../utils/languageUtils";
-    import NavLink from "../../utils/NavLink.svelte";
+    import { languageKeyToDisplayProperties } from "../../../utils/languageUtils";
+    import NavLink from "../NavLink.svelte";
 
     function makeUrl(language: string, pathname: string) {
         const parts = pathname.split("/");
@@ -13,7 +13,7 @@
 </script>
 
 <div class="language-bar">
-    {#each Object.values(languages) as language}
+    {#each Object.values(languageKeyToDisplayProperties) as language}
         <NavLink href={makeUrl(language.code, page.url.pathname)} aExtraClass="ignore-enlargement">
             <div class="language">
                 <img class="icon" src={language.icon} alt="{language.name} language flag" />

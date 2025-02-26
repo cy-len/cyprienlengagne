@@ -1,5 +1,6 @@
 <script lang="ts">
-    import Modal from "../../modals/Modal.svelte";
+    import Modal from "../../../ArtistKit/core/components/Modal.svelte";
+
 
     let modal: Modal;
 
@@ -8,7 +9,6 @@
     export function show(textToShow: string) {
         modal.show();
         text = textToShow;
-        console.log(text);
     }
 
     async function copyText() {

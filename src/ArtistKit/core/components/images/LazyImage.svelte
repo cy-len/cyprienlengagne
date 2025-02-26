@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { imageManager } from "../../stores/images.svelte";
+    import { imageManager } from "./imagesManager.svelte";
 
     interface Props {
         lowresSrc?: string;
