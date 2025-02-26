@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Concert } from '../../concertsManager.svelte';
     import { browser } from '$app/environment';
-    import { onMount } from "svelte";
+    import { onMount, type Snippet } from "svelte";
     import { page } from "$app/state";
     import ConcertListItem from "./defaults/ConcertListItem.svelte";
     import { capitalize } from "../../../../core/utils/stringUtils";
@@ -13,6 +13,8 @@
         forceCompact?: boolean;
         grouping?: "off" | "month-asc" | "month-desc";
         alwaysShowYearInGroups?: boolean;
+
+        concertItem?: Snippet<[{ concert: Concert, compact: boolean }]>;
     }
 
     let {
@@ -20,7 +22,8 @@
         maxCount = -1,
         forceCompact = false,
         grouping = "month-asc",
-        alwaysShowYearInGroups = false
+        alwaysShowYearInGroups = false,
+        concertItem
     }: Props = $props();
 
     let autoCompact = $state(false);
@@ -68,7 +71,11 @@
                 
                 {#each group as concert}
                     <li>
-                        <ConcertListItem {concert} {compact} />
+                        {#if concertItem}
+                            {@render concertItem({ concert, compact })}
+                        {:else}
+                            <ConcertListItem {concert} {compact} />
+                        {/if}
                     </li>
                 {/each}
             {/if}
@@ -76,7 +83,11 @@
     {:else}
         {#each truncatedConcerts as concert}
             <li>
-                <ConcertListItem {concert} {compact} />
+                {#if concertItem}
+                    {@render concertItem({ concert, compact })}
+                {:else}
+                    <ConcertListItem {concert} {compact} />
+                {/if}
             </li>
         {/each}
     {/if}

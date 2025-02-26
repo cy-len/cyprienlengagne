@@ -40,3 +40,8 @@ export function extractYouTubeHandle(url: string): string {
 export function limit(str: string, maxChars = 20) {
     return str.length > maxChars ? `${str.slice(0, maxChars)}...` : str;
 }
+
+export function urlHost(path: string): string {
+    const url = new URL(path);
+    return url.hostname;
+}
