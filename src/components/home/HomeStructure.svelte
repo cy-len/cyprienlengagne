@@ -10,6 +10,7 @@
     import NewsList from "../../ArtistKit/modules/news/user/components/NewsList.svelte";
     import { Status } from "../../ArtistKit/core/types/fetchTypes";
     import { setOpenGraph } from "../../ArtistKit/core/utils/openGraphManager.svelte";
+    import OpenGraph from "../../ArtistKit/core/components/OpenGraph.svelte";
 
     interface Props {
         instrument?: string;
@@ -44,6 +45,11 @@
     });
 </script>
 
+<OpenGraph
+    title="Cyprien Lengagne"
+    description="Website of the swiss-french cellist and composer Cyprien Lengagne"
+    imageUrl="https://cyprienlengagne.com/imgs/Valere_Top.webp"
+/>
 <div id="home-wrapper">
     <div id="home-bg">
         <LazyImage

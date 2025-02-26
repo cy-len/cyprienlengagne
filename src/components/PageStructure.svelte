@@ -1,10 +1,7 @@
 <script lang="ts">
-    import { setContext, type Snippet } from "svelte";
+    import type { Snippet } from "svelte";
     import LazyImage from "../ArtistKit/core/components/images/LazyImage.svelte";
-    import {
-        setOpenGraph,
-        type OpenGraphProps,
-    } from "../ArtistKit/core/utils/openGraphManager.svelte";
+    import OpenGraph from "../ArtistKit/core/components/OpenGraph.svelte";
 
     interface Props {
         title?: string;
@@ -41,14 +38,13 @@
 
         children,
     }: Props = $props();
-
-    setOpenGraph({
-        title,
-        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
-        imageUrl: `https://cyprienlengagne.com/imgs/${bannerImgName}`,
-    });
 </script>
 
+<OpenGraph
+    title="{title} - Cyprien Lengagne"
+    description="Website of the swiss-french cellist and composer Cyprien Lengagne"
+    imageUrl="https://cyprienlengagne.com/imgs/Valere_Top.webp"
+/>
 <div class="page-structure">
     <header
         style="--banner-width: {bannerWidth}; --banner-pos: {bannerPosition}; --banner-mobile-pos: {bannerMobilePosition};"

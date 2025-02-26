@@ -31,8 +31,6 @@
         children,
     }: Props = $props();
 
-    const openGraphManager = initOpenGraph(defaultOpenGraph);
-
     onMount(() => {
         document.body.classList.add("first-page", "animated");
     });
@@ -55,39 +53,10 @@
                 await navigation.complete;
                 clearTimeout(timer);
                 showLoading = false;
-                console.log("resolved");
             });
         });
     });
-
-    let title = $derived.by(() => {
-        if (hideAppendixBlacklist.includes(page.url.pathname))
-            return openGraphManager.openGraphProps.title;
-        return `${openGraphManager.openGraphProps.title} ${titleAppendix}`;
-    });
 </script>
-
-<svelte:head>
-    <title>{title}</title>
-    <meta property="og:title" content={title} />
-    <meta property="og:type" content="website" />
-    <meta
-        property="description"
-        content={openGraphManager.openGraphProps.description ?? ""}
-    />
-    <meta
-        property="og:description"
-        content={openGraphManager.openGraphProps.description ?? ""}
-    />
-    <meta
-        property="og:image"
-        content={openGraphManager.openGraphProps.imageUrl ?? "https://cyprienlengagne.com/imgs/Valere_Top.webp"}
-    />
-    <meta
-        property="og:image:secure_url"
-        content={openGraphManager.openGraphProps.imageUrl ?? "https://cyprienlengagne.com/imgs/Valere_Top.webp"}
-    />
-</svelte:head>
 
 {@render children?.()}
 {#if showLoading && enableLoadingSpinner}
