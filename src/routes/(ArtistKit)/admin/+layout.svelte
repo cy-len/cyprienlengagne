@@ -4,7 +4,7 @@
     import "../../../styles/global.css";
     import { browser } from '$app/environment';
     import LoginForm from '../../../ArtistKit/core/components/admin/LoginForm.svelte';
-    import Nav from '../../../ArtistKit/core/components/nav/Nav.svelte';
+    import Nav from '../../../components/Nav.svelte';
     import SocialLinks from '../../../ArtistKit/core/components/SocialLinks.svelte';
     import { FirebaseManager } from '../../../ArtistKit/core/libs/firebaseManager.svelte';
     import PageStructure from '../../../components/PageStructure.svelte';

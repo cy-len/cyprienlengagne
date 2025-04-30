@@ -9,6 +9,7 @@ import type { FirebaseGalleryPicture } from "../../modules/gallery/galleryManage
 import type { FirebaseVideo } from "../../modules/videos/videosManager.svelte";
 import type { FirebaseComposition } from "../../modules/compositions/compositionsManager.svelte";
 import type { FirebaseAlbum } from "../../modules/discography/discographyManager.svelte";
+import { PUBLIC_FIREBASE_API_KEY, PUBLIC_FIREBASE_APP_ID, PUBLIC_FIREBASE_AUTH_DOMAIN, PUBLIC_FIREBASE_MEASUREMENT_ID, PUBLIC_FIREBASE_MESSAGING_SENDER_ID, PUBLIC_FIREBASE_PROJECT_ID, PUBLIC_FIREBASE_STORAGE_BUCKET } from "$env/static/public";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -16,13 +17,13 @@ import type { FirebaseAlbum } from "../../modules/discography/discographyManager
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyD_hPXuY6NzDlZ0lq9IaLAOoMYZpc_PiJo",
-    authDomain: "cyprienlengagne-73f1d.firebaseapp.com",
-    projectId: "cyprienlengagne-73f1d",
-    storageBucket: "cyprienlengagne-73f1d.appspot.com",
-    messagingSenderId: "508066843103",
-    appId: "1:508066843103:web:1fac966c3722a6f5591c6a",
-    measurementId: "G-VMWJFH4G7D"
+    apiKey: PUBLIC_FIREBASE_API_KEY,
+    authDomain: PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: PUBLIC_FIREBASE_APP_ID,
+    measurementId: PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 export class FirebaseManager {

@@ -1,19 +1,10 @@
 <script lang="ts">
     import { onMount, type Snippet } from "svelte";
     import { beforeNavigate, onNavigate } from "$app/navigation";
-    import {
-        initOpenGraph,
-        type OpenGraphProps,
-    } from "../utils/openGraphManager.svelte";
-    import { page } from "$app/state";
     import { fade } from "svelte/transition";
     import LoadingSpinner from "./LoadingSpinner.svelte";
 
     interface Props {
-        titleAppendix: string;
-        hideAppendixBlacklist?: string[];
-        defaultOpenGraph: OpenGraphProps;
-
         enableLoadingSpinner?: boolean;
         loadingSpinnerBackground?: string;
         loadingSpinnerColor?: string;
@@ -22,9 +13,6 @@
     }
 
     let {
-        titleAppendix,
-        hideAppendixBlacklist = [],
-        defaultOpenGraph,
         enableLoadingSpinner = true,
         loadingSpinnerBackground = "rgba(0, 0, 0, 0.75)",
         loadingSpinnerColor = "white",
@@ -41,18 +29,25 @@
     beforeNavigate(() => {
         timer = setTimeout(() => (showLoading = true), 100);
     });
+    
+    function navigationEnd() {
+        clearTimeout(timer);
+        showLoading = false;
+    }
 
     onNavigate(async (navigation) => {
-        if (!document.startViewTransition) return;
-
         document.body.classList.remove("first-page");
+
+        if (!document.startViewTransition) {
+            navigationEnd();
+            return;
+        }
 
         return new Promise((resolve) => {
             document.startViewTransition(async () => {
                 resolve();
                 await navigation.complete;
-                clearTimeout(timer);
-                showLoading = false;
+                navigationEnd();
             });
         });
     });

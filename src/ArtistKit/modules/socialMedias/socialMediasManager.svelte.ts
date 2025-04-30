@@ -1,3 +1,4 @@
+import { PUBLIC_FIREBASE_PROJECT_ID } from "$env/static/public";
 import { Status } from "../../core/types/fetchTypes";
 
 export interface SocialMediaFetchResult {
@@ -37,7 +38,7 @@ class SocialMediaManager {
 
     async updateSocialMedias(fetchFunction = fetch) {
         try {
-            const res = await fetchFunction("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/socialMedias/handles");
+            const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/${PUBLIC_FIREBASE_PROJECT_ID}/databases/(default)/documents/socialMedias/handles`);
             const json = await res.json();
 
             this.#socialMedias = {

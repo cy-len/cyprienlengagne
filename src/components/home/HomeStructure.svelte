@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { browser } from "$app/environment";
-    import { setContext } from "svelte";
     import LazyImage from "../../ArtistKit/core/components/images/LazyImage.svelte";
     import LoadingSpinner from "../../ArtistKit/core/components/LoadingSpinner.svelte";
     import SocialLinks from "../../ArtistKit/core/components/SocialLinks.svelte";
@@ -9,7 +7,6 @@
     import ConcertsList from "../../ArtistKit/modules/concerts/user/components/ConcertsList.svelte";
     import NewsList from "../../ArtistKit/modules/news/user/components/NewsList.svelte";
     import { Status } from "../../ArtistKit/core/types/fetchTypes";
-    import { setOpenGraph } from "../../ArtistKit/core/utils/openGraphManager.svelte";
     import OpenGraph from "../../ArtistKit/core/components/OpenGraph.svelte";
 
     interface Props {
@@ -37,12 +34,6 @@
         seeAllConcertsText = "See All Concerts",
         seeGalleryText = "See Gallery",
     }: Props = $props();
-
-    setOpenGraph({
-        title: "Cyprien Lengagne",
-        description: "Website of the swiss-french cellist and composer Cyprien Lengagne",
-        imageUrl: `https://cyprienlengagne.com/imgs/Valere_Top.webp`,
-    });
 </script>
 
 <OpenGraph

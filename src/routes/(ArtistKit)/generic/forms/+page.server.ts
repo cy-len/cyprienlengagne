@@ -22,6 +22,8 @@ export const actions: Actions = {
             });
         }
 
+        data.append("reply_to", email);
+
         try {
             const captchaResponse = await verifyCaptchaToken(captcha, fetch);
 

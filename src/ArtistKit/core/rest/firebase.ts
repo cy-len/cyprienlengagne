@@ -1,3 +1,5 @@
+import { PUBLIC_FIREBASE_PROJECT_ID } from "$env/static/public";
+
 interface FirebaseReturn<T> {
     document: {
         createTime: string;
@@ -16,7 +18,7 @@ interface FirebaseAggregationReturn {
 }
 
 export async function queryFirebaseREST<T>(query: object, fetchFunction = fetch): Promise<FirebaseReturn<T>[]> {
-    const res = await fetchFunction("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents:runQuery", {
+    const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/${PUBLIC_FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery`, {
         method: "POST",
         body: JSON.stringify(query)
     });
@@ -25,7 +27,7 @@ export async function queryFirebaseREST<T>(query: object, fetchFunction = fetch)
 }
 
 export async function queryFirebaseAggregationREST(query: object, fetchFunction = fetch): Promise<FirebaseAggregationReturn[]> {
-    const res = await fetchFunction("https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents:runAggregationQuery", {
+    const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/${PUBLIC_FIREBASE_PROJECT_ID}/databases/(default)/documents:runAggregationQuery`, {
         method: "POST",
         body: JSON.stringify(query)
     });
@@ -51,7 +53,7 @@ export async function queryCountREST(collectionId: string, fetchFunction = fetch
 }
 
 export async function createDocumentFirebaseREST(fields: object, collectionPath: string, fetchFunction = fetch) {
-    const response = await fetchFunction(`https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/${collectionPath}`, {
+    const response = await fetchFunction(`https://firestore.googleapis.com/v1/projects/${PUBLIC_FIREBASE_PROJECT_ID}/databases/(default)/documents/${collectionPath}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

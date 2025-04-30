@@ -1,7 +1,7 @@
 <script lang="ts">
-    import NavLinks from "./NavLinks.svelte";
-    import type { NavLinksParams } from "./NavLinks.svelte";
-    import Hamburger from "./Hamburger.svelte";
+    import NavLinks from "../ArtistKit/core/components/nav/NavLinks.svelte";
+    import type { NavLinksParams } from "../ArtistKit/core/components/nav/NavLinks.svelte";
+    import Hamburger from "../ArtistKit/core/components/nav/Hamburger.svelte";
 
     interface Props {
         navParams?: NavLinksParams;

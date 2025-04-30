@@ -1,3 +1,4 @@
+import { PUBLIC_FIREBASE_PROJECT_ID } from "$env/static/public";
 import { Status } from "../../core/types/fetchTypes";
 import type { FirebaseString } from "../../core/types/firebaseTypes";
 
@@ -42,7 +43,7 @@ class BioManager {
         };
     
         try {
-            const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/cyprienlengagne-73f1d/databases/(default)/documents/bios/${lang}`);
+            const res = await fetchFunction(`https://firestore.googleapis.com/v1/projects/${PUBLIC_FIREBASE_PROJECT_ID}/databases/(default)/documents/bios/${lang}`);
             const json = await res.json() as RawBio;
             
             this.#bios = {
