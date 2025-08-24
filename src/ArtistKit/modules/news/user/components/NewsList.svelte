@@ -135,8 +135,8 @@
         background: linear-gradient(
             to top,
             rgba(255, 255, 255, 0.95),
-            rgba(255, 255, 255, 0.85) 6rem,
-            rgba(255, 255, 255, 0) 6rem
+            rgba(255, 255, 255, 0.85) 7rem,
+            rgba(255, 255, 255, 0) 7rem
         );
 
         display: flex;
