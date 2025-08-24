@@ -1,28 +1,27 @@
 <script lang="ts">
+    import type { APIGallery, ArtkytImage } from "../../../../../artkyt/types";
+    import type { Result } from "../../../../../utils/result";
     import LoadingSpinner from "../../../../core/components/LoadingSpinner.svelte";
     import { Status } from "../../../../core/types/fetchTypes";
-    import { galleryManager, type GalleryPicture } from "../../galleryManager.svelte";
     import GalleryModal from "./GalleryModal.svelte";
 
-
     interface Props {
+        gallery: Result<{ gallery: APIGallery }>;
         loadingText?: string;
     }
 
-    let { loadingText = "Loading gallery" }: Props = $props();
+    let { gallery, loadingText = "Loading gallery" }: Props = $props();
 
     let modal: GalleryModal;
 
-    function openFullPicture(p: GalleryPicture) {
+    function openFullPicture(p: ArtkytImage) {
         modal.show(p);
     }
 </script>
 
-{#if galleryManager.gallery.status === Status.PENDING}
-    <LoadingSpinner message={loadingText} />
-{:else}
+{#if gallery.success}
     <div class="gallery auto-grid">
-        {#each galleryManager.gallery.items as picture}
+        {#each gallery.value.gallery.images as picture}
             <button
                 class="gallery-item"
                 onclick={() => {
@@ -30,15 +29,15 @@
                 }}
             >
                 <img
-                    src={picture.thumbnail.url}
+                    src={picture.thumbnailUrl}
                     alt="Cyprien Lengagne"
                     class="gallery-image"
                     style="
-                        --offset-x: {picture.thumbnail.offset?.x ?? '50'}%;
-                        --offset-y: {picture.thumbnail.offset?.y ?? '50'}%;"
+                        --offset-x: 50%;
+                        --offset-y: 50%;"
                 />
                 <div class="gallery-image-copyright bg-very-light">
-                    &#169; {picture.copyright}
+                    &#169; {picture.credits}
                 </div>
             </button>
         {/each}

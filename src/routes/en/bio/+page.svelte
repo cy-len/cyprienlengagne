@@ -1,6 +1,8 @@
 <script lang="ts">
     import Biography from "../../../ArtistKit/modules/bio/user/components/Biography.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
+
+    let { data } = $props();
 </script>
 
 <PageStructure
@@ -13,5 +15,5 @@
     imgLowresName="Valere_Front_Vertical_ultralowres.jpg"
     imgName="Valere_Front_Vertical.jpg"
 >
-    <Biography lang="en" />
+    <Biography bio={data.bio} lang="en" />
 </PageStructure>

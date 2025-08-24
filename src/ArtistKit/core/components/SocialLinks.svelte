@@ -1,66 +1,37 @@
 <script lang="ts">
-    import { socialMediasManager } from "../../modules/socialMedias/socialMediasManager.svelte";
+    import { getContext } from "svelte";
+    import type { ArtkytProfileLink } from "../../../artkyt/types";
+    import { socialPlatformCodeToPlatform, type SocialPlatformCode } from "../../../artkyt/constants/externalPlatforms";
 
     interface Props {
         text?: "media" | "handles" | "off";
         bigIcons?: boolean;
     }
 
+    const links = getContext<ArtkytProfileLink[]>("links");
+
     let { text = "off", bigIcons = false }: Props = $props();
 </script>
 
 <ul class:big-icons={bigIcons}>
-    {#if socialMediasManager.socialMedias.youtube.handle}
-        <li>
+    {#each links as link}
+        {@const platform = socialPlatformCodeToPlatform[link.kind as SocialPlatformCode]}
+         <li>
             <a
-                href="https://www.youtube.com/{socialMediasManager.socialMedias.youtube.handle}"
+                href={link.value}
                 target="_blank"
                 rel="noopener noreferrer"
             >
-                <img src="/icons/youtube.svg" alt="Youtube" class="icon" />
+                <img src="https://www.artkyt.com{platform.iconUrl}" alt={platform.label} class="icon" />
 
                 {#if text === "handles"}
-                    <span>{socialMediasManager.socialMedias.youtube.handle}</span>
+                    <span>{link.value}</span>
                 {:else if text === "media"}
-                    <span>YouTube</span>
+                    <span>{platform.label}</span>
                 {/if}
             </a>
         </li>
-    {/if}
-    {#if socialMediasManager.socialMedias.facebook.handle}
-        <li>
-            <a
-                href="https://www.facebook.com/{socialMediasManager.socialMedias.facebook.handle}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <img src="/icons/facebook.svg" alt="Facebook" class="icon" />
-
-                {#if text === "handles"}
-                    <span>{socialMediasManager.socialMedias.facebook.handle}</span>
-                {:else if text === "media"}
-                    <span>Facebook</span>
-                {/if}
-            </a>
-        </li>
-    {/if}
-    {#if socialMediasManager.socialMedias.instagram.handle}
-        <li>
-            <a
-                href="https://www.instagram.com/{socialMediasManager.socialMedias.instagram.handle}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <img src="/icons/instagram.svg" alt="Instagram" class="icon" />
-
-                {#if text === "handles"}
-                    <span>{socialMediasManager.socialMedias.instagram.handle}</span>
-                {:else if text === "media"}
-                    <span>Instagram</span>
-                {/if}
-            </a>
-        </li>
-    {/if}
+    {/each}
 </ul>
 
 <style>
@@ -97,5 +68,6 @@
 
     ul.big-icons img {
         height: 2.5rem;
+        object-fit: contain;
     }
 </style>

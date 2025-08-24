@@ -1,16 +1,20 @@
 import { browser } from "$app/environment";
 import { imageManager } from "../../../ArtistKit/core/components/images/imagesManager.svelte";
-import { newsManager } from "../../../ArtistKit/modules/news/newsManager.svelte";
+import { artkytClient } from "../../../artkyt/artkytClient.svelte";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {
     const promises: Promise<any>[] = [
-        newsManager.updateNews(10, fetch),
+        artkytClient.getNewsList("en", { pageSize: 10 }, { fetchFunction: fetch })
     ];
 
     if (browser) {
         promises.push(imageManager.loadImage("/imgs/PendereckiWinnerConcert_ultralowres.jpg"));
     }
 
-    await Promise.all(promises);
+    const [ news ] = await Promise.all(promises);
+
+    return {
+        news
+    };
 };

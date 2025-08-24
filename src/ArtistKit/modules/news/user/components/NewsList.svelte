@@ -1,24 +1,22 @@
 <script lang="ts">
+    import { artkytClient } from "../../../../../artkyt/artkytClient.svelte";
+    import type { APINewsItem, Paginated } from "../../../../../artkyt/types";
+    import { failure, ok, type Result } from "../../../../../utils/result";
     import LoadingSpinner from "../../../../core/components/LoadingSpinner.svelte";
-    import { Status } from "../../../../core/types/fetchTypes";
-    import { newsManager, type News } from "../../newsManager.svelte";
-    import NewsModal from "./NewsModal.svelte";
 
     interface Props {
-        maxCount?: number;
-        expandedMax?: number;
+        newsResult: Result<Paginated<{ news: APINewsItem[] }>>;
         lang?: string;
         loadMoreText?: string;
+        enableLoadMore?: boolean;
     }
 
     let {
-        maxCount = $bindable(-1),
-        expandedMax = 100,
+        newsResult,
         lang = "en",
         loadMoreText = "Load more",
+        enableLoadMore = true,
     }: Props = $props();
-
-    let modal: NewsModal;
 
     let loadingMore: boolean = $state(false);
 
@@ -28,66 +26,73 @@
         day: "numeric",
     });
 
-    function openNews(n: News) {
-        modal.show(n);
-    }
-
     async function loadMore() {
-        if (maxCount === -1) return;
+        loadingMore = true;
+        const result = await artkytClient.getNewsList(lang, {
+            page: newsResult.success ? (newsResult.value.pagination.page + 1) : 0,
+            pageSize: newsResult.success
+                ? newsResult.value.pagination.pageSize
+                : 10,
+        });
 
-        if (maxCount < newsManager.news.items.length) {
-            maxCount = newsManager.news.items.length;
+        if (!result.success) {
+            newsResult = failure({
+                code: "expansion_failed",
+                message: "Failed to expand the list",
+            });
+            loadingMore = false;
             return;
         }
 
-        loadingMore = true;
-        await newsManager.updateNews(expandedMax);
-        maxCount = expandedMax;
+        newsResult = ok({
+            news: newsResult.success
+                ? [...newsResult.value.news, ...result.value.news]
+                : result.value.news,
+            pagination: {
+                page: result.value.pagination.page,
+                pageSize: result.value.pagination.pageSize,
+            },
+        });
+
         loadingMore = false;
     }
-
-    let truncatedNews = $derived(
-        maxCount < 0
-            ? newsManager.news.items
-            : newsManager.news.items.slice(0, maxCount),
-    );
 </script>
 
-{#if newsManager.news.status === Status.OK}
+{#if newsResult.success}
     <div class="auto-grid sm-center">
-        {#each truncatedNews as newsItem}
-            <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-            <button
+        {#each newsResult.value.news as newsItem}
+            <a
                 class="news"
+                href="/{lang}/news/{newsItem.id}"
                 style="
-                    background-image: url('{newsItem.thumbnail.url ?? newsItem.image.url}');
-                    --x-offset: {newsItem.thumbnail.offset?.x ?? 50}%;
-                    --y-offset: {newsItem.thumbnail.offset?.y ?? 50}%;"
-                onclick={() => {
-                    openNews(newsItem);
-                }}
+                    background-image: url('{newsItem.image?.thumbnailUrl ??
+                    newsItem.image?.highQualityUrl ??
+                    newsItem.image?.originalQualityUrl ??
+                    ''}');
+                    --x-offset: {50}%;
+                    --y-offset: {50}%;"
             >
                 <div class="overlay">
                     <div class="bottom">
-                        <h5>{dateFormatter.format(newsItem.date)}</h5>
-                        <h4>{newsItem.text[lang].title}</h4>
+                        <h5>
+                            {dateFormatter.format(
+                                new Date(newsItem.publishedAt),
+                            )}
+                        </h5>
+                        <h4>{newsItem.title}</h4>
                     </div>
                 </div>
-            </button>
+            </a>
         {/each}
-
-        <NewsModal {lang} bind:this={modal} />
     </div>
 
     {#if loadingMore}
         <LoadingSpinner message="Loading more news" />
-    {:else if maxCount !== -1 && maxCount < expandedMax && newsManager.news.total > maxCount}
+    {:else if enableLoadMore}
         <button class="cta" onclick={loadMore}>{loadMoreText}</button>
     {/if}
-{:else if newsManager.news.status === Status.FAILED}
-    <p>An error occured while fetching news</p>
-{:else if newsManager.news.status === Status.PENDING}
-    <LoadingSpinner message="Loading news" />
+{:else}
+    <p>{newsResult.error.message}</p>
 {/if}
 
 <style>
@@ -119,6 +124,7 @@
         cursor: pointer;
 
         text-align: left;
+        color: black;
 
         transition: 0.25s;
     }
@@ -129,8 +135,8 @@
         background: linear-gradient(
             to top,
             rgba(255, 255, 255, 0.95),
-            rgba(255, 255, 255, 0.85) 7.5rem,
-            rgba(255, 255, 255, 0) 7.5rem
+            rgba(255, 255, 255, 0.85) 6rem,
+            rgba(255, 255, 255, 0) 6rem
         );
 
         display: flex;

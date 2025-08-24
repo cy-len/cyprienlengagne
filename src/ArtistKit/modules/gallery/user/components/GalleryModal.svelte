@@ -1,30 +1,26 @@
 <script lang="ts">
+    import type { ArtkytImage } from "../../../../../artkyt/types";
     import LazyImage from "../../../../core/components/images/LazyImage.svelte";
     import LoadingSpinner from "../../../../core/components/LoadingSpinner.svelte";
     import Modal from "../../../../core/components/Modal.svelte";
-    import type { GalleryPicture } from "../../galleryManager.svelte";
 
 
     let modal: Modal;
 
-    let picture: GalleryPicture = $state({
-        copyright: "",
-        url: "",
-        thumbnail: {
-            url: ""
-        },
-        uploadedDate: new Date()
+    let picture: ArtkytImage = $state({
+        credits: "",
+        originalQualityUrl: ""
     });
 
     let loading: boolean = $state(true);
 
-    export function show(galleryPicture: GalleryPicture) {
+    export function show(galleryPicture: ArtkytImage) {
         modal.show();
         picture = galleryPicture;
     }
 
     async function downloadPicture() {
-        const response = await fetch(picture.url);
+        const response = await fetch(picture.originalQualityUrl);
         const blob = await response.blob();
 
         const url = URL.createObjectURL(blob);
@@ -48,7 +44,7 @@
      {/snippet}
 
      <div class="wrapper">
-        <LazyImage lowresSrc={picture.thumbnail.url} src={picture.url} alt={picture.copyright} observe={false} onFullResLoaded={() => loading = false} />
+        <LazyImage lowresSrc={picture.thumbnailUrl} src={picture.highQualityUrl ?? picture.originalQualityUrl} alt={picture.credits} observe={false} onFullResLoaded={() => loading = false} />
         {#if loading}
             <div class="loading-wrapper">
                 <LoadingSpinner message="Loading full resolution picture" />
@@ -57,7 +53,7 @@
      </div>
 
     <div class="copyright">
-        &#169; { picture.copyright }
+        &#169; { picture.credits }
     </div>
 </Modal>
 

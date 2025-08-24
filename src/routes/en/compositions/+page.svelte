@@ -1,6 +1,8 @@
 <script lang="ts">
     import CompositionsList from "../../../ArtistKit/modules/compositions/user/components/CompositionsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
+
+    let { data } = $props();
 </script>
 
 <PageStructure
@@ -14,5 +16,5 @@
     imgLowresName="AmandineLauriol_Jaroussky_Face_ultralowres.jpg"
     imgName="AmandineLauriol_Jaroussky_Face.webp"
 >
-    <CompositionsList />
+    <CompositionsList compositions={data.compositions} />
 </PageStructure>

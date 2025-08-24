@@ -1,4 +1,4 @@
-import { PUBLIC_FIREBASE_PROJECT_ID } from "$env/static/public";
+import { PUBLIC_ARTKYT_BIO_ID, PUBLIC_ARTKYT_PROFILE_ID, PUBLIC_ARTKYT_SHORT_BIO_ID, PUBLIC_FIREBASE_PROJECT_ID } from "$env/static/public";
 import { Status } from "../../core/types/fetchTypes";
 import type { FirebaseString } from "../../core/types/firebaseTypes";
 
@@ -80,3 +80,25 @@ class BioManager {
 }
 
 export const bios = new BioManager;
+
+interface SingleBioPreview {
+    name: string;
+    content: string;
+    selectedLanguage: string;
+}
+
+export async function getShortBioInLanguage(lang: string, fetchFunction = fetch): Promise<SingleBioPreview> {
+    const res = await fetchFunction(`http://localhost:5173/api/public/profile/${PUBLIC_ARTKYT_PROFILE_ID}/bios/${PUBLIC_ARTKYT_SHORT_BIO_ID}?lang=${lang}`);
+    const json = await res.json() as { bio: SingleBioPreview };
+    console.log(json);
+
+    return json.bio;
+}
+
+export async function getFullBioInLanguage(lang: string, fetchFunction = fetch): Promise<SingleBioPreview> {
+    const res = await fetchFunction(`http://localhost:5173/api/public/profile/${PUBLIC_ARTKYT_PROFILE_ID}/bios/${PUBLIC_ARTKYT_BIO_ID}?lang=${lang}`);
+    const json = await res.json() as { bio: SingleBioPreview };
+    console.log(json);
+
+    return json.bio;
+}

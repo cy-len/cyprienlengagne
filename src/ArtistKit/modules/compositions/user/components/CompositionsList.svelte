@@ -1,31 +1,25 @@
 <script lang="ts">
-    import LoadingSpinner from "../../../../core/components/LoadingSpinner.svelte";
-    import RecordingPlayer from "../../../../core/components/RecordingPlayer.svelte";
-    import { Status } from "../../../../core/types/fetchTypes";
-    import { compositionsManager } from "../../compositionsManager.svelte";
-    import { categoryByLanguage } from "../../compositionUtils";
+    import type { APIComposition, Paginated } from "../../../../../artkyt/types";
+    import type { Result } from "../../../../../utils/result";
+    import RecordingPlayer from "../../../../../artkyt/RecordingPlayer.svelte";
+    import { categoryByLanguage, type CompositionTypeCode } from "../../compositionUtils";
+    import type { RecordingPlatformCode } from "../../../../../artkyt/constants/externalPlatforms";
 
     interface Props {
-        maxCount?: number;
-        expandedMax?: number;
+        compositions: Result<Paginated<{ compositions: APIComposition[] }>>;
         lang?: string;
-        loadMoreText?: string;
         premiereText?: string;
         allCategoryText?: string;
         noPieceInCategoryText?: string;
     }
 
     let {
-        maxCount = $bindable(-1),
-        expandedMax = 100,
+        compositions,
         lang = "en",
-        loadMoreText = "Load more",
         premiereText = "Premiere",
         allCategoryText = "All",
         noPieceInCategoryText = "There are no pieces within this category"
     }: Props = $props();
-
-    let loadingMore: boolean = $state(false);
 
     const dateFormatter = new Intl.DateTimeFormat(lang, {
         year: "numeric",
@@ -35,36 +29,29 @@
 
     let currentCategory = $state("all");
 
-    async function loadMore() {
-        if (maxCount === -1) return;
+    let availableCategories = $derived.by(() => {
+        if (!compositions.success) return [];
 
-        if (maxCount < compositionsManager.compositions.items.length) {
-            maxCount = compositionsManager.compositions.items.length;
-            return;
-        }
+        return Array.from(new Set(compositions.value.compositions.map(c => c.category)));
+    })
 
-        loadingMore = true;
-        await compositionsManager.updateCompositions(expandedMax);
-        maxCount = expandedMax;
-        loadingMore = false;
-    }
-
-    let truncatedCompositions = $derived(maxCount < 0 ? compositionsManager.compositions.items : compositionsManager.compositions.items.slice(0, maxCount));
     let filteredCompositions = $derived.by(() => {
-        if (currentCategory === "all") return truncatedCompositions;
+        if (!compositions.success) return [];
 
-        return truncatedCompositions.filter((composition) => composition.category === currentCategory);
+        if (currentCategory === "all") return compositions.value.compositions;
+
+        return compositions.value.compositions.filter((composition) => composition.category === currentCategory);
     });
 </script>
 
-{#if compositionsManager.compositions.status === Status.OK}
+{#if compositions.success}
     <div class="filters">
-        {#each ["all", ...compositionsManager.availableCompositionCategories] as category}
+        {#each ["all", ...availableCategories] as category}
             <button
                 class="{currentCategory === category ? 'cta-inverted' : 'cta'}"
                 onclick={() => currentCategory = category}
             >
-                { categoryByLanguage[lang][category] ?? allCategoryText }
+                { categoryByLanguage[lang][category as CompositionTypeCode] ?? allCategoryText }
             </button>
         {/each}
     </div>
@@ -73,8 +60,8 @@
         {#each filteredCompositions as composition}
             <div class="composition">
                 <div>
-                    <h4>{ composition.name } ({ (new Date(composition.compositionDate)).getFullYear() })</h4>
-                    <div class="category">{categoryByLanguage[lang][composition.category]}</div>
+                    <h4>{ composition.title } ({ composition.compositionYear })</h4>
+                    <div class="category">{categoryByLanguage[lang][composition.category as CompositionTypeCode]}</div>
                     <div class="composition-optional">
                         {#if composition.duration}
                             <div>
@@ -90,18 +77,24 @@
                         {/if}
                     </div>
 
-                    {#if composition.premiered}
+                    {#if composition.hasBeenPremiered}
                         <div class="premiere">
                             <h5>{ premiereText }</h5>
 
-                            <div>
-                                <img src="/icons/calendar.svg" alt="Calendar" class="icon" />
-                                <span>{ dateFormatter.format(composition.premiereDate) }</span>
-                            </div>
-                            <div>
-                                <img src="/icons/map_marker.svg" alt="Map marker" class="icon" />
-                                <span>{ composition.premiereLocation }</span>
-                            </div>
+                            {#if composition.premiereDate}
+                                <div>
+                                    <img src="/icons/calendar.svg" alt="Calendar" class="icon" />
+                                    <span>
+                                        { dateFormatter.format(new Date(composition.premiereDate)) }
+                                    </span>
+                                </div>
+                            {/if}
+                            {#if composition.premiereLocation}
+                                <div>
+                                    <img src="/icons/map_marker.svg" alt="Map marker" class="icon" />
+                                    <span>{ composition.premiereLocation }</span>
+                                </div>
+                            {/if}
                             {#if composition.premierePerformers}
                                 <div>
                                     <img src="/icons/music.svg" alt="Music" class="icon" />
@@ -111,11 +104,12 @@
                         </div>
                     {/if}
 
-                    <p>{composition.lingualDescriptions[lang] ?? composition.description}</p>
+                    <p>{composition.description}</p>
                 </div>
+                
                 <div class="recordings-container">
                     {#each composition.recordings as recording}
-                        <RecordingPlayer {recording} youtubePlayerHeight={180} />
+                        <RecordingPlayer platform={recording.platform as RecordingPlatformCode} url={recording.url} />
                     {/each}
                 </div>
             </div>
@@ -123,16 +117,8 @@
             <p>{ noPieceInCategoryText }</p>
         {/each}
     </div>
-
-    {#if loadingMore}
-        <LoadingSpinner message="Loading more news" />
-    {:else if maxCount !== -1 && maxCount < expandedMax && compositionsManager.compositions.total > maxCount}
-        <button class="cta" onclick={loadMore}>{ loadMoreText }</button>
-    {/if}
-{:else if compositionsManager.compositions.status === Status.FAILED}
+{:else}
     <p>An error occured while fetching compositions</p>
-{:else if compositionsManager.compositions.status === Status.PENDING}
-    <LoadingSpinner message="Loading compositions" />
 {/if}
 
 

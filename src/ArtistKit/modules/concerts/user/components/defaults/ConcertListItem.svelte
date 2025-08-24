@@ -1,59 +1,67 @@
 <script lang="ts">
-    import type { Concert } from "../../../../concerts/concertsManager.svelte";
     import ConcertDate from "./ConcertDate.svelte";
     import { page } from "$app/state";
     import { limit } from "../../../../../core/utils/stringUtils";
+    import type { APIConcertPreview } from "../../../../../../artkyt/types";
 
     interface Props {
-        concert: Concert;
+        concert: APIConcertPreview;
         compact: boolean;
     }
 
     let { concert, compact }: Props = $props();
 
-    let description = $derived.by(() => {
-        const lang = page.url.pathname.split("/")[1];
-        return concert.lingualDescriptions[lang] ?? concert.description;
-    });
+    let startDate = $derived(
+        concert.performances[0].startTime
+            ? new Date(
+                  `${concert.performances[0].startDate}T${concert.performances[0].startTime}`,
+              )
+            : new Date(concert.performances[0].startDate),
+    );
 
-    const timeFormatter = new Intl.DateTimeFormat(page.url.pathname.split("/")[1], {
-        timeStyle: "short"
-    });
-
+    const timeFormatter = new Intl.DateTimeFormat(
+        page.url.pathname.split("/")[1],
+        {
+            timeStyle: "short",
+        },
+    );
 </script>
 
-<a href={concert.url} target="_blank" rel="noopener noreferrer" class:compact={compact}>
+<a href={concert.url} target="_blank" rel="noopener noreferrer" class:compact>
     <div class="concert-container">
-        <div class="concert-date"><ConcertDate concert={concert} compact={compact} /></div>
+        <div class="concert-date"><ConcertDate {concert} {compact} /></div>
         <header>
-            <div class="concert-title">{ concert.location }</div>
+            <div class="concert-title">{concert.title}</div>
             <div class="concert-optional">
-                {#if concert.locationPrecise}
+                {#if concert.venueName}
                     <div>
-                        <img src="/icons/map_marker.svg" alt="Map marker" class="icon" />
-                        <span>{ concert.locationPrecise }</span>
+                        <img
+                            src="/icons/map_marker.svg"
+                            alt="Map marker"
+                            class="icon"
+                        />
+                        <span>{concert.venueName}</span>
                     </div>
                 {/if}
-                {#if concert.timeEnabled}
+                {#if concert.performances[0].startTime}
                     <div>
                         <img src="/icons/clock.svg" alt="Clock" class="icon" />
-                        <span>{ timeFormatter.format(concert.date) }</span>
+                        <span>{timeFormatter.format(startDate)}</span>
                     </div>
                 {/if}
                 {#if concert.url}
                     <div>
                         <img src="/icons/link.svg" alt="Link" class="icon" />
-                        <span>{ limit(concert.url, 32) }</span>
+                        <span>{limit(concert.url, 32)}</span>
                     </div>
                 {/if}
             </div>
         </header>
-        <div class="concert-description line-breaks">{ description }</div>
+        <div class="concert-description line-breaks">{concert.shortDescription}</div>
     </div>
 </a>
 
 <style>
-
     a {
         display: block;
         padding: 0.5rem 0.5rem 0.5rem 0;
@@ -95,7 +103,7 @@
         grid-template-columns: 5rem 1fr;
         gap: 0.5rem 1rem;
     }
-    
+
     a:not(.compact) .concert-container {
         max-width: calc(100% - 1rem);
     }
@@ -118,18 +126,18 @@
         font-weight: bold;
     }
 
-    .compact .concert-title  {
+    .compact .concert-title {
         padding: 0.5rem 1rem 0.25rem 1rem;
     }
 
-    .compact .concert-optional  {
+    .compact .concert-optional {
         padding: 0 1rem 0.5rem 1rem;
     }
 
     .concert-date {
         grid-area: date;
     }
-    
+
     .concert-optional > div {
         display: flex;
         gap: 0.25rem;
@@ -150,5 +158,4 @@
     .compact .concert-description {
         padding: 0 1rem 1rem 1rem;
     }
-
 </style>

@@ -1,15 +1,17 @@
 <script lang="ts">
     import LazyImage from "../../ArtistKit/core/components/images/LazyImage.svelte";
-    import LoadingSpinner from "../../ArtistKit/core/components/LoadingSpinner.svelte";
     import SocialLinks from "../../ArtistKit/core/components/SocialLinks.svelte";
-    import { bios } from "../../ArtistKit/modules/bio/biosManager.svelte";
-    import { concertsManager } from "../../ArtistKit/modules/concerts/concertsManager.svelte";
     import ConcertsList from "../../ArtistKit/modules/concerts/user/components/ConcertsList.svelte";
     import NewsList from "../../ArtistKit/modules/news/user/components/NewsList.svelte";
-    import { Status } from "../../ArtistKit/core/types/fetchTypes";
     import OpenGraph from "../../ArtistKit/core/components/OpenGraph.svelte";
+    import type { Result } from "../../utils/result";
+    import type { APIConcertPreview, APINewsItem, Paginated, SingleBioPreview } from "../../artkyt/types";
 
     interface Props {
+        shortBio: Result<{ bio: SingleBioPreview }>;
+        topNews: Result<Paginated<{ news: APINewsItem[] }>>;
+        topConcerts: Result<Paginated<{ concerts: APIConcertPreview[] }>>;
+
         instrument?: string;
         aboutTitle?: string;
         language?: string;
@@ -23,6 +25,10 @@
     }
 
     let {
+        shortBio,
+        topConcerts,
+        topNews,
+
         instrument = "Cellist & composer",
         aboutTitle = "About Cyprien",
         language = "en",
@@ -63,11 +69,9 @@
             <div class="bio-text">
                 <h3>{aboutTitle}</h3>
 
-                {#if bios.language(language).status === Status.PENDING}
-                    <LoadingSpinner message={bioLoadingText} />
-                {:else}
+                {#if shortBio.success}
                     <p class="line-breaks">
-                        {bios.language(language).biography.short}
+                        {shortBio.value.bio.content}
                     </p>
                 {/if}
 
@@ -90,15 +94,14 @@
 
         <section class="news backdrop-blur-very-strong bg-very-light">
             <h3>{newsTitle}</h3>
-            <NewsList lang={language} maxCount={3} />
+            <NewsList newsResult={topNews} lang={language} enableLoadMore={false} />
             <a href="{language}/news" class="cta force-white-bg">{seeNews}</a>
         </section>
 
         <section class="concerts backdrop-blur-very-strong bg-very-light">
             <h3>{concertsTitle}</h3>
             <ConcertsList
-                concertsList={concertsManager.upcoming.items}
-                maxCount={5}
+                concertsList={topConcerts.success ? topConcerts.value.concerts : []}
                 grouping="off"
             />
             <a href="{language}/concerts" class="cta">{seeAllConcertsText}</a>

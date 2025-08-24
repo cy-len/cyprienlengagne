@@ -1,10 +1,10 @@
 <script lang="ts">
     import { page } from "$app/state";
+    import type { APIConcertPreview } from "../../../../../../artkyt/types";
     import { capitalize } from "../../../../../core/utils/stringUtils";
-    import type { Concert } from "../../../concertsManager.svelte";
 
     interface Props {
-        concert: Concert;
+        concert: APIConcertPreview;
         compact: boolean;
     }
 
@@ -16,10 +16,10 @@
         });
 
         if (concert.endDate) {
-            return formatter.formatRange(concert.date, concert.endDate);
+            return formatter.formatRange(concert.startDate, concert.endDate);
         }
 
-        return formatter.format(concert.date);
+        return formatter.format(concert.startDate);
     }
 
     function formatShort(date: Date) {
@@ -46,14 +46,14 @@
     </div>
 {:else}
     <div class="wrapper">
-        <div class="year">{ concert.date.getFullYear() }</div>
+        <div class="year">{ concert.startDate.getFullYear() }</div>
         {#if concert.endDate}
-            <div class="day">{ capitalize(formatShort(concert.date)) }</div>
+            <div class="day">{ capitalize(formatShort(concert.startDate)) }</div>
             <div class="year">&#9947;</div>
             <div class="day">{ capitalize(formatShort(concert.endDate)) }</div>
         {:else}
-            <div class="month">{ capitalize(formatMonth(concert.date)) }</div>
-            <div class="day">{ concert.date.getDate() }</div>
+            <div class="month">{ capitalize(formatMonth(concert.startDate)) }</div>
+            <div class="day">{ concert.startDate.getDate() }</div>
         {/if}
     </div>
 {/if}

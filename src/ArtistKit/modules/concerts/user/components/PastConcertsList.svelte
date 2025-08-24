@@ -1,20 +1,21 @@
 <script lang="ts">
+    import { artkytClient } from "../../../../../artkyt/artkytClient.svelte";
+    import { pastConcertsFilter, type APIConcertPreview, type Paginated } from "../../../../../artkyt/types";
+    import { failure, ok, type Result } from "../../../../../utils/result";
     import LoadingSpinner from "../../../../core/components/LoadingSpinner.svelte";
-    import { Status } from "../../../../core/types/fetchTypes";
-    import { concertsManager } from "../../concertsManager.svelte";
     import ConcertsList from "./ConcertsList.svelte";
 
     interface Props {
-        maxCount?: number;
-        expandedMax?: number;
+        concerts: Result<Paginated<{ concerts: APIConcertPreview[]}>>;
+        lang: string;
         loadMoreText?: string;
         grouping?: "off" | "month-asc" | "month-desc";
         alwaysShowYearInGroups?: boolean;
     }
 
     let {
-        maxCount = $bindable(-1),
-        expandedMax = 50,
+        concerts,
+        lang = "en",
         loadMoreText = "Load more",
         grouping = "month-desc",
         alwaysShowYearInGroups = false
@@ -23,31 +24,46 @@
     let loadingMore: boolean = $state(false);
 
     async function loadMore() {
-        if (maxCount === -1) return;
+        loadingMore = true;
+        const result = await artkytClient.getConcertsList(
+            lang,
+            pastConcertsFilter(),
+            {
+                page: concerts.success ? (concerts.value.pagination.page + 1) : 0,
+                pageSize: concerts.success ? concerts.value.pagination.pageSize : 10,
+            }
+        );
 
-        if (maxCount < concertsManager.past.items.length) {
-            maxCount = concertsManager.past.items.length;
+        if (!result.success) {
+            concerts = failure({
+                code: "expansion_failed",
+                message: "Failed to expand the list"
+            });
+            loadingMore = false;
             return;
         }
 
-        loadingMore = true;
-        await concertsManager.updatePast(expandedMax);
-        maxCount = expandedMax;
+        concerts = ok({
+            concerts: concerts.success ? [...concerts.value.concerts, ...result.value.concerts] : result.value.concerts,
+            pagination: {
+                page: result.value.pagination.page,
+                pageSize: result.value.pagination.pageSize
+            }
+        });
+
         loadingMore = false;
     }
 
 </script>
 
-{#if concertsManager.past.status === Status.OK}
-    <ConcertsList concertsList={concertsManager.past.items} maxCount={maxCount} {grouping} {alwaysShowYearInGroups} />
+{#if concerts.success}
+    <ConcertsList concertsList={concerts.value.concerts} {grouping} {alwaysShowYearInGroups} />
 
     {#if loadingMore}
         <LoadingSpinner message="Loading more past concerts" />
-    {:else if maxCount !== -1 && maxCount < expandedMax && concertsManager.past.total > maxCount}
+    {:else}
         <button class="cta" onclick={loadMore}>{ loadMoreText }</button>
     {/if}
-{:else if concertsManager.past.status === Status.FAILED}
-    <p>An error occured while fetching the upcoming concerts</p>
-{:else if concertsManager.past.status === Status.PENDING}
-    <LoadingSpinner message="Loading past concerts" />
+{:else}
+    <p>An error occured while fetching the past concerts</p>
 {/if}

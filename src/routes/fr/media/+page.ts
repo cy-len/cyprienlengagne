@@ -1,18 +1,25 @@
+
 import { browser } from "$app/environment";
+import { PUBLIC_ARTKYT_GALLERY_ID } from "$env/static/public";
 import { imageManager } from "../../../ArtistKit/core/components/images/imagesManager.svelte";
-import { galleryManager } from "../../../ArtistKit/modules/gallery/galleryManager.svelte";
-import { videosManager } from "../../../ArtistKit/modules/videos/videosManager.svelte";
+import { artkytClient } from "../../../artkyt/artkytClient.svelte";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch }) => {
     const promises: Promise<any>[] = [
-        galleryManager.updateGallery(1000, fetch),
-        videosManager.updateVideos(1000, fetch)
+        artkytClient.getGallery(PUBLIC_ARTKYT_GALLERY_ID, "fr", {
+            fetchFunction: fetch
+        }),
+        artkytClient.getRecordingsList("fr", { pageSize: 100 }, { fetchFunction: fetch })
     ];
 
     if (browser) {
         promises.push(imageManager.loadImage("/imgs/JarousskyPapillons_ultralowres.jpg"));
     }
 
-    await Promise.all(promises);
+    const [ gallery, recordings ] = await Promise.all(promises);
+
+    return {
+        gallery, recordings
+    }
 };

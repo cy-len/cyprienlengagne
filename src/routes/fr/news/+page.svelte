@@ -1,6 +1,8 @@
 <script lang="ts">
     import NewsList from "../../../ArtistKit/modules/news/user/components/NewsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
+
+    let { data } = $props();
 </script>
 
 <PageStructure
@@ -12,5 +14,5 @@
     bannerMobilePosition="10rem -12rem"
     layout="content-only"
 >
-    <NewsList lang="fr" loadMoreText="Afficher plus" />
+    <NewsList newsResult={data.news} lang="fr" loadMoreText="Afficher plus" />
 </PageStructure>

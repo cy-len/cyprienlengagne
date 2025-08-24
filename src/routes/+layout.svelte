@@ -1,12 +1,10 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+    import { setContext } from "svelte";
     import RootLayout from "../ArtistKit/core/components/RootLayout.svelte";
 
-    interface Props {
-        children: Snippet;
-    }
-
-    let { children }: Props = $props();
+    let { data, children } = $props();
+    
+    setContext("links", data.links);
 </script>
 
 <RootLayout>

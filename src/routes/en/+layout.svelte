@@ -1,14 +1,17 @@
 <script lang="ts">
-    import type { Snippet } from 'svelte';
+    import { setContext, type Snippet } from 'svelte';
     import "../../styles/global.css";
     import Nav from '../../components/Nav.svelte';
     import SocialLinks from '../../ArtistKit/core/components/SocialLinks.svelte';
+	import type { LayoutProps } from './$types';
 
     interface Props {
         children?: Snippet;
     }
 
-    let { children }: Props = $props();
+    let { children, data }: Props & LayoutProps = $props();
+
+    setContext("links", data.links);
 </script>
 
 <Nav />

@@ -1,23 +1,23 @@
 <script lang="ts">
-    import LoadingSpinner from "../../../../core/components/LoadingSpinner.svelte";
-    import { Status } from "../../../../core/types/fetchTypes";
-    import { videosManager } from "../../videosManager.svelte";
+    import type { RecordingPlatformCode } from "../../../../../artkyt/constants/externalPlatforms";
+    import RecordingPlayer from "../../../../../artkyt/RecordingPlayer.svelte";
+    import type { APIRecording } from "../../../../../artkyt/types";
+    import type { Result } from "../../../../../utils/result";
 
     interface Props {
+        recordings: Result<{ recordings: APIRecording[] }>;
         loadingText?: string;
     }
 
-    let { loadingText = "Loading videos" }: Props = $props();
+    let { recordings, loadingText = "Loading videos" }: Props = $props();
 </script>
 
-{#if videosManager.videos.status === Status.PENDING}
-    <LoadingSpinner message={loadingText} />
-{:else}
+{#if recordings.success}
     <div class="video-gallery auto-grid">
-        {#each videosManager.videos.items as video}
+        {#each recordings.value.recordings as recording}
             <div>
-                <iframe class="yt-video" width="560" height="315" src="https://www.youtube.com/embed/{video.youtubeHandle}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <div class="video-title">{video.title}</div>
+                <RecordingPlayer platform={recording.platform as RecordingPlatformCode} url={recording.url} />
+                <p>{recording.title}</p>
             </div>
         {/each}
     </div>
@@ -32,12 +32,7 @@
         --cell-height: calc(var(--player-height) + 3rem);
     }
 
-    .yt-video {
-        max-height: var(--player-height);
-        margin-bottom: 0.5rem;
-    }
-
-    .video-title {
+    .video-gallery div {
         text-align: center;
     }
 

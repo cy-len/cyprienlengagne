@@ -2,6 +2,8 @@
     import Gallery from "../../../ArtistKit/modules/gallery/user/components/Gallery.svelte";
     import VideoList from "../../../ArtistKit/modules/videos/user/components/VideoList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
+
+    let { data } = $props();
 </script>
 
 <PageStructure
@@ -17,11 +19,11 @@
     <section>
         <h2>Videos</h2>
 
-        <VideoList />
+        <VideoList recordings={data.recordings} />
     </section>
     <section>
         <h2>Images</h2>
 
-        <Gallery />
+        <Gallery gallery={data.gallery} />
     </section>
 </PageStructure>

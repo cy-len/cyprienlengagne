@@ -1,25 +1,23 @@
 <script lang="ts">
-    import type { Concert } from '../../concertsManager.svelte';
     import { browser } from '$app/environment';
     import { onMount, type Snippet } from "svelte";
     import { page } from "$app/state";
     import ConcertListItem from "./defaults/ConcertListItem.svelte";
     import { capitalize } from "../../../../core/utils/stringUtils";
     import { groupBy } from "../../../../core/utils/objectUtils";
+    import type { APIConcertPreview } from '../../../../../artkyt/types';
 
     interface Props {
-        concertsList: Concert[];
-        maxCount?: any;
+        concertsList: APIConcertPreview[];
         forceCompact?: boolean;
         grouping?: "off" | "month-asc" | "month-desc";
         alwaysShowYearInGroups?: boolean;
 
-        concertItem?: Snippet<[{ concert: Concert, compact: boolean }]>;
+        concertItem?: Snippet<[{ concert: APIConcertPreview, compact: boolean }]>;
     }
 
     let {
         concertsList,
-        maxCount = -1,
         forceCompact = false,
         grouping = "month-asc",
         alwaysShowYearInGroups = false,
@@ -41,12 +39,18 @@
         }
     });
 
-    let truncatedConcerts = $derived(maxCount > 0 ? concertsList.slice(0, maxCount) : concertsList);
-    let groupedConcertObj = $derived(groupBy(truncatedConcerts, (item) => `${item.date.getFullYear()}${item.date.getMonth().toString().padStart(2, "0")}`));
+    let processedConcerts = $derived(concertsList.map((c) => {
+        return {
+            ...c,
+            startDate: new Date(c.startDate),
+            endDate: c.endDate ? new Date(c.endDate) : undefined
+        }
+    }));
+    let groupedConcertObj = $derived(groupBy(processedConcerts, (item) => `${item.startDate.getFullYear()}${item.startDate.getMonth().toString().padStart(2, "0")}`));
     let groupedConcert = $derived.by(() => {
         const filtered = Object.values(groupedConcertObj).filter(g => !!g);
         if (grouping === "month-desc") {
-            filtered.sort((a, b) => (b[0].date.valueOf() - a[0].date.valueOf()));
+            filtered.sort((a, b) => (b[0].startDate.valueOf() - a[0].startDate.valueOf()));
         }
 
         return filtered;
@@ -62,9 +66,9 @@
             {#if group}
                 <li class="group-header" class:extra-margin={compact}>
                     <h4>
-                        { capitalize(monthFormatter.format(group[0].date)) }
-                        {#if alwaysShowYearInGroups || i === 0 || group[0].date.getFullYear() !== groupedConcert[i - 1][0].date.getFullYear()}
-                            { group[0].date.getFullYear() }
+                        { capitalize(monthFormatter.format(group[0].startDate)) }
+                        {#if alwaysShowYearInGroups || i === 0 || group[0].startDate.getFullYear() !== groupedConcert[i - 1][0].startDate.getFullYear()}
+                            { group[0].startDate.getFullYear() }
                         {/if}
                     </h4>
                 </li>
@@ -81,7 +85,7 @@
             {/if}
         {/each}
     {:else}
-        {#each truncatedConcerts as concert}
+        {#each processedConcerts as concert}
             <li>
                 {#if concertItem}
                     {@render concertItem({ concert, compact })}

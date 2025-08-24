@@ -2,6 +2,8 @@
     import PastConcertsList from "../../../ArtistKit/modules/concerts/user/components/PastConcertsList.svelte";
     import UpcomingConcertsList from "../../../ArtistKit/modules/concerts/user/components/UpcomingConcertsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
+
+    let { data } = $props();
 </script>
 
 <PageStructure
@@ -15,8 +17,8 @@
     imgLowresName="Zimmermann_Vertical_ultralowres.webp"
 >
     <h2>Prochains concerts</h2>
-    <UpcomingConcertsList />
+    <UpcomingConcertsList concerts={data.upcoming} lang="fr" />
 
     <h2 class="extra-top-margin">Concerts passés</h2>
-    <PastConcertsList maxCount={10} loadMoreText="Voir plus" />
+    <PastConcertsList concerts={data.past} lang="fr" loadMoreText="Voir plus" />
 </PageStructure>

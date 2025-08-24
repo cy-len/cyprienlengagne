@@ -38,6 +38,12 @@
 
         children,
     }: Props = $props();
+
+    let bannerUrl = $derived(bannerImgName.startsWith("http") ? bannerImgName : `/imgs/${bannerImgName}`);
+    let bannerLowresUrl = $derived(bannerLowresImgName ? (bannerLowresImgName.startsWith("http") ? bannerLowresImgName : `/imgs/${bannerLowresImgName}`) : undefined);
+
+    let imgUrl = $derived(imgName.startsWith("http") ? imgName : `/imgs/${imgName}`);
+    let imgLowresUrl = $derived(imgLowresName ? (imgLowresName.startsWith("http") ? imgLowresName : `/imgs/${imgLowresName}`) : undefined);
 </script>
 
 <OpenGraph
@@ -54,10 +60,8 @@
         }}
     >
         <LazyImage
-            lowresSrc={bannerLowresImgName
-                ? `/imgs/${bannerLowresImgName}`
-                : undefined}
-            src="/imgs/{bannerImgName}"
+            lowresSrc={bannerLowresUrl}
+            src={bannerUrl}
             alt="background"
         />
     </header>
@@ -69,10 +73,8 @@
                 {#if layout !== "content-only"}
                     <div class="picture">
                         <LazyImage
-                            lowresSrc={imgLowresName
-                                ? `/imgs/${imgLowresName}`
-                                : undefined}
-                            src="/imgs/{imgName}"
+                            lowresSrc={imgLowresUrl}
+                            src={imgUrl}
                             alt={imgAlt}
                         />
                     </div>

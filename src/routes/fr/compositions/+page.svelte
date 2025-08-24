@@ -1,6 +1,8 @@
 <script lang="ts">
     import CompositionsList from "../../../ArtistKit/modules/compositions/user/components/CompositionsList.svelte";
     import PageStructure from "../../../components/PageStructure.svelte";
+
+    let { data } = $props();
 </script>
 
 <PageStructure
@@ -15,8 +17,8 @@
     imgName="AmandineLauriol_Jaroussky_Face.webp"
 >
     <CompositionsList
+        compositions={data.compositions}
         lang="fr"
-        loadMoreText="Afficher plus"
         premiereText="Création"
         allCategoryText="Tout"
         noPieceInCategoryText="Il n'y a pas de pièce dans cette catégorie"
