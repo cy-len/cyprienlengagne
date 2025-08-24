@@ -6,7 +6,7 @@ import type { APIComposition, APIConcert, APIConcertPreview, APIConcertPreviewsL
 
 async function fetchArtkytEndpoint<T>(endpoint: string, fetchFunction = fetch, options: RequestInit = {}): Promise<Result<T>> {
     try {
-        const res = await fetchFunction(`http://www.artkyt.com/api/public/profile/${PUBLIC_ARTKYT_PROFILE_ID}/${endpoint}`, options);
+        const res = await fetchFunction(`https://www.artkyt.com/api/public/profile/${PUBLIC_ARTKYT_PROFILE_ID}/${endpoint}`, options);
         const json = await res.json() as T;
         
         if (!res.ok) {
@@ -119,7 +119,6 @@ class ArtkytEndpointMemCache {
     }
 
     async getConcertsList(lang: string, params: Partial<APIConcertPreviewsListParams> = {}, pagination: Partial<Pagination> = {}, options: EndpointFetchOptions = {}): Promise<Result<Paginated<{ concerts: APIConcertPreview[] }>>> {
-        console.log(lang, params, pagination)
         return this.getItem(
             `concerts?lang=${lang}&${concertsListParamsToUrlParams(params)}&${paginationToUrlParams(pagination)}`,
             options
